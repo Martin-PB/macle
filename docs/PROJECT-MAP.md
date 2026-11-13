@@ -72,6 +72,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
 - [Provenance, temporal relations, and event-envelope standards study](studies/PROVENANCE-TIME-EVENT-STANDARDS.md)
 - [Open reference environments study](studies/REFERENCE-ENVIRONMENTS.md)
+- [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
