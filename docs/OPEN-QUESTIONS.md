@@ -3,6 +3,9 @@
 This is a working list. An open question is not a hidden decision.
 
 ## Product behavior
+- Is the proposed reference meeting fixture sufficiently representative, and which actions/timing tolerances should be changed before a first run?
+- What annotation protocol and adjudication rules are required for ground truth?
+- What numeric acceptance thresholds should be set only after the first reproducible runs?
 - Which competency questions should be baselined as initial consumer needs, and which are explicitly out of scope?
 - Which conceptual entities and relations are essential, optional, or merely explanatory?
 - What is the minimum observation envelope needed to preserve source identity, derivation, time, uncertainty, and provenance?
