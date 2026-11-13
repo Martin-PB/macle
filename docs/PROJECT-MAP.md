@@ -61,7 +61,9 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 
 - [Initial scope](01-SCOPE.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
+- [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
+- [Open questions](OPEN-QUESTIONS.md)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
 
