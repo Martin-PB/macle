@@ -160,7 +160,17 @@ Security controls should be proportionate to the sensitivity, volume, and conseq
 
 The CNIL explains that a data protection impact assessment (DPIA/AIPD) is required when processing is likely to result in high risk to individuals' rights and freedoms. It should be assessed before processing begins, based on the actual nature, scope, context, purposes, and risks. The product should make it possible for a deploying organization to understand its data flows and supply evidence for its own assessment; a vendor-level assessment does not automatically replace the controller's assessment.
 
-## 10. Product-neutral design questions
+## 10. Emotion inference in workplace and education contexts
+
+The EU Artificial Intelligence Act (Regulation (EU) 2024/1689), Article 5(1)(f), prohibits the placing on the market, putting into service for that specific purpose, or use of AI systems to infer emotions of natural persons in workplace and education contexts, except where the system is intended for medical or safety reasons.
+
+This is a distinct issue from ordinary meeting transcription, diarization, or event detection. It is also not a blanket prohibition on every analysis of audio or video: whether a feature is an emotion-inference system depends on its purpose and operation and requires legal assessment. The Act's recitals explain concerns about scientific basis, reliability, generalisability, discrimination, and the power imbalance in work and education settings.
+
+**Conservative product hypothesis to assess:** do not include emotion or intention inference in the initial operational feature set for workplace or education meetings. Do not relabel emotion inference as an “acoustic descriptor” or “engagement signal” to avoid the issue. Keep neutral, observable event descriptions (for example, speech interval, overlap, pause, volume level) conceptually distinct from claims about a person's emotional state or intention.
+
+This is a research finding and a proposed restriction for legal review, not an adopted MACLE requirement or a substitute for counsel's assessment of a concrete feature and context.
+
+## 11. Product-neutral design questions
 
 These questions should be answered before an operational deployment is approved:
 
@@ -184,6 +194,7 @@ These questions should be answered before an operational deployment is approved:
 
 ### European Union
 - [Regulation (EU) 2016/679 — GDPR, especially Articles 5, 6, 9, 25, 28, 32 and 35](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
+- [Regulation (EU) 2024/1689 — Artificial Intelligence Act, Article 5(1)(f) and recitals 44–45](https://eur-lex.europa.eu/eli/reg/2024/1689/oj)
 - [GDPR consolidated text — EUR-Lex](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679)
 
 ### CNIL
@@ -197,6 +208,6 @@ These questions should be answered before an operational deployment is approved:
 - [Risk management and DPIA](https://www.cnil.fr/fr/gerer-les-risques)
 - [Voice assistants and biometric voice identification](https://www.cnil.fr/sites/default/files/atoms/files/cnil_livre-blanc-assistants-vocaux.pdf)
 
-## 12. No decision made
+## 13. No decision made
 
 This study does not select a lawful basis, consent mechanism, retention period, hosting location, capture default, or provider. It does not conclude that MACLE may record a particular meeting. Those matters depend on the actual controller, purpose, participants, deployment context, and applicable law, and require appropriate legal/privacy review.
