@@ -41,6 +41,9 @@ This is a working list. An open question is not a hidden decision.
 - What access-control model applies to recordings, derived events, and meeting context?
 
 ## Interfaces and consumers
+- Should provenance be represented natively in a MACLE model, mapped to W3C PROV, or both?
+- Which interval relations and uncertainty semantics are needed for cross-modal temporal reasoning?
+- Is CloudEvents useful as a transport envelope while retaining a MACLE-owned domain payload?
 - Which query semantics are needed for as-of views, temporal overlap, provenance traversal, and contradiction discovery?
 - Should the first consumer interface be an API, MCP server, event stream, SDK, or a combination?
 - What does a consuming agent need to query: timeline, participants, current state, relations, source artifacts, or all of these?
