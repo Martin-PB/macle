@@ -70,6 +70,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
 - [Data protection and governance study](studies/DATA-PROTECTION-AND-GOVERNANCE.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
+- [Provenance, temporal relations, and event-envelope standards study](studies/PROVENANCE-TIME-EVENT-STANDARDS.md)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
