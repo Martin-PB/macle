@@ -60,6 +60,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 ## 6. Current documents
 
 - [Initial scope](01-SCOPE.md)
+- [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
