@@ -3,6 +3,9 @@
 This is a working list. An open question is not a hidden decision.
 
 ## Product behavior
+- Which competency questions should be baselined as initial consumer needs, and which are explicitly out of scope?
+- Which conceptual entities and relations are essential, optional, or merely explanatory?
+- What is the minimum observation envelope needed to preserve source identity, derivation, time, uncertainty, and provenance?
 - Must MACLE expose observations while the meeting is still running, or is post-meeting processing sufficient for the first milestone?
 - What is the minimum useful event set for a first demonstrator?
 - Is full video capture required, or are selected frames and derived visual events sufficient?
@@ -10,6 +13,8 @@ This is a working list. An open question is not a hidden decision.
 - Should raw media be retained, transiently buffered, or discarded after extraction?
 
 ## Identity and attribution
+- Should speaker labels be session-scoped hypotheses by default, with person resolution deferred unless justified by a concrete purpose and legal assessment?
+- What rules govern identity hypotheses, competing candidates, confidence, correction, and supersession?
 - How should a person be represented when they join from several devices?
 - How should one device representing several people be modeled?
 - Can voice/visual diarization be linked to platform identity, and under what confidence rules?
@@ -36,6 +41,7 @@ This is a working list. An open question is not a hidden decision.
 - What access-control model applies to recordings, derived events, and meeting context?
 
 ## Interfaces and consumers
+- Which query semantics are needed for as-of views, temporal overlap, provenance traversal, and contradiction discovery?
 - Should the first consumer interface be an API, MCP server, event stream, SDK, or a combination?
 - What does a consuming agent need to query: timeline, participants, current state, relations, source artifacts, or all of these?
 - How should MACLE expose uncertainty and provenance without making downstream consumers depend on vendor-specific schemas?
