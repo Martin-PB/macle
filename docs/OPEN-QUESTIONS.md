@@ -26,6 +26,8 @@ This is a working list. An open question is not a hidden decision.
 - Is desktop/browser capture acceptable?
 - Is a third-party capture provider acceptable for an initial version?
 - Which platforms and client types must be supported at launch?
+- Which self-hostable environment, if any, should be used only as a reproducible reference fixture (separate from production-platform selection)?
+- Should the reference fixture prioritize a complete meeting UI (Jitsi), explicit track-level media primitives (LiveKit), or rich post-meeting replay (BigBlueButton)?
 - What exact event/media coverage is needed for the first demonstrator, and which gaps are acceptable?
 - Can the candidate capture path preserve the distinction between a person, a platform participant, an endpoint, and a participant session?
 - Which platform permissions and tenant restrictions make a candidate route unavailable in realistic target environments?
