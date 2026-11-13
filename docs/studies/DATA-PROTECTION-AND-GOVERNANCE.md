@@ -190,7 +190,7 @@ These questions should be answered before an operational deployment is approved:
 | Transfers | Where is data processed and which providers/subprocessors receive it? |
 | Impact | Is an AIPD/DPIA required for this deployment? |
 
-## 11. Official references
+## 12. Official references
 
 ### European Union
 - [Regulation (EU) 2016/679 — GDPR, especially Articles 5, 6, 9, 25, 28, 32 and 35](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
