@@ -30,9 +30,9 @@ An API's existence does not imply universal availability. Account plan, tenant c
 - Investigate platform event coverage and the exact distinction between meeting REST APIs, Meeting SDK, and Video SDK before designing an adapter.
 
 **Sources**
-- https://godevelopers.zoom.us/docs/api/meetings/
-- https://developers.zoom.us/docs/meeting-sdk/windows/default-ui/advanced-features/raw-data/
-- https://developers.zoom.us/docs/video-sdk/web/raw-data/
+- https://godevelopers.zoom.us/docs/api/meetings/ — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developers.zoom.us/docs/meeting-sdk/windows/default-ui/advanced-features/raw-data/ — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developers.zoom.us/docs/video-sdk/web/raw-data/ — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### 2.2 Microsoft Teams
 
@@ -49,9 +49,9 @@ An API's existence does not imply universal availability. Account plan, tenant c
 - Tenant policy can disable Graph transcript access independently of app-level permissions.
 
 **Sources**
-- https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/real-time-media-concepts
-- https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/meeting-transcripts/overview-transcripts
-- https://learn.microsoft.com/en-us/microsoftteams/meeting-transcript-api-access
+- https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/real-time-media-concepts — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/meeting-transcripts/overview-transcripts — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://learn.microsoft.com/en-us/microsoftteams/meeting-transcript-api-access — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### 2.3 Google Meet
 
@@ -67,8 +67,8 @@ An API's existence does not imply universal availability. Account plan, tenant c
 - Distinguish persistent meeting-space members from participants and participant-device sessions.
 
 **Sources**
-- https://developers.google.com/workspace/meet/api/guides/overview
-- https://developers.google.com/workspace/meet/api/reference/rest/v2
+- https://developers.google.com/workspace/meet/api/guides/overview — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developers.google.com/workspace/meet/api/reference/rest/v2 — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### 2.4 Cisco Webex
 
@@ -83,9 +83,9 @@ An API's existence does not imply universal availability. Account plan, tenant c
 - Further investigation is needed for Webex media SDKs and any supported live capture path.
 
 **Sources**
-- https://developer.webex.com/meeting/docs/meetings
-- https://developer.webex.com/meeting/docs/api/guides/webhooks
-- https://developer.webex.com/meeting/docs/access-meeting-resources-guide
+- https://developer.webex.com/meeting/docs/meetings — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developer.webex.com/meeting/docs/api/guides/webhooks — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developer.webex.com/meeting/docs/access-meeting-resources-guide — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ## 3. Cross-platform capture providers
 
@@ -112,10 +112,10 @@ This is particularly relevant because it offers two distinct acquisition models:
 - behavior when multiple people share one endpoint.
 
 Sources:
-- https://docs.recall.ai/docs/meeting-platforms
-- https://docs.recall.ai/docs/bot-overview
-- https://docs.recall.ai/docs/getting-started
-- https://www.recall.ai/product/meeting-bot-api
+- https://docs.recall.ai/docs/meeting-platforms — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://docs.recall.ai/docs/bot-overview — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://docs.recall.ai/docs/getting-started — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://www.recall.ai/product/meeting-bot-api — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ## 4. Preliminary comparison
 
@@ -157,13 +157,13 @@ The platform APIs expose different granularities of events. Examples found in cu
 These are examples, not a normalized cross-platform event taxonomy. MACLE will need to preserve the original platform event type and payload provenance before mapping it into any common event model.
 
 **Sources**
-- https://developers.zoom.us/docs/meeting-sdk/web/client-view/participant-events/
-- https://developers.zoom.us/docs/api/meetings/events/
-- https://developers.zoom.us/docs/meeting-sdk/linux/default-ui/basic-features/in-meeting-chat/
-- https://developers.google.com/workspace/events/guides/events-meet
-- https://developers.google.com/workspace/meet/api/guides/participants
-- https://developer.webex.com/admin/docs/webhook-event-reference
-- https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/real-time-media-concepts
+- https://developers.zoom.us/docs/meeting-sdk/web/client-view/participant-events/ — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developers.zoom.us/docs/api/meetings/events/ — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developers.zoom.us/docs/meeting-sdk/linux/default-ui/basic-features/in-meeting-chat/ — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developers.google.com/workspace/events/guides/events-meet — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developers.google.com/workspace/meet/api/guides/participants — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://developer.webex.com/admin/docs/webhook-event-reference — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/real-time-media-concepts — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ## 8. Secondary platforms and environments
 
@@ -175,8 +175,8 @@ The initial comparison should not imply that the four major enterprise platforms
 - **Other services:** Whereby, Discord voice/video, Amazon Chime SDK, and Zoom Rooms / Teams Rooms may be worth considering depending on product priorities. They are not part of the current baseline comparison.
 
 Sources:
-- https://developer.goto.com/GoToMeetingV1/
-- https://docs.recall.ai/docs/meeting-platforms
+- https://developer.goto.com/GoToMeetingV1/ — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://docs.recall.ai/docs/meeting-platforms — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ## 9. Revised research priority
 
