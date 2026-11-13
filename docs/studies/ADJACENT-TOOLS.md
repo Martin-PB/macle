@@ -14,52 +14,52 @@ A tool that generates excellent summaries may still be a poor source for MACLE i
 ### Recall.ai
 A cross-platform capture infrastructure candidate. Offers meeting bots and a desktop recording SDK, with access to meeting media and metadata. Particularly relevant for comparing bot-based and bot-free acquisition.
 
-Study: https://docs.recall.ai/docs/getting-started
+Study: https://docs.recall.ai/docs/getting-started — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### Fireflies.ai
 A meeting assistant that joins supported video meetings, records/transcribes, and provides a GraphQL API, webhooks, transcripts, summaries and action items. It can also ingest uploaded media. This appears oriented toward meeting intelligence and productivity rather than a neutral multimodal event substrate.
 
 Study:
-- https://fireflies.ai/api
-- https://guide.fireflies.ai/articles/5365127863-web-conference-platforms-supported
+- https://fireflies.ai/api — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://guide.fireflies.ai/articles/5365127863-web-conference-platforms-supported — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### Otter.ai
 A meeting assistant supporting automatic joining of Zoom, Google Meet and Teams, transcription, notes, and slide capture. Its product surface is useful as a benchmark for meeting capture and transcription workflows; raw multimodal/event export needs separate verification.
 
-Study: https://otter.ai/apps
+Study: https://otter.ai/apps — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### Fathom
 A meeting recording/transcription product with a public API for summaries, transcripts and action items, plus integrations and an MCP route to meeting context. The API is oriented toward already processed meeting insights.
 
 Study:
-- https://help.fathom.video/en/articles/8368641
-- https://help.fathom.video/en/articles/11497793
+- https://help.fathom.video/en/articles/8368641 — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://help.fathom.video/en/articles/11497793 — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### tl;dv
 A recorder and meeting-notes product for Meet, Teams and Zoom, with API access to meeting data, transcripts and notes. Its API is documented as alpha and access is plan-dependent. It also offers bot-free recording for some workflows, which is worth examining as a capture pattern.
 
 Study:
-- https://intercom.help/tldv/en/articles/11583137-api
-- https://intercom.help/tldv/en/
+- https://intercom.help/tldv/en/articles/11583137-api — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://intercom.help/tldv/en/ — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### Granola
 A desktop AI notepad that integrates with calendars and connects notes to CRM, project management, document, messaging and AI tools. Its “no meeting bot” approach is an interesting alternative capture model. Its public product emphasis is notes and workflow integration rather than full raw multimodal capture.
 
 Study:
-- https://docs.granola.ai/help-center/getting-started/granola-101
-- https://www.granola.ai/integrations
+- https://docs.granola.ai/help-center/getting-started/granola-101 — retrieved_on: 2026-11-13; version: not stated in the cited source.
+- https://www.granola.ai/integrations — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ## 3. Speech and diarization components
 
 ### Deepgram
 Documents streaming and batch speech recognition with speaker diarization. Diarization assigns speaker labels to words; streaming and batch models have different capabilities. Speaker labels must not be treated as verified human identities.
 
-Study: https://developers.deepgram.com/docs/diarization
+Study: https://developers.deepgram.com/docs/diarization — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### Speechmatics
 Documents real-time transcription over WebSocket with continuously returned transcript results. Evaluate latency, language coverage, punctuation, timestamps, speaker attribution, overlap handling, and data-processing terms.
 
-Study: https://docs.speechmatics.com/speech-to-text/realtime/quickstart
+Study: https://docs.speechmatics.com/speech-to-text/realtime/quickstart — retrieved_on: 2026-11-13; version: not stated in the cited source.
 
 ### Further candidates to investigate
 - AssemblyAI
