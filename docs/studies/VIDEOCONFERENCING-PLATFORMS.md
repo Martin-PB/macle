@@ -143,3 +143,48 @@ This table is a research snapshot, not a scorecard. “Not established” means 
 ## 6. No decisions made
 
 No platform has been selected as the first integration. No capture provider has been selected. No assumption is made that all four platforms must be supported in the first release.
+
+
+## 7. Event-level findings (additional research)
+
+The platform APIs expose different granularities of events. Examples found in current official documentation:
+
+- **Zoom Meeting SDK (web):** participant joined/left, participant state updates (including mute, video, roles and raised hand), waiting-room state, and active-speaker changes. Zoom also documents a webhook for screen-sharing started, and Meeting SDK chat callbacks for message received, edited, deleted, and chat status changes.
+- **Google Meet:** Workspace Events subscriptions cover conference start/end, participant join/leave, recording start/end/file generation, transcript start/end/file generation, and smart-note lifecycle. The participant model explicitly distinguishes a person from a participant-device session; a room device can appear as a signed-in user/robot account.
+- **Webex:** webhook event references include meeting participant joined/left and transcript-created events. The Meetings API also exposes meeting controls and participant resources, subject to scopes and product availability.
+- **Teams:** real-time media bots can subscribe to selected participant video streams and screen-sharing content; Graph artifact notifications concern recordings and transcripts becoming available, not a complete live event stream.
+
+These are examples, not a normalized cross-platform event taxonomy. MACLE will need to preserve the original platform event type and payload provenance before mapping it into any common event model.
+
+**Sources**
+- https://developers.zoom.us/docs/meeting-sdk/web/client-view/participant-events/
+- https://developers.zoom.us/docs/api/meetings/events/
+- https://developers.zoom.us/docs/meeting-sdk/linux/default-ui/basic-features/in-meeting-chat/
+- https://developers.google.com/workspace/events/guides/events-meet
+- https://developers.google.com/workspace/meet/api/guides/participants
+- https://developer.webex.com/admin/docs/webhook-event-reference
+- https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/real-time-media-concepts
+
+## 8. Secondary platforms and environments
+
+The initial comparison should not imply that the four major enterprise platforms are the entire videoconferencing ecosystem.
+
+- **GoTo Meeting:** official REST API documentation describes meeting creation and management, recordings, transcripts (when enabled for the account), and reporting. Recall.ai lists GoTo Meeting as beta support for its bot API.
+- **Jitsi Meet:** worth a separate investigation because its open-source deployment model may offer a different integration and self-hosting profile. The current platform comparison has not yet validated its event/media interfaces or operational limitations.
+- **Slack Huddles:** relevant because it is a meeting-like environment embedded in a collaboration platform. Recall.ai lists bot support and desktop SDK support with platform/OS limitations; native capture options need further study.
+- **Other services:** Whereby, Discord voice/video, Amazon Chime SDK, and Zoom Rooms / Teams Rooms may be worth considering depending on product priorities. They are not part of the current baseline comparison.
+
+Sources:
+- https://developer.goto.com/GoToMeetingV1/
+- https://docs.recall.ai/docs/meeting-platforms
+
+## 9. Revised research priority
+
+The next useful platform work is not to add every vendor indiscriminately. It is to complete a capability matrix for the likely first candidates (Zoom, Teams, Meet, Webex), then decide whether one or more secondary platforms merit inclusion. The matrix should distinguish:
+- lifecycle and participant events;
+- live media access and stream granularity;
+- screen-share lifecycle and content;
+- chat and reactions;
+- post-meeting artifacts;
+- permissions and tenant/host dependencies;
+- client/OS coverage and deployment constraints.
