@@ -71,6 +71,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Data protection and governance study](studies/DATA-PROTECTION-AND-GOVERNANCE.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
 - [Provenance, temporal relations, and event-envelope standards study](studies/PROVENANCE-TIME-EVENT-STANDARDS.md)
+- [Open reference environments study](studies/REFERENCE-ENVIRONMENTS.md)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
