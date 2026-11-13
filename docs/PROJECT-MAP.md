@@ -65,6 +65,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
+- [Data protection and governance study](studies/DATA-PROTECTION-AND-GOVERNANCE.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Decision register](decisions/README.md)
