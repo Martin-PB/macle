@@ -2,6 +2,7 @@ package dev.macle.app.capture
 
 import android.app.Notification
 import android.app.NotificationChannel
+import android.app.PendingIntent
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
@@ -263,11 +264,18 @@ class ScreenCaptureService : Service() {
             @Suppress("DEPRECATION")
             Notification.Builder(this)
         }
+        val stopIntent = PendingIntent.getService(
+            this,
+            1,
+            Intent(this, ScreenCaptureService::class.java).setAction(ACTION_STOP),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
         return builder
             .setContentTitle("MACLE capture active")
             .setContentText(message)
             .setSmallIcon(android.R.drawable.ic_menu_camera)
             .setOngoing(true)
+            .addAction(android.R.drawable.ic_media_pause, "Stop", stopIntent)
             .build()
     }
 
