@@ -385,7 +385,6 @@ mod tests {
 
 #[cfg(target_os = "android")]
 mod android_jni {
-    use super::*;
     use jni::objects::{JClass, JString};
     use jni::sys::jstring;
     use jni::JNIEnv;
