@@ -154,7 +154,7 @@ macle-meet transcribe \\
 Expected:
 - The first run downloads the selected Whisper model weights to the local cache.
 - Audio is decoded and transcribed locally; only model weights are downloaded, never the recording.
-- The output consists of timestamped speech-segment observations with capture and model provenance.
+- The command indexes the capture and outputs timestamped speech-segment observations with capture, optional conference and model provenance.
 - No participant identity or speaker attribution is fabricated.
 - The machine-generated transcript is distinct from any Google-generated transcript artifact.
 
