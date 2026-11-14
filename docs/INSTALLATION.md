@@ -25,7 +25,7 @@ No Rust, Cargo, wasm-pack, Node.js, ZIP utility, or local compilation is needed 
 4. Enable **Developer mode**.
 5. Select **Load unpacked** and choose the extracted folder containing `manifest.json`.
 6. Pin MACLE to the toolbar if desired.
-7. Open the extension's options and explicitly attest to synthetic-only testing.
+7. Open the extension's options and explicitly attest to synthetic-only testing. Local tab-audio playback on the computer is disabled by default; enable **Play captured Meet tab audio through this computer** only when you want to monitor it locally.
 8. Open a synthetic Google Meet test session.
 9. Click the MACLE toolbar icon to start. Click it again to stop and save the WebM and manifest separately.
 
@@ -72,7 +72,7 @@ To load directly from the source tree instead of the ZIP:
 
 The generated core-wasm directory is intentionally ignored by Git; the packaging script creates it before producing the ZIP. A missing or invalid WASM runtime blocks capture rather than falling back to a weaker validator.
 
-The extension records the rendered tab, not individual participant tracks. Tab audio availability depends on what Chrome exposes for that tab. Microphone capture is off by default and must remain disabled unless the input is synthetic test audio.
+The extension records the rendered tab, not individual participant tracks. Tab audio availability depends on what Chrome exposes for that tab. Capturing tab audio does not require playing it through the computer speakers: local monitoring is disabled by default and can be enabled in extension settings. Microphone capture is off by default and must remain disabled unless the input is synthetic test audio.
 
 ## Android
 
