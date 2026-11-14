@@ -79,6 +79,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Architecture decision template](decisions/TEMPLATE.md) (PROPOSED)
 - [Issue taxonomy and decomposition proposal](GOVERNANCE-ISSUES.md) (PROPOSED)
 - [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
+- [Ground-truth annotation dry run 01](fixtures/GROUND-TRUTH-DRY-RUN-01.md) (simulated worked example; no real annotators or recording)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Google Meet local connector](../connectors/google-meet/README.md) (single-device executable prototype; synthetic-only validation; one-command post-capture processing)
 - [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending; includes one-command post-capture workflow)
