@@ -23,7 +23,7 @@ From the repository root:
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -e '.[dev]'
+python -m pip install -e '.[dev,asr]'
 pytest -q
 macle-meet --version
 ```
@@ -139,6 +139,24 @@ Expected:
 - The JSONL observation includes the capture manifest, file path, file size and hash.
 - The media bytes are not copied into SQLite or uploaded.
 - The capture observation is associated with the supplied conference resource.
+
+## 8b. Local speech transcription
+
+Run local ASR on the captured WebM:
+
+```sh
+macle-meet transcribe \\
+  --media ./MACLE-Meet-....webm \\
+  --manifest ./MACLE-Meet-....manifest.json \\
+  --language fr
+```
+
+Expected:
+- The first run downloads the selected Whisper model weights to the local cache.
+- Audio is decoded and transcribed locally; only model weights are downloaded, never the recording.
+- The output consists of timestamped speech-segment observations with capture and model provenance.
+- No participant identity or speaker attribution is fabricated.
+- The machine-generated transcript is distinct from any Google-generated transcript artifact.
 
 ## 9. Post-meeting artifact sync
 
