@@ -46,7 +46,7 @@ Manual installation is also possible:
 ```sh
 python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install -e .
+python -m pip install -e '.[asr]'
 ```
 
 Create a Google Cloud project, enable Google Meet REST API, configure OAuth consent for a Desktop app, add your account as a test user if the app is in Testing, and download the OAuth client JSON to:
@@ -76,7 +76,22 @@ To retrieve a known past conference resource:
 macle-meet sync --conference-record 'conferenceRecords/CONFERENCE_ID'
 ```
 
-The local SQLite database is stored under `~/.local/share/macle-meet/`; the JSONL observation export is written to the current directory. OAuth credentials are stored under `~/.config/macle-meet/` with owner-only permissions; the directory is created with mode 0700 and the token with mode 0600.
+The local SQLite database is stored under `~/.local/share/macle-meet/`; the JSONL observation export is written to the current directory. The optional ASR model cache is stored under `~/.cache/macle-meet/models/`. OAuth credentials are stored under `~/.config/macle-meet/` with owner-only permissions; the directory is created with mode 0700 and the token with mode 0600.
+
+## Local speech transcription
+
+The installer includes the optional `faster-whisper` backend. After capture, transcribe the local WebM file with:
+
+```sh
+macle-meet transcribe \\
+  --media ./MACLE-Meet-....webm \\
+  --manifest ./MACLE-Meet-....manifest.json \\
+  --language fr
+```
+
+Omit `--language` for automatic language detection. The default model is `small`, running locally on CPU with int8 quantization. Use `--model medium` for a larger model, or `--device cuda` only when the required CUDA runtime is correctly installed. The model weights are downloaded from Hugging Face the first time a model is used and cached locally; the WebM audio and generated transcript are not sent to Hugging Face or any hosted ASR service. `faster-whisper` decodes media through PyAV, so a system FFmpeg installation is not required.
+
+Each generated segment is stored as a separate MACLE observation with capture ID, media SHA-256, relative start/end offsets, text, model identifier, detected language and confidence metadata. These are **machine-generated local ASR observations**, not Google-generated transcript entries. No speaker identity or diarization is inferred from the composite tab recording. ASR output is not a verified verbatim transcript.
 
 ## Local-only data handling
 
@@ -95,7 +110,7 @@ Run the Python unit tests:
 pytest
 ```
 
-The Chrome extension requires a manual smoke test in Chrome against a synthetic meeting. No real meeting capture is part of the approved validation scope.
+The Chrome extension requires a manual smoke test in Chrome against a synthetic meeting. The local ASR test requires a short synthetic audio/video fixture; the first use downloads the selected model weights. No real meeting capture is part of the approved validation scope.
 
 
 ## Index a local capture
