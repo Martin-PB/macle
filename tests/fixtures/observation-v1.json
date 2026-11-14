@@ -1,0 +1,17 @@
+{
+  "schema": "macle.observation/v1",
+  "observation_id": "synthetic-observation-001",
+  "session_id": "synthetic-session-001",
+  "source_id": "meet-tab-video",
+  "sequence": 1,
+  "kind": "capture.started",
+  "observed_at": "2026-11-14T10:00:00Z",
+  "payload": {
+    "capture_status": "started",
+    "synthetic": true
+  },
+  "provenance": {
+    "origin": "browser_capture_adapter",
+    "adapter_version": "0.1.0"
+  }
+}

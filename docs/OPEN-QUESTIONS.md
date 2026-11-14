@@ -75,6 +75,13 @@ This is a working list. An open question is not a hidden decision.
 - What is the smallest conformance suite that proves package/observation equivalence across independently implemented adapters?
 - Which desktop shell/UI framework, if any, can be shared without weakening native capture and lifecycle behavior?
 
+## Shared core implementation
+- Does the first Rust core contract cover the necessary source, time, provenance, artifact, and authorization dimensions before the schema is baselined?
+- Should the portable package become a ZIP archive or a directory bundle, and how should large media artifacts be streamed without loading them into memory?
+- Which Android MediaProjection lifecycle and interruption events must be represented in the first native capture adapter?
+- Which Android device/OS/Meet combinations can expose playback audio through AudioPlaybackCapture, if any?
+- Which Chrome extension build and packaging process should produce reproducible signed/reviewable artifacts without committing generated WASM binaries?
+
 ## Engineering
 - What latency and throughput targets are appropriate?
 - Which media and event formats should be canonical?

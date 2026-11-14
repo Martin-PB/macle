@@ -7,9 +7,14 @@ let fileHandle = null;
 let writable = null;
 let temporaryFileName = null;
 let writeChain = Promise.resolve();
-let captureMetadata = null;
+let sessionManifest = null;
+let artifactHasher = null;
 let saving = false;
 let captureFailure = null;
+const macleCoreReady = import(chrome.runtime.getURL("core-wasm/macle_core.js")).then(async (core) => {
+  await core.default();
+  return core;
+});
 
 function send(type, details = {}) {
   chrome.runtime.sendMessage({ type, ...details }).catch(() => {});
@@ -34,6 +39,9 @@ async function startCapture(
     throw new Error("A capture is already running or the previous file is still being saved.");
   }
   try {
+    // Fail before recording starts if the shared contract runtime was not built.
+    const core = await macleCoreReady;
+    artifactHasher = new core.WasmSha256Accumulator();
     const constraints = {
       audio: { mandatory: {
         chromeMediaSource: "tab",
@@ -88,31 +96,36 @@ async function startCapture(
     const mimeType = chooseMimeType();
     recorder = new MediaRecorder(recorderStream, mimeType ? { mimeType } : undefined);
     captureFailure = null;
-    captureMetadata = {
-      schema: "macle.capture-manifest/v0",
-      captureId: crypto.randomUUID(),
-      platform: "google_meet",
-      captureMode: "single_device_visible_tab",
-      startedAt: new Date().toISOString(),
-      endedAt: null,
-      tabOrigin: new URL(tab.url).origin,
-      tabTitle: tab.title,
-      mimeType: recorder.mimeType || mimeType || "browser-default",
-      audioSource: [
-        tabAudioTracks.length ? "google_meet_tab_audio_output" : null,
-        microphoneStream ? "local_microphone" : null
-      ].filter(Boolean),
-      videoSource: "rendered_google_meet_tab",
-      microphoneCaptured: Boolean(microphoneStream),
-      microphoneSyntheticAttested: Boolean(microphoneStream && syntheticMicrophoneAttested),
-      individualParticipantTracks: false,
-      syntheticTestAttested: true,
-      egress: "local_browser_download_only"
+    sessionManifest = {
+      schema: "macle.session-manifest/v1",
+      session_id: crypto.randomUUID(),
+      platform: "chrome",
+      started_at: new Date().toISOString(),
+      ended_at: null,
+      sources: [
+        { source_id: "meet-tab-video", kind: "tab_video", status: "available", detail: "Composite rendered Meet tab video; not participant-specific tracks." },
+        { source_id: "meet-tab-audio", kind: "tab_audio", status: tabAudioTracks.length ? "available" : "unavailable", detail: tabAudioTracks.length ? "Browser-exposed tab playback audio." : "No tab audio track was exposed by the browser." },
+        { source_id: "device-microphone", kind: "microphone", status: microphoneStream ? "available" : "not_requested", detail: microphoneStream ? (syntheticMicrophoneAttested ? "Synthetic microphone input explicitly attested." : "Microphone input.") : "Microphone capture was not requested." }
+      ],
+      artifacts: [],
+      limitations: [
+        "Captures only the selected rendered Google Meet tab.",
+        "Does not expose individual participant media tracks.",
+        "Microphone input, when enabled, is a distinct source mixed into the recording container."
+      ],
+      authorization: { test_scope: "synthetic_only", egress: "local_only" }
     };
 
     recorder.ondataavailable = (event) => {
       if (event.data && event.data.size) {
-        writeChain = writeChain.then(() => writable.write(event.data));
+        const chunk = event.data;
+        writeChain = writeChain.then(async () => {
+          // Hash each bounded recorder chunk as it is written; never load the
+          // complete meeting recording into memory merely to compute its digest.
+          const bytes = await chunk.arrayBuffer();
+          artifactHasher.update(new Uint8Array(bytes));
+          await writable.write(chunk);
+        });
       }
     };
     recorder.onerror = (event) => {
@@ -143,7 +156,8 @@ async function startCapture(
     writable = null;
     temporaryFileName = null;
     recorder = null;
-    captureMetadata = null;
+    sessionManifest = null;
+    artifactHasher = null;
     captureFailure = null;
     throw error;
   }
@@ -168,23 +182,35 @@ async function requestDownload(blob, filename) {
 async function saveCapture() {
   saving = true;
   try {
-    captureMetadata.endedAt = new Date().toISOString();
+    sessionManifest.ended_at = new Date().toISOString();
     if (captureFailure) throw new Error(captureFailure);
     await writeChain;
     await writable.close();
     writable = null;
     const blob = await fileHandle.getFile();
     if (!blob.size) throw new Error("The capture produced an empty recording.");
-    const stamp = captureMetadata.startedAt.replace(/[:.]/g, "-");
+    const stamp = sessionManifest.started_at.replace(/[:.]/g, "-");
     const filename = "MACLE-Meet-" + stamp + ".webm";
-    await requestDownload(blob, filename);
+    const sha256 = artifactHasher.finalize_hex();
+    artifactHasher = null;
+    sessionManifest.artifacts.push({
+      path: filename,
+      media_type: blob.type || "video/webm",
+      size_bytes: blob.size,
+      sha256,
+      started_at: sessionManifest.started_at,
+      ended_at: sessionManifest.ended_at
+    });
+    const core = await macleCoreReady;
+    core.validate_manifest_json(JSON.stringify(sessionManifest));
     const manifest = new Blob(
-      [JSON.stringify(captureMetadata, null, 2)],
+      [JSON.stringify(sessionManifest, null, 2)],
       { type: "application/json" }
     );
+    await requestDownload(blob, filename);
     await requestDownload(
       manifest,
-      filename.replace(/\\.webm$/, ".manifest.json")
+      filename.replace(/\.webm$/, ".manifest.json")
     );
     if (temporaryFileName) {
       const fileToRemove = temporaryFileName;
@@ -213,7 +239,8 @@ async function saveCapture() {
     fileHandle = null;
     writable = null;
     temporaryFileName = null;
-    captureMetadata = null;
+    sessionManifest = null;
+    artifactHasher = null;
     captureFailure = null;
     saving = false;
   }
