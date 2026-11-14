@@ -3,6 +3,12 @@
 This is a working list. An open question is not a hidden decision.
 
 ## Product behavior
+- Is the proposed reference meeting fixture sufficiently representative, and which actions/timing tolerances should be changed before a first run?
+- What annotation protocol and adjudication rules are required for ground truth?
+- What numeric acceptance thresholds should be set only after the first reproducible runs?
+- Which competency questions should be baselined as initial consumer needs, and which are explicitly out of scope?
+- Which conceptual entities and relations are essential, optional, or merely explanatory?
+- What is the minimum observation envelope needed to preserve source identity, derivation, time, uncertainty, and provenance?
 - Must MACLE expose observations while the meeting is still running, or is post-meeting processing sufficient for the first milestone?
 - What is the minimum useful event set for a first demonstrator?
 - Is full video capture required, or are selected frames and derived visual events sufficient?
@@ -10,6 +16,8 @@ This is a working list. An open question is not a hidden decision.
 - Should raw media be retained, transiently buffered, or discarded after extraction?
 
 ## Identity and attribution
+- Should speaker labels be session-scoped hypotheses by default, with person resolution deferred unless justified by a concrete purpose and legal assessment?
+- What rules govern identity hypotheses, competing candidates, confidence, correction, and supersession?
 - How should a person be represented when they join from several devices?
 - How should one device representing several people be modeled?
 - Can voice/visual diarization be linked to platform identity, and under what confidence rules?
@@ -21,11 +29,18 @@ This is a working list. An open question is not a hidden decision.
 - Is desktop/browser capture acceptable?
 - Is a third-party capture provider acceptable for an initial version?
 - Which platforms and client types must be supported at launch?
+- Which self-hostable environment, if any, should be used only as a reproducible reference fixture (separate from production-platform selection)?
+- Should the reference fixture prioritize a complete meeting UI (Jitsi), explicit track-level media primitives (LiveKit), or rich post-meeting replay (BigBlueButton)?
 - What exact event/media coverage is needed for the first demonstrator, and which gaps are acceptable?
 - Can the candidate capture path preserve the distinction between a person, a platform participant, an endpoint, and a participant session?
 - Which platform permissions and tenant restrictions make a candidate route unavailable in realistic target environments?
 
 ## Data and governance
+- Which deployment profile should be evaluated first (local-only, customer-controlled, contracted cloud, third-party capture, or hybrid)?
+- Is the first demonstrator strictly synthetic, or may it process real participants' data?
+- Who can approve a deployment-specific privacy/data-egress gate, and what evidence is required?
+- Which recipients, subprocessors, support locations, transfer mechanisms, model uses, and deletion guarantees must be known before provider selection?
+- How should deletion propagate through provenance-linked derivatives, backups, and exports?
 - What consent and disclosure behavior is required?
 - What retention and deletion guarantees are required?
 - Which deployment regions and data residency constraints apply?
@@ -36,6 +51,14 @@ This is a working list. An open question is not a hidden decision.
 - What access-control model applies to recordings, derived events, and meeting context?
 
 ## Interfaces and consumers
+- Which temporal dimensions must be represented independently: valid/event, source assertion, observation, ingestion, processing, and revision/system time?
+- How should clock identity, precision, drift, uncertainty, and ambiguous cross-clock ordering be represented?
+- Which assertion revision states and correction relations are needed for current and as-of views?
+- How can historical correction traceability coexist with deletion and retention requirements?
+- Should provenance be represented natively in a MACLE model, mapped to W3C PROV, or both?
+- Which interval relations and uncertainty semantics are needed for cross-modal temporal reasoning?
+- Is CloudEvents useful as a transport envelope while retaining a MACLE-owned domain payload?
+- Which query semantics are needed for as-of views, temporal overlap, provenance traversal, and contradiction discovery?
 - Should the first consumer interface be an API, MCP server, event stream, SDK, or a combination?
 - What does a consuming agent need to query: timeline, participants, current state, relations, source artifacts, or all of these?
 - How should MACLE expose uncertainty and provenance without making downstream consumers depend on vendor-specific schemas?
