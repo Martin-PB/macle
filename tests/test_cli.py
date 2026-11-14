@@ -149,3 +149,26 @@ def test_watch_requires_synthetic_meeting_attestation(tmp_path):
     args = Namespace(synthetic_test_attested=False, token_file=tmp_path / "token.json")
     with pytest.raises(RuntimeError, match="synthetic test meetings"):
         run_watch(args)
+
+
+
+def test_report_command_requires_synthetic_test_attestation():
+    args = build_parser().parse_args(["report", "observations.jsonl", "report.html"])
+    assert args.command == "report"
+    assert args.synthetic_test_attested is False
+
+
+def test_report_refuses_non_synthetic_export(tmp_path):
+    from argparse import Namespace
+
+    import pytest
+    from macle_meet.cli import run_report
+
+    args = Namespace(
+        synthetic_test_attested=False,
+        input=tmp_path / "observations.jsonl",
+        output=tmp_path / "report.html",
+        frames_root=tmp_path / "frames",
+    )
+    with pytest.raises(RuntimeError, match="synthetic test observations"):
+        run_report(args)
