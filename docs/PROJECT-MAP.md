@@ -79,7 +79,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Issue taxonomy and decomposition proposal](GOVERNANCE-ISSUES.md) (PROPOSED)
 - [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
 - [Open questions](OPEN-QUESTIONS.md)
-- [Google Meet local connector](../connectors/google-meet/README.md) (first single-device executable slice; synthetic-only validation)
+- [Google Meet local connector](../connectors/google-meet/README.md) (single-device executable prototype; synthetic-only validation; one-command post-capture processing)
 - [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending; includes one-command post-capture workflow)
 - [Local speech transcription study](studies/LOCAL-SPEECH-TRANSCRIPTION.md) (first optional local ASR backend)
 - [Local video frame observations](studies/LOCAL-VIDEO-FRAME-OBSERVATIONS.md) (sparse local visual references)
