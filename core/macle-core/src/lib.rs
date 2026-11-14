@@ -351,6 +351,14 @@ mod tests {
     }
 
     #[test]
+    fn validates_interrupted_session_manifest_fixture() {
+        let fixture = include_str!("../../../tests/fixtures/session-manifest-interrupted-v1.json");
+        let manifest = validate_manifest_json(fixture).unwrap();
+        assert!(manifest.artifacts.is_empty());
+        assert_eq!(manifest.sources[0].status, "interrupted");
+    }
+
+    #[test]
     fn rejects_unsafe_artifact_paths() {
         let fixture = include_str!("../../../tests/fixtures/session-manifest-v1.json");
         let mut manifest = validate_manifest_json(fixture).unwrap();

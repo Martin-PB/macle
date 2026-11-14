@@ -222,9 +222,44 @@ async function saveCapture() {
     }
     send("CAPTURE_SAVED", { filename });
   } catch (error) {
-    send("CAPTURE_ERROR", { error: error.message || String(error) });
+    let failureMessage = error.message || String(error);
+    if (sessionManifest) {
+      sessionManifest.ended_at = sessionManifest.ended_at || new Date().toISOString();
+      const hasFinalizedArtifact = sessionManifest.artifacts.length > 0;
+      if (!hasFinalizedArtifact) {
+        for (const source of sessionManifest.sources) {
+          if (source.status === "available") {
+            source.status = "interrupted";
+            source.detail = (source.detail ? source.detail + " " : "") +
+              "Capture ended before a complete artifact could be finalized.";
+          }
+        }
+      }
+      sessionManifest.limitations.push(
+        (hasFinalizedArtifact ? "Capture artifact was finalized, but export failed: " :
+          "Capture was interrupted before an artifact could be finalized: ") + failureMessage
+      );
+      try {
+        const core = await macleCoreReady;
+        core.validate_manifest_json(JSON.stringify(sessionManifest));
+        const manifest = new Blob(
+          [JSON.stringify(sessionManifest, null, 2)],
+          { type: "application/json" }
+        );
+        const stamp = sessionManifest.started_at.replace(/[:.]/g, "-");
+        await requestDownload(manifest, "MACLE-Meet-" + stamp + ".manifest.json");
+      } catch (manifestError) {
+        failureMessage += "; interruption manifest export also failed: " +
+          (manifestError.message || String(manifestError));
+      }
+    }
+    send("CAPTURE_ERROR", { error: failureMessage });
   } finally {
+    // Stop every acquired source explicitly. Closing AudioContext does not
+    // release the microphone MediaStream tracks created by getUserMedia().
     if (stream) stream.getTracks().forEach((track) => track.stop());
+    if (microphoneStream) microphoneStream.getTracks().forEach((track) => track.stop());
+    if (recorderStream) recorderStream.getTracks().forEach((track) => track.stop());
     if (audioContext) await audioContext.close().catch(() => {});
     if (writable) await writable.abort().catch(() => {});
     if (temporaryFileName) {

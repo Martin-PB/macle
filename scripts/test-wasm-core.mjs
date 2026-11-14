@@ -10,8 +10,10 @@ await init(wasmBytes);
 
 const manifest = await readFile(new URL("../tests/fixtures/session-manifest-v1.json", import.meta.url), "utf8");
 const observation = await readFile(new URL("../tests/fixtures/observation-v1.json", import.meta.url), "utf8");
+const interruptedManifest = await readFile(new URL("../tests/fixtures/session-manifest-interrupted-v1.json", import.meta.url), "utf8");
 validate_manifest_json(manifest);
 validate_observation_json(observation);
+validate_manifest_json(interruptedManifest);
 
 const digest = new WasmSha256Accumulator();
 digest.update(new TextEncoder().encode("a"));

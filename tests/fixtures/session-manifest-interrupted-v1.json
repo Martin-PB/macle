@@ -1,0 +1,35 @@
+{
+  "schema": "macle.session-manifest/v1",
+  "session_id": "synthetic-interrupted-session-001",
+  "platform": "chrome",
+  "started_at": "2026-11-14T10:00:00Z",
+  "ended_at": "2026-11-14T10:00:02Z",
+  "sources": [
+    {
+      "source_id": "meet-tab-video",
+      "kind": "tab_video",
+      "status": "interrupted",
+      "detail": "Capture ended before a complete artifact could be finalized."
+    },
+    {
+      "source_id": "meet-tab-audio",
+      "kind": "tab_audio",
+      "status": "unavailable",
+      "detail": "No tab audio track was exposed by the browser."
+    },
+    {
+      "source_id": "device-microphone",
+      "kind": "microphone",
+      "status": "not_requested",
+      "detail": "Microphone capture was not requested."
+    }
+  ],
+  "artifacts": [],
+  "limitations": [
+    "Synthetic interrupted-session fixture; no media artifact was finalized."
+  ],
+  "authorization": {
+    "test_scope": "synthetic_only",
+    "egress": "local_only"
+  }
+}

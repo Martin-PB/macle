@@ -1,6 +1,17 @@
 # MACLE Android — first native capture prototype
 
-The Android shell now contains a deliberately limited, synthetic-only screen-capture vertical slice. It calls the same Rust core as the Chrome WebAssembly build.
+The Android shell contains a deliberately limited, synthetic-only screen-capture vertical slice. It calls the same Rust core as the Chrome WebAssembly build.
+
+## Build and install
+
+See [the shared installation guide](../../docs/INSTALLATION.md#android) for prerequisites and the reproducible APK build:
+
+~~~sh
+sh scripts/build-android-apk.sh
+adb install -r dist/MACLE-android-debug.apk
+~~~
+
+The build script compiles the Rust JNI library for arm64-v8a, builds the Android debug APK, and copies it to dist/. Android Studio can also open this directory as a Gradle project after the JNI library has been built.
 
 ## What works in this prototype
 
@@ -23,20 +34,7 @@ The Android shell now contains a deliberately limited, synthetic-only screen-cap
 - A single ZIP package; this prototype exports the manifest and media as two files.
 - Production lifecycle recovery, exhaustive device/OS compatibility, or long-duration reliability.
 
-The manifest records playback audio and microphone as `not_requested`, not as successfully captured sources. If screen recording fails or produces an empty file, the screen source is marked `interrupted`.
-
-## Build the shared Rust library
-
-Prerequisites: Rust, Android SDK/NDK, Android Studio/Gradle, and cargo-ndk.
-
-From the repository root:
-
-```sh
-cargo install cargo-ndk
-sh scripts/build-android-core.sh
-```
-
-The current script builds `arm64-v8a`. Then open `apps/android` in Android Studio and run the `app` configuration on an Android 10+ physical device.
+The manifest records playback audio and microphone as not_requested, not as successfully captured sources. If screen recording fails or produces an empty file, the screen source is marked interrupted.
 
 ## Synthetic smoke test
 
