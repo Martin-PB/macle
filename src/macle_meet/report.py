@@ -88,7 +88,7 @@ def _copy_frame_asset(
     if not target.exists():
         shutil.copyfile(source, target)
         target.chmod(0o600)
-    return f"{assets_frames.name}/{target.name}", "verified"
+    return f"{assets_frames.parent.name}/{assets_frames.name}/{target.name}", "verified"
 
 
 def generate_report(
