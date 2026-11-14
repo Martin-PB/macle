@@ -89,6 +89,8 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
 
+- [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
+
 ## 7. Important restraint
 
 The README remains the concise public introduction. These working documents carry the detailed distinctions and may evolve without forcing premature technical commitments into the README.
