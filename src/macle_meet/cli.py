@@ -192,6 +192,66 @@ def run_index_capture(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_process_capture(args: argparse.Namespace) -> int:
+    if not args.synthetic_test_attested:
+        raise RuntimeError(
+            "Capture processing is restricted to synthetic test data under the current approval. "
+            "Pass --synthetic-test-attested only after confirming the capture contains synthetic identities/content."
+        )
+    transcribe_args = argparse.Namespace(
+        media=args.media,
+        manifest=args.manifest,
+        conference_record=args.conference_record,
+        model=args.model,
+        language=args.language,
+        device=args.device,
+        compute_type=args.compute_type,
+        model_cache=args.model_cache,
+        cpu_threads=args.cpu_threads,
+        beam_size=args.beam_size,
+        frame_interval=args.frame_interval,
+        max_frame_dimension=args.max_frame_dimension,
+        jpeg_quality=args.jpeg_quality,
+        frames_dir=args.frames_dir,
+        database=args.database,
+        export=args.export,
+    )
+    run_transcribe(transcribe_args)
+
+    sync_warning = None
+    if args.conference_record:
+        sync_args = argparse.Namespace(
+            synthetic_test_attested=True,
+            token_file=args.token_file,
+            days=None,
+            conference_record=args.conference_record,
+            meeting_code=None,
+            space=None,
+            database=args.database,
+            export=args.export,
+        )
+        try:
+            run_sync(sync_args)
+        except (MeetApiError, FileNotFoundError, RuntimeError, requests.RequestException) as exc:
+            sync_warning = str(exc)
+            print(
+                f"macle-meet: warning: Meet REST sync failed; local capture/ASR/frame data "
+                f"remain available: {sync_warning}",
+                file=sys.stderr,
+            )
+
+    report_args = argparse.Namespace(
+        synthetic_test_attested=True,
+        input=args.export,
+        output=args.report,
+        frames_root=args.frames_dir,
+    )
+    run_report(report_args)
+    if sync_warning:
+        print("Report generated from local observations; Meet REST metadata may be incomplete.")
+    return 0
+
+
 def run_report(args: argparse.Namespace) -> int:
     if not args.synthetic_test_attested:
         raise RuntimeError(
@@ -386,6 +446,27 @@ def build_parser() -> argparse.ArgumentParser:
     sync.add_argument("--token-file", type=Path, default=config_dir() / "token.json")
     sync.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
     sync.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
+    process = sub.add_parser("process-capture", help="Index, transcribe, sample frames, optionally sync Meet metadata, and generate a local report.")
+    process.add_argument("--media", type=Path, required=True)
+    process.add_argument("--manifest", type=Path, required=True)
+    process.add_argument("--conference-record", help="Optional known Meet conference resource to synchronize.")
+    process.add_argument("--synthetic-test-attested", action="store_true", help="Confirm that the capture contains only synthetic test identities/content.")
+    process.add_argument("--model", default="small", choices=["tiny", "base", "small", "medium", "large-v3", "turbo"])
+    process.add_argument("--language", help="Language code such as fr; omit for automatic detection.")
+    process.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
+    process.add_argument("--compute-type", help="Defaults to int8 on CPU and float16 on CUDA.")
+    process.add_argument("--cpu-threads", type=int, default=min(os.cpu_count() or 4, 8))
+    process.add_argument("--beam-size", type=int, default=5)
+    process.add_argument("--frame-interval", type=float, default=30.0)
+    process.add_argument("--max-frame-dimension", type=int, default=1280)
+    process.add_argument("--jpeg-quality", type=int, default=85)
+    process.add_argument("--frames-dir", type=Path, default=data_dir() / "frames")
+    process.add_argument("--model-cache", type=Path, default=cache_dir() / "models")
+    process.add_argument("--token-file", type=Path, default=config_dir() / "token.json")
+    process.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
+    process.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
+    process.add_argument("--report", type=Path, default=Path("macle-meet-report.html"))
+
     report = sub.add_parser("report", help="Generate a local HTML report from MACLE JSONL observations.")
     report.add_argument("input", type=Path)
     report.add_argument("output", type=Path)
@@ -441,6 +522,8 @@ def main() -> None:
             return
         if args.command == "sync":
             raise SystemExit(run_sync(args))
+        if args.command == "process-capture":
+            raise SystemExit(run_process_capture(args))
         if args.command == "report":
             raise SystemExit(run_report(args))
         if args.command == "watch":
