@@ -33,7 +33,7 @@ The generated `core-wasm/` directory is a local build artifact and is not commit
 
 ## Release process
 
-A maintainer publishes a release by pushing a tag named `macle-chrome-vX.Y.Z`. The release workflow:
+A maintainer can publish without a local build or Git command by opening **Actions → MACLE Chrome extension release → Run workflow** on the `main` branch, setting **Publish a versioned GitHub Release** to true, and entering the version from `manifest.json`. Alternatively, pushing a tag named `macle-chrome-vX.Y.Z` publishes the same release. The release workflow:
 
 - runs the native Rust workspace tests;
 - builds and exercises the exact WASM module used by the extension;
@@ -42,7 +42,7 @@ A maintainer publishes a release by pushing a tag named `macle-chrome-vX.Y.Z`. T
 - records SHA-256 checksums and build provenance;
 - publishes the ZIP and verification files as GitHub Release assets.
 
-The tag version must match `version` in `manifest.json`. A manual workflow dispatch builds and uploads a temporary artifact but does not publish a release.
+The requested version must match `version` in `manifest.json`. A manual workflow dispatch with publishing disabled builds and uploads a temporary artifact but does not publish a release. The workflow only allows manual publication from `main`, and creates the matching tag and GitHub Release after all build and archive checks pass.
 
 ## Capture and authorization boundary
 
