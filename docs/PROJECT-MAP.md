@@ -78,6 +78,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Data egress and privacy gate](studies/DATA-EGRESS-AND-PRIVACY-GATE.md) (PROPOSED)
 - [Temporal and revision semantics](studies/TEMPORAL-AND-REVISION-SEMANTICS.md) (PROPOSED)
 - [Architecture decision template](decisions/TEMPLATE.md) (PROPOSED)
+- [Initial demonstrator data/deployment boundary brief](decisions/DEPLOYMENT-BOUNDARY-ARBITRATION.md) (OPEN; user arbitration required)
 - [Issue taxonomy and decomposition proposal](GOVERNANCE-ISSUES.md) (PROPOSED)
 - [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
 - [Ground-truth annotation dry run 01](fixtures/GROUND-TRUTH-DRY-RUN-01.md) (simulated worked example; no real annotators or recording)
