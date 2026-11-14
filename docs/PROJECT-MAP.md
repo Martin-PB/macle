@@ -35,11 +35,11 @@ A shared camera or endpoint does not turn this initial use case into an in-perso
 | Workstream | Purpose | Status |
 |---|---|---|
 | Conceptual foundation | Situation, events, relations, time, concrescence | Established as framing |
-| Meeting domain model | Describe what can happen in a meeting independently of vendors | To specify |
+| Meeting domain model | Describe what can happen in a meeting independently of vendors | PROPOSED conceptual draft added; review and validation pending |
 | Videoconferencing platforms | Study platform APIs, SDKs, permissions, limitations | Comparative matrix added; research gaps remain |
 | Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Candidate strategies documented; repeatable evaluation protocol added |
 | Adjacent tools | Transcription, diarization, recording, calendar, chat, documents, workflow tools | Study candidates |
-| MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined |
+| MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined; competency questions drafted as proposals |
 | Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | Not decided |
 
 ## 5. Document governance
@@ -60,6 +60,9 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 ## 6. Current documents
 
 - [Initial scope](01-SCOPE.md)
+- [Initial conceptual domain model](02-DOMAIN-MODEL.md) (PROPOSED)
+- [Competency questions](03-COMPETENCY-QUESTIONS.md) (PROPOSED)
+- [Observation envelope](04-OBSERVATION-ENVELOPE.md) (PROPOSED)
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
@@ -67,6 +70,9 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
 - [Data protection and governance study](studies/DATA-PROTECTION-AND-GOVERNANCE.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
+- [Provenance, temporal relations, and event-envelope standards study](studies/PROVENANCE-TIME-EVENT-STANDARDS.md)
+- [Open reference environments study](studies/REFERENCE-ENVIRONMENTS.md)
+- [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
