@@ -138,4 +138,4 @@ def test_transcribe_cli_indexes_capture_and_stores_segments(tmp_path, monkeypatc
     assert len(rows) == 2
     by_id = {row["id"]: row for row in rows}
     assert by_id["asr-segment-1"]["source"]["conferenceRecord"] == "conferenceRecords/c2"
-    assert any(row["source"]["resourceType"] == "local_capture" for row in rows)
+    assert any(row["source"].get("resourceType") == "local_capture" for row in rows)
