@@ -44,3 +44,13 @@ def test_transcribe_command_defaults_to_local_cpu_int8():
     assert args.device == "cpu"
     assert args.compute_type is None
     assert args.language is None
+
+
+def test_transcribe_command_accepts_conference_resource():
+    args = build_parser().parse_args([
+        "transcribe",
+        "--media", "capture.webm",
+        "--manifest", "capture.manifest.json",
+        "--conference-record", "conferenceRecords/c1",
+    ])
+    assert args.conference_record == "conferenceRecords/c1"
