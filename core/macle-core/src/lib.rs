@@ -32,7 +32,7 @@ pub struct ArtifactDescriptor {
     pub sha256: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub started_at: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(deserialize_with = "deserialize_nullable_required")]
     pub ended_at: Option<String>,
 }
 
@@ -139,6 +139,13 @@ pub fn validate_observation_json(input: &str) -> Result<ObservationEnvelope, Cor
     }
     require_rfc3339("observed_at", &observation.observed_at)?;
     Ok(observation)
+}
+
+fn deserialize_nullable_required<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    Option::<String>::deserialize(deserializer)
 }
 
 fn require_rfc3339(field: &str, value: &str) -> Result<(), CoreError> {
