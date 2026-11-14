@@ -47,10 +47,11 @@ Three candidates were investigated because they represent different kinds of ope
 - Self-hosted deployments can load the IFrame API from their own domain.
 - The IFrame API exposes participant join/leave, participant mute state, dominant speaker changes, screen-sharing participant changes, hand raise, chat messages, recording status, transcription status/chunks, breakout-room-related data, and other events.
 - The lower-level lib-jitsi-meet client library exposes conference events including participant join/leave, dominant speaker changes, track added/removed, track mute changes, and audio-level changes.
+- The generated API documents JitsiRemoteTrack objects with owner endpoint ID, source name, SSRC, media/video type, and access to the underlying WebRTC media track through the inherited JitsiTrack API. Thus, client-side remote track access is documented; full observer coverage and stability remain empirical questions.
 - The IFrame API provides meeting session and participant metadata functions.
 
 ### Open questions
-- Does a custom observer client using lib-jitsi-meet receive the required remote media tracks in a stable supported manner without becoming an intrusive participant?
+- Does a dedicated observer client receive all required remote tracks under LastN, P2P, bandwidth, encryption, and participant-permission conditions, and what user-visible participant role does it require?
 - Can individual audio and video frames be obtained with reliable participant/source attribution?
 - What media is available for screen sharing, and how are source changes represented?
 - Which events are available from the server independently of a client connection?
@@ -98,7 +99,13 @@ LiveKit is the strongest candidate for a controlled media-plane fixture because 
 ### Preliminary assessment
 BigBlueButton is a strong candidate for testing rich post-meeting event/media reconstruction and complex shared-content interactions. It is less obviously the simplest fixture for a minimal generic live multimodal observer.
 
-## 7. Preliminary comparison and research recommendation
+## 7. Version snapshot and research recommendation
+
+On 14 November 2026, the Jitsi Docker release inventory showed stable-11248-3 as the latest release; the Jitsi web release notes showed the 2.0.11248 line. LiveKit's official server release inventory showed v1.13.11, and the npm package registry showed livekit-client v2.24.0 (published 13 November 2026). The generated SDK documentation page still displayed v2.23.0 when checked, so the spike must pin the package release and separately record the documentation build version. These are candidate test pins, not selected production dependencies. See [reference spike readiness](REFERENCE-SPIKE-READINESS.md) for the detailed pinning and test plan.
+
+The Jitsi and LiveKit documentation sources below establish API surfaces, not empirical behavior in the MACLE fixture.
+
+## 8. Preliminary comparison and research recommendation
 
 If the immediate goal is **controlled access to individual media tracks and live event semantics**, LiveKit appears to offer the clearest documented primitives, at the cost of building a small meeting application.
 
@@ -108,7 +115,7 @@ If the immediate goal is **rich post-meeting replay of multiple modalities and i
 
 These are conditional research findings, not a selection. A reasonable next experiment is a short technical spike on Jitsi and LiveKit, using the same two-participant-plus-shared-endpoint scenario, before selecting one reference fixture. BigBlueButton can remain a candidate for a later post-meeting replay fixture.
 
-## 8. Required spike and pass criteria
+## 9. Required spike and pass criteria
 
 For each candidate, demonstrate:
 
@@ -125,7 +132,7 @@ For each candidate, demonstrate:
 
 The spike must report which capabilities are server-side, client-side, live, post-meeting, or inferred. It must not treat the fixture platform's internal event taxonomy as MACLE's canonical ontology.
 
-## 9. Sources and retrieval record
+## 10. Sources and retrieval record
 
 Official project documentation checked on 13 November 2026:
 
@@ -133,13 +140,17 @@ Official project documentation checked on 13 November 2026:
 - [IFrame API overview](https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe/)
 - [IFrame API events](https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe-events/)
 - [IFrame API functions](https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe-functions/)
-- [lib-jitsi-meet conference event definitions](https://github.com/jitsi/lib-jitsi-meet/blob/master/JitsiConferenceEvents.ts)
+- [lib-jitsi-meet conference event API](https://jitsi.github.io/lib-jitsi-meet/enums/JitsiConferenceEvents.JitsiConferenceEvents.html)
+- [lib-jitsi-meet remote track API](https://jitsi.github.io/lib-jitsi-meet/classes/JitsiConference._internal_.JitsiRemoteTrack.html)
 
 ### LiveKit
 - [Webhooks and SDK events](https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/)
 - [Subscribing to tracks](https://docs.livekit.io/transport/media/subscribe/)
 - [Participant and track-composite egress](https://docs.livekit.io/transport/media/ingress-egress/egress/participant/)
 - [Webhook API reference](https://docs.livekit.io/reference/api/projects/webhooks/)
+- [Self-hosted local server](https://docs.livekit.io/transport/self-hosting/local/)
+- [livekit-client npm package](https://www.npmjs.com/package/livekit-client) — v2.24.0 published 13 November 2026; generated docs page version differs at retrieval.
+- [Server deployment requirements](https://docs.livekit.io/transport/self-hosting/deployment/)
 
 ### BigBlueButton
 - [API reference](https://docs.bigbluebutton.org/dev/api/)
@@ -147,6 +158,6 @@ Official project documentation checked on 13 November 2026:
 - [Webhooks](https://docs.bigbluebutton.org/4.0/development/webhooks/)
 - [Privacy and raw recording/transcription behavior](https://docs.bigbluebutton.org/administration/privacy/)
 
-## 10. No decision made
+## 11. No decision made
 
 No candidate is selected as MACLE's reference environment. No conclusion is made about the production platform. The next step is a narrow technical spike and a repeatable fixture, not a platform commitment.

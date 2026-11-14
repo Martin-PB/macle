@@ -74,6 +74,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [External source and version traceability audit](studies/SOURCE-TRACEABILITY-AUDIT.md) (PROPOSED audit)
 - [Provenance, temporal relations, and event-envelope standards study](studies/PROVENANCE-TIME-EVENT-STANDARDS.md)
 - [Open reference environments study](studies/REFERENCE-ENVIRONMENTS.md)
+- [Reference spike readiness and version pins](studies/REFERENCE-SPIKE-READINESS.md) (PROPOSED; not executed)
 - [Data egress and privacy gate](studies/DATA-EGRESS-AND-PRIVACY-GATE.md) (PROPOSED)
 - [Temporal and revision semantics](studies/TEMPORAL-AND-REVISION-SEMANTICS.md) (PROPOSED)
 - [Architecture decision template](decisions/TEMPLATE.md) (PROPOSED)
