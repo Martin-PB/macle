@@ -82,6 +82,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Google Meet local connector](../connectors/google-meet/README.md) (first single-device executable slice; synthetic-only validation)
 - [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending)
 - [Local speech transcription study](studies/LOCAL-SPEECH-TRANSCRIPTION.md) (first optional local ASR backend)
+- [Local video frame observations](studies/LOCAL-VIDEO-FRAME-OBSERVATIONS.md) (sparse local visual references)
 - [Google Meet single-device participant watch](../connectors/google-meet/README.md#watch-participant-state-during-a-synthetic-meeting) (sampled REST polling; implementation in progress)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
