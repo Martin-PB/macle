@@ -91,6 +91,11 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 
 - [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
 
+- [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
+- [Shared Rust core](../core/macle-core/README.md) (session/observation contracts, JSONL log, SHA-256; first implementation slice)
+- [Android native core check](../apps/android/README.md) (imports and validates a session manifest through the shared Rust JNI library; capture not yet implemented)
+- [Chrome extension build](../connectors/google-meet/chrome-extension/BUILD.md) (WASM core build prerequisite)
+
 ## 7. Important restraint
 
 The README remains the concise public introduction. These working documents carry the detailed distinctions and may evolve without forcing premature technical commitments into the README.
