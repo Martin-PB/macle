@@ -72,7 +72,7 @@ Expected:
 3. Run:
 
 ```sh
-macle-meet sync --meeting-code abc-mnop-xyz
+macle-meet sync --synthetic-test-attested --meeting-code abc-mnop-xyz
 ```
 
 Replace the example with the actual synthetic test meeting code.
@@ -88,6 +88,22 @@ Expected:
 - No data is sent to a MACLE server or a third-party provider.
 
 If there is no active conference, the command should explain that a known past `conferenceRecords/…` resource is required.
+
+## 5b. Watch participant sessions during the synthetic meeting
+
+In a second terminal, start the local participant-state poller:
+
+```sh
+macle-meet watch --synthetic-test-attested --meeting-code abc-mnop-xyz --interval 15 --duration 600
+```
+
+Expected:
+- The command resolves the same active conference record.
+- It polls participants and participant-device sessions every 15 seconds.
+- New or changed source resource revisions are added to SQLite/JSONL; unchanged resources are not duplicated.
+- It stops when the conference ends, the duration elapses, or Ctrl+C is pressed.
+- The resulting records preserve participant and participant-session resource identities and source times.
+- This is sampled polling, not guaranteed real-time event delivery.
 
 ## 6. Test local tab capture
 
@@ -164,7 +180,7 @@ Expected:
 After the synthetic meeting ends and Google has generated any configured artifacts, run:
 
 ```sh
-macle-meet sync --conference-record 'conferenceRecords/CONFERENCE_ID'
+macle-meet sync --synthetic-test-attested --conference-record 'conferenceRecords/CONFERENCE_ID'
 ```
 
 Expected:
