@@ -46,9 +46,7 @@ pub struct SessionManifest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ended_at: Option<String>,
     pub sources: Vec<SourceDescriptor>,
-    #[serde(default)]
     pub artifacts: Vec<ArtifactDescriptor>,
-    #[serde(default)]
     pub limitations: Vec<String>,
     pub authorization: AuthorizationRecord,
 }
@@ -71,7 +69,6 @@ pub struct ObservationEnvelope {
     pub kind: String,
     pub observed_at: String,
     pub payload: Value,
-    #[serde(default)]
     pub provenance: Value,
 }
 
@@ -109,7 +106,7 @@ pub fn validate_manifest_json(input: &str) -> Result<SessionManifest, CoreError>
     }
     for artifact in &manifest.artifacts {
         require_nonempty("artifact path", &artifact.path)?;
-        if artifact.path.starts_with('/') || artifact.path.contains('\\\\')
+        if artifact.path.starts_with('/') || artifact.path.contains('\\')
             || artifact.path.split('/').any(|part| part == ".." || part.is_empty())
         {
             return Err(CoreError::Invalid(format!("artifact path must be a safe relative path: {}", artifact.path)));
@@ -350,7 +347,7 @@ mod android_jni {
 
     #[unsafe(no_mangle)]
     pub extern "system" fn Java_dev_macle_app_core_NativeCore_validateObservationJson<'local>(
-        env: JNIEnv, _class: JClass, input: JString
+        env: JNIEnv<'local>, _class: JClass<'local>, input: JString<'local>
     ) -> jstring {
         validation_result(env, input, false)
     }
