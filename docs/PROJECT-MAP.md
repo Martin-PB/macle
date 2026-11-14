@@ -77,6 +77,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Architecture decision template](decisions/TEMPLATE.md) (PROPOSED)
 - [Issue taxonomy and decomposition proposal](GOVERNANCE-ISSUES.md) (PROPOSED)
 - [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
+- [Ground-truth annotation dry run 01](fixtures/GROUND-TRUTH-DRY-RUN-01.md) (simulated worked example; no real annotators or recording)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
