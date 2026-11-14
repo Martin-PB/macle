@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -183,6 +184,83 @@ def run_index_capture(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_watch(args: argparse.Namespace) -> int:
+    credentials = load_credentials(args.token_file)
+    client = MeetClient(AuthorizedSession(credentials))
+    space_name = args.space
+    space_resource = None
+    if args.meeting_code or args.space:
+        space_name = args.space or f"spaces/{args.meeting_code}"
+        space_resource = client.get_space(space_name)
+        active = space_resource.get("activeConference") or {}
+        conference_name = active.get("conferenceRecord")
+        if not conference_name:
+            raise RuntimeError(
+                f"No active conference was found in {space_name}. "
+                "Open the meeting first, then start watch."
+            )
+        stable_space_name = space_resource.get("name") or space_name
+    else:
+        conference_name = args.conference_record
+        stable_space_name = None
+
+    store = LocalStore(args.database)
+    started = time.monotonic()
+    poll_number = 0
+    total_new = 0
+    try:
+        if space_resource:
+            store.add(
+                [sanitize_space_resource(space_resource)],
+                conference_name=conference_name,
+            )
+        print(
+            f"Watching {conference_name} every {args.interval:g}s. "
+            "Press Ctrl+C to stop."
+        )
+        while True:
+            conference = client.get(conference_name)
+            resources = [conference]
+            resources.extend(client.collect_participant_state(conference))
+            inserted = store.add(resources, conference_name=conference_name)
+            total_new += inserted
+            poll_number += 1
+            print(
+                f"Poll {poll_number}: {len(resources) - 1} participant/session "
+                f"resources; {inserted} new source revisions."
+            )
+
+            if conference.get("endTime"):
+                print("Conference has ended.")
+                break
+            if args.duration is not None and time.monotonic() - started >= args.duration:
+                print("Watch duration reached.")
+                break
+
+            if stable_space_name:
+                latest_space = client.get_space(stable_space_name)
+                latest_active = (latest_space.get("activeConference") or {}).get(
+                    "conferenceRecord"
+                )
+                if latest_active and latest_active != conference_name:
+                    print("The meeting space has moved to a different conference.")
+                    break
+
+            time.sleep(args.interval)
+    except KeyboardInterrupt:
+        print("Watch stopped by user.")
+    finally:
+        try:
+            exported = store.export_jsonl(args.export)
+        finally:
+            store.close()
+    print(
+        f"Watch complete: {poll_number} polls, {total_new} new source revisions, "
+        f"{exported} observations exported to {args.export}"
+    )
+    return 0
+
+
 def run_transcribe(args: argparse.Namespace) -> int:
     if not args.manifest.is_file():
         raise FileNotFoundError(f"Capture manifest not found: {args.manifest}")
@@ -260,6 +338,17 @@ def build_parser() -> argparse.ArgumentParser:
     sync.add_argument("--token-file", type=Path, default=config_dir() / "token.json")
     sync.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
     sync.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
+    watch = sub.add_parser("watch", help="Poll Meet participant and participant-session state locally.")
+    watch_lookup = watch.add_mutually_exclusive_group(required=True)
+    watch_lookup.add_argument("--meeting-code", help="Resolve the active conference from a meeting code.")
+    watch_lookup.add_argument("--space", help="Resolve the active conference from a space resource.")
+    watch_lookup.add_argument("--conference-record", help="Watch a known conference resource.")
+    watch.add_argument("--interval", type=float, default=15.0, help="Polling interval in seconds (default: 15).")
+    watch.add_argument("--duration", type=float, help="Optional maximum watch duration in seconds.")
+    watch.add_argument("--token-file", type=Path, default=config_dir() / "token.json")
+    watch.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
+    watch.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
+
     capture = sub.add_parser("index-capture", help="Index a local Chrome capture and its manifest.")
     capture.add_argument("--manifest", type=Path, required=True)
     capture.add_argument("--media", type=Path, required=True)
@@ -293,6 +382,10 @@ def main() -> None:
             return
         if args.command == "sync":
             raise SystemExit(run_sync(args))
+        if args.command == "watch":
+            if args.interval <= 0 or (args.duration is not None and args.duration <= 0):
+                raise RuntimeError("Watch interval and duration must be positive.")
+            raise SystemExit(run_watch(args))
         if args.command == "index-capture":
             raise SystemExit(run_index_capture(args))
         if args.command == "transcribe":
