@@ -3,7 +3,7 @@
 This is a working list. An open question is not a hidden decision.
 
 ## Product behavior
-- Is the proposed reference meeting fixture sufficiently representative, and which actions/timing tolerances should be changed before a first run?
+- What is the minimum useful first Google Meet product slice, and which actions/artifacts must it support?
 - What annotation protocol and adjudication rules are required for ground truth?
 - What numeric acceptance thresholds should be set only after the first reproducible runs?
 - Which competency questions should be baselined as initial consumer needs, and which are explicitly out of scope?
@@ -24,11 +24,10 @@ This is a working list. An open question is not a hidden decision.
 - How should anonymous, dial-in, room-device, guest, and bot participants be represented?
 
 ## Capture and platforms
-- Which platform is the first reference integration?
-- Is a visible bot acceptable?
+- Is a visible bot acceptable as a possible later live-observation route for Google Meet?
 - Is desktop/browser capture acceptable?
 - Is a third-party capture provider acceptable for an initial version?
-- Which platforms and client types must be supported at launch?
+- Beyond Google Meet, which platforms and client types should be considered after the first usable integration? Discord is a likely later candidate, not a current implementation commitment.
 - Which self-hostable environment, if any, should be used only as a reproducible reference fixture (separate from production-platform selection)?
 - Should the reference fixture prioritize a complete meeting UI (Jitsi), explicit track-level media primitives (LiveKit), or rich post-meeting replay (BigBlueButton)?
 - What exact event/media coverage is needed for the first demonstrator, and which gaps are acceptable?

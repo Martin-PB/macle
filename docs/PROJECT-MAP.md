@@ -36,7 +36,7 @@ A shared camera or endpoint does not turn this initial use case into an in-perso
 |---|---|---|
 | Conceptual foundation | Situation, events, relations, time, concrescence | Established as framing |
 | Meeting domain model | Describe what can happen in a meeting independently of vendors | PROPOSED conceptual draft added; review and validation pending |
-| Videoconferencing platforms | Study platform APIs, SDKs, permissions, limitations | Comparative matrix added; research gaps remain |
+| Videoconferencing platforms | Study platform APIs, SDKs, permissions, limitations | Google Meet is the first product integration priority; Discord is deferred; comparative research remains |
 | Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Candidate strategies documented; repeatable evaluation protocol added |
 | Adjacent tools | Transcription, diarization, recording, calendar, chat, documents, workflow tools | Study candidates |
 | MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined; competency questions drafted as proposals |
@@ -65,6 +65,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Observation envelope](04-OBSERVATION-ENVELOPE.md) (PROPOSED)
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
+- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (priority target; no capture route selected)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
