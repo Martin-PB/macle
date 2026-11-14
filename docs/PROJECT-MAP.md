@@ -40,7 +40,7 @@ A shared camera or endpoint does not turn this initial use case into an in-perso
 | Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Candidate strategies documented; repeatable evaluation protocol added |
 | Adjacent tools | Transcription, diarization, recording, calendar, chat, documents, workflow tools | Study candidates |
 | MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined; competency questions drafted as proposals |
-| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | Core path: invitee joins an existing Meet through the normal browser flow and explicitly captures the tab locally on one device; local ASR/report follows. Meet REST/OAuth client is optional enrichment, not a prerequisite. Synthetic-only validation boundary remains in force. |
+| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | Shared Rust session/observation core with Chrome WebAssembly and Android native/JNI hosts is implemented as a first source-level slice. Android currently records screen only; Chrome captures the rendered Meet tab and tab audio. Offline/local operation and synthetic-only validation remain authoritative. Native/WASM builds and physical-device/browser compatibility validation are still outstanding; modality parity is not established. |
 
 ## 5. Document governance
 
@@ -66,6 +66,11 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
 - [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (invitee-side browser capture is the core path; REST/OAuth is optional enrichment)
+- [Android capture feasibility](studies/ANDROID-CAPTURE-FEASIBILITY.md) (MediaProjection screen-only prototype; audio playback remains unverified)
+- [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
+- [Shared Rust core](../core/macle-core/README.md) (session/observation contracts, validation, append-only log and incremental SHA-256)
+- [Android capture prototype](../apps/android/README.md) (synthetic-only MediaProjection screen capture; playback audio and microphone not implemented)
+- [Chrome WASM build](../connectors/google-meet/chrome-extension/BUILD.md) (shared Rust validator and incremental artifact hashing)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)

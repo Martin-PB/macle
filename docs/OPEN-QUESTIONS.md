@@ -24,6 +24,11 @@ This is a working list. An open question is not a hidden decision.
 - How should anonymous, dial-in, room-device, guest, and bot participants be represented?
 
 ## Capture and platforms
+- Can the Android Google Meet app's remote playback audio actually be captured by a separate MACLE app through AudioPlaybackCapture on supported devices/versions, or is only screen/microphone capture available?
+- Which Android versions/devices can sustain MediaProjection and microphone capture for a complete meeting, including app switching, screen lock, permission revocation and interruptions?
+- Should Android be baselined as the primary user-facing client after the capture feasibility gate, with desktop/browser retained as fallback?
+- What portable session-package contract and Android export/share mechanism should be baselined?
+- Which agent streaming protocol, endpoint trust model, encryption, acknowledgement and replay semantics should be baselined?
 - Is a visible bot acceptable as a possible later live-observation route for Google Meet?
 - Is desktop/browser capture acceptable?
 - Is a third-party capture provider acceptable for an initial version?
@@ -61,6 +66,21 @@ This is a working list. An open question is not a hidden decision.
 - Should the first consumer interface be an API, MCP server, event stream, SDK, or a combination?
 - What does a consuming agent need to query: timeline, participants, current state, relations, source artifacts, or all of these?
 - How should MACLE expose uncertainty and provenance without making downstream consumers depend on vendor-specific schemas?
+
+## Cross-platform architecture
+- Which domain/session/package/transport components must be shared across Android, iOS, Windows, Linux, macOS and browser?
+- Should the shared core be Rust with native bindings and an optional WASM target, or should Kotlin Multiplatform, Flutter, Tauri or another approach be preferred after prototyping?
+- Which capture capabilities can each OS expose for the actual Meet client and route, and which remain unavailable or conditional?
+- Which iOS ReplayKit flows are viable for capturing another app's meeting content, and what limitations apply?
+- What is the smallest conformance suite that proves package/observation equivalence across independently implemented adapters?
+- Which desktop shell/UI framework, if any, can be shared without weakening native capture and lifecycle behavior?
+
+## Shared core implementation
+- Does the first Rust core contract cover the necessary source, time, provenance, artifact, and authorization dimensions before the schema is baselined?
+- Should the portable package become a ZIP archive or a directory bundle, and how should large media artifacts be streamed without loading them into memory?
+- Which Android MediaProjection lifecycle and interruption events must be represented in the first native capture adapter?
+- Which Android device/OS/Meet combinations can expose playback audio through AudioPlaybackCapture, if any?
+- Which Chrome extension build and packaging process should produce reproducible signed/reviewable artifacts without committing generated WASM binaries?
 
 ## Engineering
 - What latency and throughput targets are appropriate?

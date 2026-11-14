@@ -32,3 +32,16 @@ connectors/google-meet/token.json
 .macle-meet/
 *.sqlite3
 macle-meet-observations.jsonl
+
+# Rust shared core build output
+/target/
+**/target/
+
+# Android/Gradle build output and machine-local SDK configuration
+.gradle/
+**/build/
+local.properties
+apps/android/app/src/main/jniLibs/
+
+# Generated Chrome WebAssembly package (rebuild from source)
+connectors/google-meet/chrome-extension/core-wasm/
