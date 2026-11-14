@@ -106,6 +106,8 @@ Omit `--language` for automatic language detection. The default model is `small`
 
 The command first indexes the capture manifest and media hash, then stores each generated segment as a separate MACLE observation with capture ID, optional conference resource, media SHA-256, relative start/end offsets, text, model identifier, detected language and confidence metadata. It also samples one video frame every 30 seconds by default, saves JPEG artifacts under `~/.local/share/macle-meet/frames/`, and creates `video_frame` observations with their own hashes and capture-relative timestamps. Use `--frame-interval 0` to disable frame sampling or adjust the interval and maximum dimension with `--frame-interval` and `--max-frame-dimension`. These are **machine-generated local ASR observations**, not Google-generated transcript entries. No speaker identity or diarization is inferred from the composite tab recording. Frame samples are sparse references to the composite video, not continuous or participant-specific streams. No face recognition, identity inference, emotion inference or semantic interpretation is performed. ASR output is not a verified verbatim transcript.
 
+### Local HTML report
+
 Generate a local HTML report for inspection:
 
 ```sh
