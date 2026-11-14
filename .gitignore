@@ -25,3 +25,10 @@ Thumbs.db
 *.pem
 *.key
 secrets/
+
+# Local Google Meet connector secrets and collected data
+connectors/google-meet/client_secret.json
+connectors/google-meet/token.json
+.macle-meet/
+*.sqlite3
+macle-meet-observations.jsonl

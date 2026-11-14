@@ -40,7 +40,7 @@ A shared camera or endpoint does not turn this initial use case into an in-perso
 | Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Candidate strategies documented; repeatable evaluation protocol added |
 | Adjacent tools | Transcription, diarization, recording, calendar, chat, documents, workflow tools | Study candidates |
 | MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined; competency questions drafted as proposals |
-| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | Not decided |
+| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | First executable Google Meet slice implemented on a work branch: local Chrome tab capture + Python REST/artifact client; not a production architecture decision |
 
 ## 5. Document governance
 
@@ -65,7 +65,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Observation envelope](04-OBSERVATION-ENVELOPE.md) (PROPOSED)
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
-- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (priority target; no capture route selected)
+- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (priority target; local single-device capture route implemented as a first prototype)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
@@ -79,6 +79,8 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Issue taxonomy and decomposition proposal](GOVERNANCE-ISSUES.md) (PROPOSED)
 - [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
 - [Open questions](OPEN-QUESTIONS.md)
+- [Google Meet local connector](../connectors/google-meet/README.md) (first single-device executable slice; synthetic-only validation)
+- [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
 
