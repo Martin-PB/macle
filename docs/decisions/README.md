@@ -16,6 +16,10 @@ This register contains explicit project decisions only. Studies and recommendati
 |---|---|---|
 | ADR-0001 | Initial operational scope is videoconferencing meetings | ACCEPTED |
 
+## Templates and proposed governance
+
+- [ADR template](TEMPLATE.md) — proposed structure; not yet adopted.
+
 ## Open decision topics
 
 - First platform(s) to support.
