@@ -37,7 +37,7 @@ Expected:
 1. Enable Google Meet REST API in the selected Google Cloud project.
 2. Configure the OAuth consent screen; add the test account as a test user if the app is in Testing.
 3. Create and download a Desktop OAuth client JSON.
-4. Save it as `~/.config/macle-meet/client_secret.json`.
+4. Save it as `~/.config/macle-meet/client_secret.json` and restrict it to your user (`chmod 600 ~/.config/macle-meet/client_secret.json`).
 5. Run:
 
 ```sh
