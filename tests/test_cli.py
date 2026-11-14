@@ -6,6 +6,7 @@ def test_sync_accepts_meeting_code_for_active_conference_lookup():
     assert args.command == "sync"
     assert args.meeting_code == "abc-mnop-xyz"
     assert args.conference_record is None
+    assert args.synthetic_test_attested is False
 
 
 def test_sync_rejects_multiple_conference_lookup_modes():
@@ -63,6 +64,7 @@ def test_watch_command_defaults_to_fifteen_second_local_polling():
     assert args.meeting_code == "abc-mnop-xyz"
     assert args.interval == 15.0
     assert args.duration is None
+    assert args.synthetic_test_attested is False
 
 
 def test_watch_polls_until_conference_ends_and_exports_revisions(tmp_path, monkeypatch):
@@ -110,6 +112,7 @@ def test_watch_polls_until_conference_ends_and_exports_revisions(tmp_path, monke
         token_file=tmp_path / "token.json",
         meeting_code="abc-mnop-xyz",
         space=None,
+        synthetic_test_attested=True,
         conference_record=None,
         interval=1.0,
         duration=None,
@@ -121,3 +124,26 @@ def test_watch_polls_until_conference_ends_and_exports_revisions(tmp_path, monke
     rows = [json.loads(line) for line in export.read_text().splitlines()]
     assert len(rows) == 5
     assert sum(row["payload"].get("endTime") is not None for row in rows) == 1
+
+
+
+def test_sync_requires_synthetic_meeting_attestation(tmp_path):
+    from argparse import Namespace
+
+    import pytest
+    from macle_meet.cli import run_sync
+
+    args = Namespace(synthetic_test_attested=False, token_file=tmp_path / "token.json")
+    with pytest.raises(RuntimeError, match="synthetic test meetings"):
+        run_sync(args)
+
+
+def test_watch_requires_synthetic_meeting_attestation(tmp_path):
+    from argparse import Namespace
+
+    import pytest
+    from macle_meet.cli import run_watch
+
+    args = Namespace(synthetic_test_attested=False, token_file=tmp_path / "token.json")
+    with pytest.raises(RuntimeError, match="synthetic test meetings"):
+        run_watch(args)
