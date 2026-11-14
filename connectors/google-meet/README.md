@@ -91,7 +91,7 @@ macle-meet transcribe \\
 
 Omit `--language` for automatic language detection. The default model is `small`, running locally on CPU with int8 quantization. Use `--model medium` for a larger model, or `--device cuda` only when the required CUDA runtime is correctly installed. The model weights are downloaded from Hugging Face the first time a model is used and cached locally; the WebM audio and generated transcript are not sent to Hugging Face or any hosted ASR service. `faster-whisper` decodes media through PyAV, so a system FFmpeg installation is not required.
 
-Each generated segment is stored as a separate MACLE observation with capture ID, media SHA-256, relative start/end offsets, text, model identifier, detected language and confidence metadata. These are **machine-generated local ASR observations**, not Google-generated transcript entries. No speaker identity or diarization is inferred from the composite tab recording. ASR output is not a verified verbatim transcript.
+The command first indexes the capture manifest and media hash, then stores each generated segment as a separate MACLE observation with capture ID, optional conference resource, media SHA-256, relative start/end offsets, text, model identifier, detected language and confidence metadata. These are **machine-generated local ASR observations**, not Google-generated transcript entries. No speaker identity or diarization is inferred from the composite tab recording. ASR output is not a verified verbatim transcript.
 
 ## Local-only data handling
 
