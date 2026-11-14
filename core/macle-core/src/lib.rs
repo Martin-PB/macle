@@ -252,3 +252,43 @@ mod tests {
         assert!(validate_observation_json(&json).is_ok());
     }
 }
+
+#[cfg(target_os = "android")]
+mod android_jni {
+    use super::*;
+    use jni::objects::{JClass, JString};
+    use jni::sys::jstring;
+    use jni::JNIEnv;
+
+    fn validation_result(mut env: JNIEnv, input: JString, manifest: bool) -> jstring {
+        let message = match env.get_string(&input) {
+            Ok(value) => {
+                let json: String = value.into();
+                let result = if manifest {
+                    super::validate_manifest_json(&json).map(|_| ())
+                } else {
+                    super::validate_observation_json(&json).map(|_| ())
+                };
+                result.map(|_| String::new()).unwrap_or_else(|error| error.to_string())
+            }
+            Err(error) => error.to_string(),
+        };
+        env.new_string(message)
+            .map(|value| value.into_raw())
+            .unwrap_or(std::ptr::null_mut())
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "system" fn Java_dev_macle_app_core_NativeCore_validateManifestJson(
+        env: JNIEnv, _class: JClass, input: JString
+    ) -> jstring {
+        validation_result(env, input, true)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "system" fn Java_dev_macle_app_core_NativeCore_validateObservationJson(
+        env: JNIEnv, _class: JClass, input: JString
+    ) -> jstring {
+        validation_result(env, input, false)
+    }
+}
