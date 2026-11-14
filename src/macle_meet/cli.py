@@ -232,7 +232,7 @@ def run_process_capture(args: argparse.Namespace) -> int:
         )
         try:
             run_sync(sync_args)
-        except (MeetApiError, FileNotFoundError, RuntimeError, requests.RequestException) as exc:
+        except Exception as exc:
             sync_warning = str(exc)
             print(
                 f"macle-meet: warning: Meet REST sync failed; local capture/ASR/frame data "
