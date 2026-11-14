@@ -90,6 +90,9 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
 
 - [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
+- [Shared Rust core](../core/macle-core/README.md) (session/observation contracts, JSONL log, incremental SHA-256)
+- [Android capture prototype](../apps/android/README.md) (synthetic-only MediaProjection screen capture; playback audio and microphone not implemented)
+- [Chrome WASM build](../connectors/google-meet/chrome-extension/BUILD.md) (shared Rust validator and incremental artifact hashing)
 
 - [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
 - [Shared Rust core](../core/macle-core/README.md) (session/observation contracts, JSONL log, SHA-256; first implementation slice)
