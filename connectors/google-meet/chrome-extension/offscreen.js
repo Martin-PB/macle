@@ -8,6 +8,7 @@ let writable = null;
 let temporaryFileName = null;
 let writeChain = Promise.resolve();
 let sessionManifest = null;
+let artifactHasher = null;
 let saving = false;
 let captureFailure = null;
 const macleCoreReady = import(chrome.runtime.getURL("core-wasm/macle_core.js")).then(async (core) => {
@@ -39,7 +40,8 @@ async function startCapture(
   }
   try {
     // Fail before recording starts if the shared contract runtime was not built.
-    await macleCoreReady;
+    const core = await macleCoreReady;
+    artifactHasher = new core.WasmSha256Accumulator();
     const constraints = {
       audio: { mandatory: {
         chromeMediaSource: "tab",
@@ -116,7 +118,14 @@ async function startCapture(
 
     recorder.ondataavailable = (event) => {
       if (event.data && event.data.size) {
-        writeChain = writeChain.then(() => writable.write(event.data));
+        const chunk = event.data;
+        writeChain = writeChain.then(async () => {
+          // Hash each bounded recorder chunk as it is written; never load the
+          // complete meeting recording into memory merely to compute its digest.
+          const bytes = await chunk.arrayBuffer();
+          artifactHasher.update(new Uint8Array(bytes));
+          await writable.write(chunk);
+        });
       }
     };
     recorder.onerror = (event) => {
@@ -148,6 +157,7 @@ async function startCapture(
     temporaryFileName = null;
     recorder = null;
     sessionManifest = null;
+    artifactHasher = null;
     captureFailure = null;
     throw error;
   }
@@ -181,10 +191,8 @@ async function saveCapture() {
     if (!blob.size) throw new Error("The capture produced an empty recording.");
     const stamp = sessionManifest.started_at.replace(/[:.]/g, "-");
     const filename = "MACLE-Meet-" + stamp + ".webm";
-    await requestDownload(blob, filename);
-    const mediaBytes = await blob.arrayBuffer();
-    const digest = await crypto.subtle.digest("SHA-256", mediaBytes);
-    const sha256 = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+    const sha256 = artifactHasher.finalize_hex();
+    artifactHasher = null;
     sessionManifest.artifacts.push({
       path: filename,
       media_type: blob.type || "video/webm",
@@ -199,6 +207,7 @@ async function saveCapture() {
       [JSON.stringify(sessionManifest, null, 2)],
       { type: "application/json" }
     );
+    await requestDownload(blob, filename);
     await requestDownload(
       manifest,
       filename.replace(/\\.webm$/, ".manifest.json")
@@ -231,6 +240,7 @@ async function saveCapture() {
     writable = null;
     temporaryFileName = null;
     sessionManifest = null;
+    artifactHasher = null;
     captureFailure = null;
     saving = false;
   }
