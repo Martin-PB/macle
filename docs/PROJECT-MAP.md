@@ -36,8 +36,8 @@ A shared camera or endpoint does not turn this initial use case into an in-perso
 |---|---|---|
 | Conceptual foundation | Situation, events, relations, time, concrescence | Established as framing |
 | Meeting domain model | Describe what can happen in a meeting independently of vendors | To specify |
-| Videoconferencing platforms | Study platform APIs, SDKs, permissions, limitations | Research in progress |
-| Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Study candidates |
+| Videoconferencing platforms | Study platform APIs, SDKs, permissions, limitations | Comparative matrix added; research gaps remain |
+| Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Candidate strategies documented; repeatable evaluation protocol added |
 | Adjacent tools | Transcription, diarization, recording, calendar, chat, documents, workflow tools | Study candidates |
 | MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined |
 | Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | Not decided |
@@ -63,6 +63,9 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
+- [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
+- [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
+- [Data protection and governance study](studies/DATA-PROTECTION-AND-GOVERNANCE.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Decision register](decisions/README.md)

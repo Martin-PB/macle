@@ -21,12 +21,18 @@ This is a working list. An open question is not a hidden decision.
 - Is desktop/browser capture acceptable?
 - Is a third-party capture provider acceptable for an initial version?
 - Which platforms and client types must be supported at launch?
+- What exact event/media coverage is needed for the first demonstrator, and which gaps are acceptable?
+- Can the candidate capture path preserve the distinction between a person, a platform participant, an endpoint, and a participant session?
+- Which platform permissions and tenant restrictions make a candidate route unavailable in realistic target environments?
 
 ## Data and governance
 - What consent and disclosure behavior is required?
 - What retention and deletion guarantees are required?
 - Which deployment regions and data residency constraints apply?
 - What data may leave the user's environment?
+- What lawful basis, controller/processor roles, participant notice, objection/opt-out, and organizational policies apply to each deployment context? (Requires dedicated legal/privacy analysis; not answered by the platform API study.)
+- What minimization rules apply separately to raw media, transcripts, extracted observations, and inferred attributes?
+- How should deletion propagate to derived observations, backups, exports, and third-party processors?
 - What access-control model applies to recordings, derived events, and meeting context?
 
 ## Interfaces and consumers
