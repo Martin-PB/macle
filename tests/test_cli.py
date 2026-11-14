@@ -195,14 +195,25 @@ def test_process_capture_keeps_local_report_when_meet_sync_fails(tmp_path, monke
     import macle_meet.cli as cli
 
     calls = []
-    monkeypatch.setattr(cli, "run_transcribe", lambda args: calls.append("transcribe"))
+    def fake_transcribe(args):
+        calls.append("transcribe")
+        args.export.write_text('{"id":"local-capture"}\\n', encoding="utf-8")
+
+    monkeypatch.setattr(cli, "run_transcribe", fake_transcribe)
 
     def fail_sync(args):
         calls.append("sync")
         raise RuntimeError("synthetic OAuth/API failure")
 
     monkeypatch.setattr(cli, "run_sync", fail_sync)
-    monkeypatch.setattr(cli, "run_report", lambda args: calls.append("report") or 0)
+
+    def fake_report(args):
+        assert args.input.is_file()
+        assert "local-capture" in args.input.read_text(encoding="utf-8")
+        calls.append("report")
+        return 0
+
+    monkeypatch.setattr(cli, "run_report", fake_report)
     args = Namespace(
         synthetic_test_attested=True,
         media=tmp_path / "capture.webm",
