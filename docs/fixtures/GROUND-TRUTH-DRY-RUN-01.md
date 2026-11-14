@@ -38,7 +38,7 @@ The operator's scripted action log is the ground-truth evidence for who was inst
 
 ## 4. Independent annotation passes
 
-Two annotators independently receive the same synthetic source package:
+Two simulated annotator profiles independently receive the same synthetic source package (these are worked example records, not real human annotators):
 - operator action log;
 - platform event log;
 - time synchronization note;
