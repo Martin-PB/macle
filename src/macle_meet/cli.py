@@ -193,6 +193,14 @@ def run_transcribe(args: argparse.Namespace) -> int:
         raise RuntimeError("Refusing to transcribe a capture without the synthetic-only attestation.")
     if manifest.get("microphoneCaptured") and manifest.get("microphoneSyntheticAttested") is not True:
         raise RuntimeError("Refusing to transcribe microphone audio without a synthetic-input attestation.")
+    capture_args = argparse.Namespace(
+        manifest=args.manifest,
+        media=args.media,
+        conference_record=args.conference_record,
+        database=args.database,
+        export=args.export,
+    )
+    run_index_capture(capture_args)
     observations, summary = transcribe_file(
         args.media,
         model_name=args.model,
@@ -203,11 +211,12 @@ def run_transcribe(args: argparse.Namespace) -> int:
         cpu_threads=args.cpu_threads,
         beam_size=args.beam_size,
         manifest=manifest,
+        conference_name=args.conference_record,
     )
     store = LocalStore(args.database)
     try:
         for observation in observations:
-            store.add_observation(observation, conference_name="")
+            store.add_observation(observation, conference_name=args.conference_record or "")
         exported = store.export_jsonl(args.export)
     finally:
         store.close()
@@ -261,6 +270,7 @@ def build_parser() -> argparse.ArgumentParser:
     transcribe = sub.add_parser("transcribe", help="Transcribe a local capture using local Whisper ASR.")
     transcribe.add_argument("--media", type=Path, required=True)
     transcribe.add_argument("--manifest", type=Path, required=True)
+    transcribe.add_argument("--conference-record", help="Associate the capture and transcript with a Meet conference resource.")
     transcribe.add_argument("--model", default="small", choices=["tiny", "base", "small", "medium", "large-v3", "turbo"])
     transcribe.add_argument("--language", help="Language code such as fr; omit for automatic detection.")
     transcribe.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
