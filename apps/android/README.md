@@ -33,7 +33,7 @@ From the repository root:
 
 ```sh
 cargo install cargo-ndk
-./scripts/build-android-core.sh
+sh scripts/build-android-core.sh
 ```
 
 The current script builds `arm64-v8a`. Then open `apps/android` in Android Studio and run the `app` configuration on an Android 10+ physical device.
