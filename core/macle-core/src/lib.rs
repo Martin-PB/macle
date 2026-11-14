@@ -343,6 +343,14 @@ mod tests {
     }
 
     #[test]
+    fn validates_shared_observation_fixture() {
+        let fixture = include_str!("../../../tests/fixtures/observation-v1.json");
+        let observation = validate_observation_json(fixture).unwrap();
+        assert_eq!(observation.session_id, "synthetic-session-001");
+        assert_eq!(observation.sequence, 1);
+    }
+
+    #[test]
     fn rejects_unsafe_artifact_paths() {
         let fixture = include_str!("../../../tests/fixtures/session-manifest-v1.json");
         let mut manifest = validate_manifest_json(fixture).unwrap();
