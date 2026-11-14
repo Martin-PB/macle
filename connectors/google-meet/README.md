@@ -38,7 +38,7 @@ The extension only starts on `https://meet.google.com/`. Capture is initiated by
 The Chrome extension uses the same Rust contract validator as the Android native shell. Build the WebAssembly module before loading the extension:
 
 ```sh
-./scripts/build-wasm-core.sh
+sh scripts/build-wasm-core.sh
 ```
 
 See [Chrome extension build instructions](chrome-extension/BUILD.md). The extension refuses to start a capture if the shared WASM runtime is missing. The generated `core-wasm/` files are build artifacts and are not committed.
