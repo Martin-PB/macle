@@ -7,7 +7,6 @@ on:
       - "src/macle_meet/**"
       - "tests/**"
       - "scripts/**"
-      - "scripts/**"
       - "connectors/google-meet/**"
       - ".github/workflows/google-meet-connector.yml"
   push:
