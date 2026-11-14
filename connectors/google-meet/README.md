@@ -106,6 +106,20 @@ Omit `--language` for automatic language detection. The default model is `small`
 
 The command first indexes the capture manifest and media hash, then stores each generated segment as a separate MACLE observation with capture ID, optional conference resource, media SHA-256, relative start/end offsets, text, model identifier, detected language and confidence metadata. It also samples one video frame every 30 seconds by default, saves JPEG artifacts under `~/.local/share/macle-meet/frames/`, and creates `video_frame` observations with their own hashes and capture-relative timestamps. Use `--frame-interval 0` to disable frame sampling or adjust the interval and maximum dimension with `--frame-interval` and `--max-frame-dimension`. These are **machine-generated local ASR observations**, not Google-generated transcript entries. No speaker identity or diarization is inferred from the composite tab recording. Frame samples are sparse references to the composite video, not continuous or participant-specific streams. No face recognition, identity inference, emotion inference or semantic interpretation is performed. ASR output is not a verified verbatim transcript.
 
+### One-command post-capture workflow
+
+Instead of running the separate indexing, transcription, REST sync and report commands, use:
+
+```sh
+macle-meet process-capture --synthetic-test-attested \\
+  --media ./MACLE-Meet-....webm \\
+  --manifest ./MACLE-Meet-....manifest.json \\
+  --conference-record 'conferenceRecords/CONFERENCE_ID' \\
+  --language fr
+```
+
+The conference resource is optional. When supplied, MACLE synchronizes available Meet REST metadata/artifacts using the local OAuth token. If that sync fails, the local capture, ASR and frame observations are retained and the report is still generated with a warning. Without a conference resource, the command processes only the local capture.
+
 ### Local HTML report
 
 Generate a local HTML report for inspection:
