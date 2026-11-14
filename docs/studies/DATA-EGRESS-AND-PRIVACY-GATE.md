@@ -96,6 +96,7 @@ Which deployment profile is intended initially? Is the first demonstrator synthe
 - GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj
 - AI Act: https://eur-lex.europa.eu/eli/reg/2024/1689
 - EDPB Guidelines 05/2020 on consent: https://www.edpb.europa.eu/documents/guideline/guidelines-052020-on-consent-under-regulation-2016679_en
-- CNIL workplace IT tools: https://www.cnil.fr/fr/les-outils-informatiques-au-travail
+- CNIL, telework security and communication tools: https://www.cnil.fr/fr/les-conseils-de-la-cnil-pour-mettre-en-place-du-teletravail
+- CNIL, workplace screen capture/video coupled with call recording: https://www.cnil.fr/fr/lenregistrement-video-ou-la-capture-decran-couple-lenregistrement-des-conversations-telephoniques
 
 No lawful basis, consent model, controller/processor allocation, deployment profile, region, provider, retention period or production architecture is selected.
