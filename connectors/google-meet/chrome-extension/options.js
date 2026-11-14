@@ -1,16 +1,19 @@
 const attest = document.getElementById("attest");
 const includeMicrophone = document.getElementById("includeMicrophone");
 const syntheticMicrophone = document.getElementById("syntheticMicrophone");
+const monitorTabAudio = document.getElementById("monitorTabAudio");
 const status = document.getElementById("status");
 
 chrome.storage.local.get([
   "syntheticTestAttested",
   "includeMicrophone",
-  "syntheticMicrophoneAttested"
+  "syntheticMicrophoneAttested",
+  "monitorTabAudio"
 ]).then((value) => {
   attest.checked = Boolean(value.syntheticTestAttested);
   includeMicrophone.checked = Boolean(value.includeMicrophone);
   syntheticMicrophone.checked = Boolean(value.syntheticMicrophoneAttested);
+  monitorTabAudio.checked = Boolean(value.monitorTabAudio);
 });
 
 document.getElementById("authorizeMic").addEventListener("click", async () => {
@@ -35,7 +38,8 @@ document.getElementById("save").addEventListener("click", async () => {
   await chrome.storage.local.set({
     syntheticTestAttested: attest.checked,
     includeMicrophone: includeMicrophone.checked,
-    syntheticMicrophoneAttested: syntheticMicrophone.checked
+    syntheticMicrophoneAttested: syntheticMicrophone.checked,
+    monitorTabAudio: monitorTabAudio.checked
   });
   status.textContent = attest.checked
     ? "Synthetic-only attestation and capture settings saved on this device."
