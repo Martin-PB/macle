@@ -35,12 +35,18 @@ The extension only starts on `https://meet.google.com/`. Capture is initiated by
 
 ## Python API/artifact client
 
-Install from the repository root:
+From the repository root, the convenience installer creates a local virtual environment, installs the client, and prepares private configuration/data directories:
+
+```sh
+bash scripts/install-google-meet.sh
+```
+
+Manual installation is also possible:
 
 ```sh
 python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install -e '.[dev]'
+python -m pip install -e .
 ```
 
 Create a Google Cloud project, enable Google Meet REST API, configure OAuth consent for a Desktop app, add your account as a test user if the app is in Testing, and download the OAuth client JSON to:
