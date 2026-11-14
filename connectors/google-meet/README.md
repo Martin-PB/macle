@@ -45,6 +45,18 @@ No Google Workspace plan, administrator access, Google Cloud project or OAuth se
 
 The extension only starts on `https://meet.google.com/`. Capture is initiated by a visible toolbar click; a second click stops it. It also stops on tab navigation or closure. It records the tab's rendered output and tab audio. The local microphone is included only if explicitly enabled, authorized in Chrome, and separately attested as synthetic test audio. Never use a real person's voice under the current approval.
 
+### Shared Rust/WASM contract runtime
+
+The Chrome extension uses the same Rust contract validator as the Android native shell. Build the WebAssembly module before loading the extension:
+
+```sh
+sh scripts/build-wasm-core.sh
+```
+
+See [Chrome extension build instructions](chrome-extension/BUILD.md). The extension refuses to start a capture if the shared WASM runtime is missing. The generated `core-wasm/` files are build artifacts and are not committed.
+
+The Chrome capture now emits a `macle.session-manifest/v1` manifest with separate source capability states and a SHA-256 digest for the WebM artifact. The recording and manifest are still downloaded as a pair, not yet as a single archive package.
+
 ## Optional Google API/artifact enrichment
 
 The following Python client is **not required** for joining or recording. Skip this entire section if local tab recording, transcription and reporting are sufficient.
