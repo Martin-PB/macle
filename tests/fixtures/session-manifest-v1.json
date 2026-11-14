@@ -1,0 +1,15 @@
+{
+  "schema": "macle.session-manifest/v1",
+  "session_id": "synthetic-session-001",
+  "platform": "chrome",
+  "started_at": "2026-11-14T10:00:00Z",
+  "ended_at": null,
+  "sources": [
+    {"source_id": "meet-tab-video", "kind": "tab_video", "status": "available"},
+    {"source_id": "meet-tab-audio", "kind": "tab_audio", "status": "available"},
+    {"source_id": "device-microphone", "kind": "microphone", "status": "not_requested"}
+  ],
+  "artifacts": [],
+  "limitations": ["Synthetic test fixture only; no participant-specific media tracks."],
+  "authorization": {"test_scope": "synthetic_only", "egress": "local_only"}
+}
