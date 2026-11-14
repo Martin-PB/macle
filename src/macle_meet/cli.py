@@ -451,7 +451,7 @@ def main() -> None:
             raise SystemExit(run_index_capture(args))
         if args.command == "transcribe":
             raise SystemExit(run_transcribe(args))
-    except (MeetApiError, FileNotFoundError, RuntimeError, requests.RequestException) as exc:
+    except (MeetApiError, FileNotFoundError, RuntimeError, ValueError, requests.RequestException) as exc:
         print(f"macle-meet: error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc
 
