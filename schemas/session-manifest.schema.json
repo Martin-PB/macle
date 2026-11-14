@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://macle.dev/schemas/session-manifest-v1.json",
+  "$id": "urn:macle:schema:session-manifest:v1",
   "title": "MACLE session manifest v1",
   "type": "object",
   "additionalProperties": false,
