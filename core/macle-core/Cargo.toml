@@ -6,7 +6,7 @@ license = "Apache-2.0"
 description = "Platform-independent MACLE session and observation contract implementation"
 
 [lib]
-crate-type = ["rlib", "cdylib", "staticlib"]
+crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
