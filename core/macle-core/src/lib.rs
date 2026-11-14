@@ -32,7 +32,7 @@ pub struct ArtifactDescriptor {
     pub sha256: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub started_at: Option<String>,
-    #[serde(deserialize_with = "deserialize_nullable_required")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ended_at: Option<String>,
 }
 
@@ -43,7 +43,7 @@ pub struct SessionManifest {
     pub session_id: String,
     pub platform: String,
     pub started_at: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(deserialize_with = "deserialize_nullable_required")]
     pub ended_at: Option<String>,
     pub sources: Vec<SourceDescriptor>,
     pub artifacts: Vec<ArtifactDescriptor>,
