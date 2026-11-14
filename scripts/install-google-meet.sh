@@ -19,7 +19,7 @@ PY
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -e .
+python -m pip install -e ".[asr]"
 
 install -d -m 700 "${XDG_CONFIG_HOME:-$HOME/.config}/macle-meet"
 install -d -m 700 "${XDG_DATA_HOME:-$HOME/.local/share}/macle-meet"
