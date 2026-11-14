@@ -11,6 +11,33 @@ The two adapters have different capabilities:
 
 ## Chrome
 
+### Install the prebuilt extension (recommended)
+
+A versioned, prebuilt extension ZIP is published on the repository's GitHub Releases page:
+
+- [MACLE Chrome releases](https://github.com/Martin-PB/macle/releases)
+
+No Rust, Cargo, wasm-pack, Node.js, ZIP utility, or local compilation is needed to install a published release.
+
+1. Download the asset named `macle-chrome-extension.zip` from the selected release.
+2. Extract the ZIP into a permanent folder. Do not delete or move that folder while the extension is installed.
+3. Open `chrome://extensions`.
+4. Enable **Developer mode**.
+5. Select **Load unpacked** and choose the extracted folder containing `manifest.json`.
+6. Pin MACLE to the toolbar if desired.
+7. Open the extension's options and explicitly attest to synthetic-only testing.
+8. Open a synthetic Google Meet test session.
+9. Click the MACLE toolbar icon to start. Click it again to stop and save the WebM and manifest separately.
+
+Chrome will load the extension from the extracted folder. This is a developer-mode installation, not a Chrome Web Store installation; Chrome may display a developer-mode notice. To update, download and extract the newer release, then use **Reload** on the extension card or remove the old unpacked folder and load the new one.
+
+Check the release's `SHA256SUMS.txt` before installation if you want to verify the downloaded ZIP. The release also includes `BUILD-PROVENANCE.txt`, identifying the source commit and build tool versions.
+
+The release ZIP contains the compiled shared Rust/WASM runtime. Installing it does not require building that runtime locally.
+
+### Build from source (maintainers and contributors)
+
+
 ### Prerequisites
 
 - Rust toolchain and rustup
