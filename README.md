@@ -40,6 +40,10 @@ The project takes inspiration from process philosophy and the philosophy of situ
 
 MACLE remains an exploratory product, but its first cross-platform implementation slice is now underway: a shared Rust session core with a Chrome WebAssembly host and an Android native/JNI host. The Android app contains a synthetic-only, screen-only MediaProjection prototype; Chrome continues to provide the existing local tab recorder. Neither platform's capture behavior has yet been validated across a physical-device/browser compatibility matrix. The current Stage A boundary remains synthetic-only and local-only.
 
+## Build and installation
+
+The first local Chrome and Android capture prototypes can be built from source. See [the installation guide](docs/INSTALLATION.md) for prerequisites, build commands and the synthetic-only smoke tests.
+
 ## License
 
 MACLE is distributed under the [Apache License, Version 2.0](LICENSE).

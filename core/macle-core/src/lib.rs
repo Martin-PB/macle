@@ -242,7 +242,6 @@ impl<W: Write> ObservationLog<W> {
 
 #[cfg(target_arch = "wasm32")]
 mod wasm_api {
-    use super::*;
     use wasm_bindgen::prelude::*;
 
     #[wasm_bindgen]
@@ -351,6 +350,14 @@ mod tests {
     }
 
     #[test]
+    fn validates_interrupted_session_manifest_fixture() {
+        let fixture = include_str!("../../../tests/fixtures/session-manifest-interrupted-v1.json");
+        let manifest = validate_manifest_json(fixture).unwrap();
+        assert!(manifest.artifacts.is_empty());
+        assert_eq!(manifest.sources[0].status, "interrupted");
+    }
+
+    #[test]
     fn rejects_unsafe_artifact_paths() {
         let fixture = include_str!("../../../tests/fixtures/session-manifest-v1.json");
         let mut manifest = validate_manifest_json(fixture).unwrap();
@@ -378,7 +385,6 @@ mod tests {
 
 #[cfg(target_os = "android")]
 mod android_jni {
-    use super::*;
     use jni::objects::{JClass, JString};
     use jni::sys::jstring;
     use jni::JNIEnv;

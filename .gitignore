@@ -45,3 +45,6 @@ apps/android/app/src/main/jniLibs/
 
 # Generated Chrome WebAssembly package (rebuild from source)
 connectors/google-meet/chrome-extension/core-wasm/
+
+# Local build and release artifacts
+/dist/

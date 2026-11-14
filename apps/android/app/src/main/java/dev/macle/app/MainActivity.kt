@@ -6,6 +6,8 @@ import android.media.projection.MediaProjectionManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.widget.Button
 import android.widget.CheckBox
@@ -25,6 +27,13 @@ import java.io.File
 class MainActivity : Activity() {
     private lateinit var status: TextView
     private lateinit var syntheticAttestation: CheckBox
+    private val statusHandler = Handler(Looper.getMainLooper())
+    private val statusRefresh = object : Runnable {
+        override fun run() {
+            refreshCaptureStatus()
+            statusHandler.postDelayed(this, 500)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +83,25 @@ class MainActivity : Activity() {
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        statusHandler.removeCallbacks(statusRefresh)
+        statusHandler.post(statusRefresh)
+    }
+
+    override fun onPause() {
+        statusHandler.removeCallbacks(statusRefresh)
+        super.onPause()
+    }
+
+    private fun refreshCaptureStatus() {
+        val savedStatus = getSharedPreferences(
+            ScreenCaptureService.PREFERENCES,
+            MODE_PRIVATE
+        ).getString(ScreenCaptureService.LAST_CAPTURE_STATUS, null)
+        if (!savedStatus.isNullOrBlank()) status.text = savedStatus
     }
 
     private fun requestScreenCapture() {

@@ -6,12 +6,14 @@ import init, {
 } from "../connectors/google-meet/chrome-extension/core-wasm/macle_core.js";
 
 const wasmBytes = await readFile(new URL("../connectors/google-meet/chrome-extension/core-wasm/macle_core_bg.wasm", import.meta.url));
-await init(wasmBytes);
+await init({ module_or_path: wasmBytes });
 
 const manifest = await readFile(new URL("../tests/fixtures/session-manifest-v1.json", import.meta.url), "utf8");
 const observation = await readFile(new URL("../tests/fixtures/observation-v1.json", import.meta.url), "utf8");
+const interruptedManifest = await readFile(new URL("../tests/fixtures/session-manifest-interrupted-v1.json", import.meta.url), "utf8");
 validate_manifest_json(manifest);
 validate_observation_json(observation);
+validate_manifest_json(interruptedManifest);
 
 const digest = new WasmSha256Accumulator();
 digest.update(new TextEncoder().encode("a"));

@@ -152,8 +152,10 @@ class ScreenCaptureService : Service() {
             )
             mediaRecorder.start()
             recorderFinalized = false
+            setCaptureStatus("Screen capture is running locally. Return here or use the notification to stop.")
         } catch (failure: Exception) {
             finishCapture(stopProjection = true)
+            setCaptureStatus("Capture failed to start: ${failure.message ?: failure.javaClass.simpleName}")
         }
     }
 
@@ -186,11 +188,23 @@ class ScreenCaptureService : Service() {
                     currentProjection.stop()
                 }
             }
-            writeSessionManifest()
+            if (sessionDirectory == null) {
+                setCaptureStatus("Capture stopped before a session was created.")
+            } else {
+                writeSessionManifest()
+            }
+        } catch (failure: Exception) {
+            setCaptureStatus("Capture finalization failed: ${failure.message ?: failure.javaClass.simpleName}")
         } finally {
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         }
+    }
+
+    private fun setCaptureStatus(message: String) {
+        getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit()
+            .putString(LAST_CAPTURE_STATUS, message)
+            .apply()
     }
 
     private fun writeSessionManifest() {
@@ -241,6 +255,14 @@ class ScreenCaptureService : Service() {
         }
         getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit()
             .putString(LAST_SESSION_DIRECTORY, directory.absolutePath)
+            .putString(
+                LAST_CAPTURE_STATUS,
+                if (artifactExists) {
+                    "Capture saved locally. Export the MP4 and manifest when ready."
+                } else {
+                    "Capture ended without a usable MP4; the manifest marks the screen source interrupted."
+                }
+            )
             .apply()
     }
 
@@ -305,6 +327,7 @@ class ScreenCaptureService : Service() {
         const val EXTRA_PROJECTION_DATA = "projection_data"
         const val PREFERENCES = "macle_capture"
         const val LAST_SESSION_DIRECTORY = "last_session_directory"
+        const val LAST_CAPTURE_STATUS = "last_capture_status"
         private const val CHANNEL_ID = "macle-capture"
         private const val NOTIFICATION_ID = 4102
     }
