@@ -19,6 +19,26 @@ async function ensureOffscreenDocument() {
   } finally {
     creatingOffscreen = null;
   }
+
+  // createDocument() can resolve before the offscreen module has installed
+  // its message listener. Wait for an explicit round-trip before sending
+  // START_CAPTURE; otherwise the first toolbar click can fail with
+  // "Could not establish connection. Receiving end does not exist."
+  let lastError = "The offscreen recorder did not become ready.";
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    try {
+      const response = await chrome.runtime.sendMessage({
+        target: "macle-offscreen",
+        type: "PING"
+      });
+      if (response?.ok && response?.type === "PONG") return;
+      lastError = response?.error || lastError;
+    } catch (error) {
+      lastError = error.message || String(error);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error("MACLE offscreen recorder startup timed out: " + lastError);
 }
 
 async function stopCapture() {
@@ -55,7 +75,8 @@ chrome.action.onClicked.addListener(async (tab) => {
       "syntheticTestAttested",
       "captureActive",
       "includeMicrophone",
-      "syntheticMicrophoneAttested"
+      "syntheticMicrophoneAttested",
+      "monitorTabAudio"
     ]);
     if (state.captureActive) {
       await stopCapture();
@@ -80,7 +101,8 @@ chrome.action.onClicked.addListener(async (tab) => {
       streamId,
       tab: { id: tab.id, title: tab.title || "", url: tab.url },
       includeMicrophone: Boolean(state.includeMicrophone && state.syntheticMicrophoneAttested),
-      syntheticMicrophoneAttested: Boolean(state.syntheticMicrophoneAttested)
+      syntheticMicrophoneAttested: Boolean(state.syntheticMicrophoneAttested),
+      monitorTabAudio: Boolean(state.monitorTabAudio)
     });
     if (!result?.ok) throw new Error(result?.error || "Recorder did not start.");
     await chrome.storage.local.set({ captureActive: true, captureStopping: false, capturedTabId: tab.id });

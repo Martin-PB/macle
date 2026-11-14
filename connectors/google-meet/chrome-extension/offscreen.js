@@ -33,7 +33,8 @@ async function startCapture(
   streamId,
   tab,
   includeMicrophone = false,
-  syntheticMicrophoneAttested = false
+  syntheticMicrophoneAttested = false,
+  monitorTabAudio = false
 ) {
   if (saving || (recorder && recorder.state !== "inactive")) {
     throw new Error("A capture is already running or the previous file is still being saved.");
@@ -71,7 +72,9 @@ async function startCapture(
       const mixedAudio = audioContext.createMediaStreamDestination();
       if (tabAudioTracks.length) {
         const tabAudio = audioContext.createMediaStreamSource(new MediaStream(tabAudioTracks));
-        tabAudio.connect(audioContext.destination);
+        // Keep recording independent from local playback. Chrome tabCapture
+        // suppresses local playback unless explicitly routed to destination.
+        if (monitorTabAudio) tabAudio.connect(audioContext.destination);
         tabAudio.connect(mixedAudio);
       }
       if (microphoneStream) {
@@ -111,7 +114,10 @@ async function startCapture(
       limitations: [
         "Captures only the selected rendered Google Meet tab.",
         "Does not expose individual participant media tracks.",
-        "Microphone input, when enabled, is a distinct source mixed into the recording container."
+        "Microphone input, when enabled, is a distinct source mixed into the recording container.",
+        monitorTabAudio
+          ? "Local tab-audio monitoring was enabled."
+          : "Local tab-audio monitoring was disabled; captured audio was not played locally."
       ],
       authorization: { test_scope: "synthetic_only", egress: "local_only" }
     };
@@ -283,12 +289,17 @@ async function saveCapture() {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.target !== "macle-offscreen") return;
+  if (message.type === "PING") {
+    sendResponse({ ok: true, type: "PONG" });
+    return;
+  }
   if (message.type === "START_CAPTURE") {
     startCapture(
       message.streamId,
       message.tab,
       Boolean(message.includeMicrophone),
-      Boolean(message.syntheticMicrophoneAttested)
+      Boolean(message.syntheticMicrophoneAttested),
+      Boolean(message.monitorTabAudio)
     )
       .then(sendResponse)
       .catch((error) => sendResponse({ ok: false, error: error.message || String(error) }));

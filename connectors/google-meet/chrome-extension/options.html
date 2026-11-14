@@ -19,6 +19,10 @@
       Include this device's microphone in the recording (optional; off by default).
     </label>
     <label>
+      <input id="monitorTabAudio" type="checkbox">
+      Play captured Meet tab audio through this computer (off by default; enable only if you want local monitoring).
+    </label>
+    <label>
       <input id="syntheticMicrophone" type="checkbox">
       I confirm that the selected microphone input is synthetic test audio (for example, a virtual microphone), not a real person's voice.
     </label>
@@ -31,7 +35,7 @@
       <li>Click the MACLE extension toolbar icon to start recording. The icon badge shows REC.</li>
       <li>Click the icon again to stop and save the WebM and JSON manifest.</li>
     </ol>
-    <p>The capture contains the rendered tab and tab audio output. The microphone is optional and is mixed into the recorded audio only when explicitly enabled and authorized. Under the current project approval, microphone input must be synthetic test audio; do not capture a real person's voice. Separate participant tracks are not available.
+    <p>The capture contains the rendered tab and tab audio independently of local playback. Local monitoring is off by default to avoid acoustic echo. The microphone is optional and is mixed into the recorded audio only when explicitly enabled and authorized. Under the current project approval, microphone input must be synthetic test audio; do not capture a real person's voice. Separate participant tracks are not available.
   </main>
   <script src="options.js"></script>
 </body>
