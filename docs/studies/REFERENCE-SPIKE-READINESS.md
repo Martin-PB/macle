@@ -13,7 +13,7 @@ These versions were observed on 14 November 2026 and are candidate pins for a co
 | Jitsi | Web client | 2.0.11248 release line | Web frontend release line |
 | Jitsi | lib-jitsi-meet | Generated API docs / master source | Documentation snapshot only; not a reproducible source pin |
 | LiveKit | Server | v1.13.11 (released 25 Oct 2026) | Server release |
-| LiveKit | JavaScript client SDK | v2.24.0 documentation | JS SDK reference version |
+| LiveKit | JavaScript client SDK | npm package livekit-client v2.24.0 (published 13 Nov 2026) | Reproducible package pin |
 
 For an actual run, record container image digests, package lockfile versions, browser versions, OS/kernel, Docker/Compose versions, and the exact lib-jitsi-meet source bundled by the Jitsi release. A page or branch named master is not a version pin.
 
