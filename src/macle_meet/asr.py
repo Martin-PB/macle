@@ -28,6 +28,7 @@ def transcribe_file(
     cpu_threads: int = 8,
     beam_size: int = 5,
     manifest: dict[str, Any] | None = None,
+    conference_name: str | None = None,
     model_factory: Callable[..., Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Transcribe a local audio/video file and return MACLE segment observations.
@@ -123,6 +124,7 @@ def transcribe_file(
                 "platform": "google_meet",
                 "resourceName": capture_id or media_path.name,
                 "resourceType": "local_asr_segment",
+                "conferenceRecord": conference_name,
                 "captureId": capture_id,
                 "mediaSha256": media_hash,
                 "deviceBoundary": "single_local_device",
