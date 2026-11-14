@@ -303,22 +303,24 @@ def run_transcribe(args: argparse.Namespace) -> int:
         manifest=manifest,
         conference_name=args.conference_record,
     )
-    frame_observations: list[dict[str, Any]] = []
     frame_summary = {"frames": 0}
-    if args.frame_interval > 0:
-        frame_observations, frame_summary = sample_video_frames(
-            args.media,
-            args.frames_dir,
-            interval_seconds=args.frame_interval,
-            max_dimension=args.max_frame_dimension,
-            jpeg_quality=args.jpeg_quality,
-            manifest=manifest,
-        )
     store = LocalStore(args.database)
     try:
-        for observation in observations + frame_observations:
+        for observation in observations:
             store.add_observation(observation, conference_name=args.conference_record or "")
         exported = store.export_jsonl(args.export)
+        if args.frame_interval > 0:
+            frame_observations, frame_summary = sample_video_frames(
+                args.media,
+                args.frames_dir,
+                interval_seconds=args.frame_interval,
+                max_dimension=args.max_frame_dimension,
+                jpeg_quality=args.jpeg_quality,
+                manifest=manifest,
+            )
+            for observation in frame_observations:
+                store.add_observation(observation, conference_name=args.conference_record or "")
+            exported = store.export_jsonl(args.export)
     finally:
         store.close()
     print(
