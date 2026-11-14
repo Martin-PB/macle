@@ -41,6 +41,7 @@ class ScreenCaptureService : Service() {
     private var sessionId: String? = null
     private var startedAt: String? = null
     private var finishing = false
+    private var recorderFinalized = false
 
     private val projectionCallback = object : MediaProjection.Callback() {
         override fun onStop() {
@@ -103,8 +104,9 @@ class ScreenCaptureService : Service() {
             val metrics = DisplayMetrics()
             @Suppress("DEPRECATION")
             (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealMetrics(metrics)
-            val width = metrics.widthPixels
-            val height = metrics.heightPixels
+            val scale = minOf(1f, 1920f / metrics.widthPixels, 1080f / metrics.heightPixels)
+            val width = ((metrics.widthPixels * scale).toInt() / 2) * 2
+            val height = ((metrics.heightPixels * scale).toInt() / 2) * 2
             val density = metrics.densityDpi
 
             val mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -134,6 +136,7 @@ class ScreenCaptureService : Service() {
                 null
             )
             mediaRecorder.start()
+            recorderFinalized = false
         } catch (failure: Exception) {
             finishCapture(stopProjection = true)
         }
@@ -144,13 +147,18 @@ class ScreenCaptureService : Service() {
         finishing = true
 
         try {
-            try {
-                recorder?.stop()
-            } catch (_: RuntimeException) {
-                // MediaRecorder can reject a very short/empty recording.
+            val activeRecorder = recorder
+            if (activeRecorder != null) {
+                try {
+                    activeRecorder.stop()
+                    recorderFinalized = true
+                } catch (_: RuntimeException) {
+                    // MediaRecorder can reject a very short/empty recording.
+                    recorderFinalized = false
+                }
+                runCatching { activeRecorder.reset() }
+                runCatching { activeRecorder.release() }
             }
-            recorder?.reset()
-            recorder?.release()
             recorder = null
             virtualDisplay?.release()
             virtualDisplay = null
@@ -159,7 +167,7 @@ class ScreenCaptureService : Service() {
             projection = null
             if (currentProjection != null) {
                 if (stopProjection) {
-                    currentProjection.unregisterCallback(projectionCallback)
+                    runCatching { currentProjection.unregisterCallback(projectionCallback) }
                     currentProjection.stop()
                 }
             }
@@ -175,7 +183,7 @@ class ScreenCaptureService : Service() {
         val started = startedAt ?: Instant.now().toString()
         val ended = Instant.now().toString()
         val artifactFile = mediaFile
-        val artifactExists = artifactFile != null && artifactFile.isFile && artifactFile.length() > 0L
+        val artifactExists = recorderFinalized && artifactFile != null && artifactFile.isFile && artifactFile.length() > 0L
         val sources = JSONArray()
             .put(source("android-screen", "screen", if (artifactExists) "available" else "interrupted",
                 "User-approved MediaProjection screen recording."))
@@ -258,7 +266,7 @@ class ScreenCaptureService : Service() {
         return builder
             .setContentTitle("MACLE capture active")
             .setContentText(message)
-            .setSmallIcon(android.R.drawable.presence_video_online)
+            .setSmallIcon(android.R.drawable.ic_menu_camera)
             .setOngoing(true)
             .build()
     }
