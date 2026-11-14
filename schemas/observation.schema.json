@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://macle.dev/schemas/observation-v1.json",
+  "$id": "urn:macle:schema:observation:v1",
   "title": "MACLE observation envelope v1",
   "type": "object",
   "additionalProperties": false,
