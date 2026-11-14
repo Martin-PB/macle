@@ -136,7 +136,6 @@ def test_transcribe_cli_indexes_capture_and_stores_segments(tmp_path, monkeypatc
     assert cli.run_transcribe(args) == 0
     rows = [json.loads(line) for line in export.read_text().splitlines()]
     assert len(rows) == 2
-    assert {row["source"]["resourceType"] for row in rows} == {
-        "local_capture",
-        None,
-    } or any(row["id"] == "asr-segment-1" for row in rows)
+    by_id = {row["id"]: row for row in rows}
+    assert by_id["asr-segment-1"]["source"]["conferenceRecord"] == "conferenceRecords/c2"
+    assert any(row["source"]["resourceType"] == "local_capture" for row in rows)
