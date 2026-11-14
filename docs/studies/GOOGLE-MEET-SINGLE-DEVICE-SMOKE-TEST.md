@@ -148,6 +148,7 @@ Run local ASR on the captured WebM:
 macle-meet transcribe \\
   --media ./MACLE-Meet-....webm \\
   --manifest ./MACLE-Meet-....manifest.json \\
+  --conference-record 'conferenceRecords/CONFERENCE_ID' \
   --language fr
 ```
 
