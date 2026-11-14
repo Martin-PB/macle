@@ -1,0 +1,254 @@
+//! Platform-independent MACLE session primitives.
+//!
+//! Capture APIs belong to platform adapters. This crate validates and records
+//! the common session/observation contract; it does not acquire media itself.
+
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use sha2::{Digest, Sha256};
+use std::collections::HashMap;
+use std::io::Write;
+use thiserror::Error;
+
+pub const MANIFEST_SCHEMA: &str = "macle.session-manifest/v1";
+pub const OBSERVATION_SCHEMA: &str = "macle.observation/v1";
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct SourceDescriptor {
+    pub source_id: String,
+    pub kind: String,
+    pub status: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub detail: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ArtifactDescriptor {
+    pub path: String,
+    pub media_type: String,
+    pub size_bytes: u64,
+    pub sha256: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub started_at: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ended_at: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct SessionManifest {
+    pub schema: String,
+    pub session_id: String,
+    pub platform: String,
+    pub started_at: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ended_at: Option<String>,
+    pub sources: Vec<SourceDescriptor>,
+    #[serde(default)]
+    pub artifacts: Vec<ArtifactDescriptor>,
+    #[serde(default)]
+    pub limitations: Vec<String>,
+    pub authorization: AuthorizationRecord,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct AuthorizationRecord {
+    pub test_scope: String,
+    pub egress: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ObservationEnvelope {
+    pub schema: String,
+    pub observation_id: String,
+    pub session_id: String,
+    pub source_id: String,
+    pub sequence: u64,
+    pub kind: String,
+    pub observed_at: String,
+    pub payload: Value,
+    #[serde(default)]
+    pub provenance: Value,
+}
+
+#[derive(Debug, Error)]
+pub enum CoreError {
+    #[error("invalid JSON: {0}")]
+    Json(#[from] serde_json::Error),
+    #[error("invalid MACLE contract: {0}")]
+    Invalid(String),
+    #[error("observation sequence for source '{source_id}' must increase: got {got}, previous {previous}")]
+    NonMonotonicSequence { source_id: String, got: u64, previous: u64 },
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+}
+
+pub fn validate_manifest_json(input: &str) -> Result<SessionManifest, CoreError> {
+    let manifest: SessionManifest = serde_json::from_str(input)?;
+    if manifest.schema != MANIFEST_SCHEMA {
+        return Err(CoreError::Invalid(format!("schema must be {MANIFEST_SCHEMA}")));
+    }
+    require_nonempty("session_id", &manifest.session_id)?;
+    require_nonempty("platform", &manifest.platform)?;
+    require_nonempty("started_at", &manifest.started_at)?;
+    let mut ids = std::collections::HashSet::new();
+    for source in &manifest.sources {
+        require_nonempty("source_id", &source.source_id)?;
+        require_nonempty("source kind", &source.kind)?;
+        if !ids.insert(&source.source_id) {
+            return Err(CoreError::Invalid(format!("duplicate source_id: {}", source.source_id)));
+        }
+        if !matches!(source.status.as_str(), "available" | "unavailable" | "interrupted" | "not_requested") {
+            return Err(CoreError::Invalid(format!("unsupported source status: {}", source.status)));
+        }
+    }
+    for artifact in &manifest.artifacts {
+        require_nonempty("artifact path", &artifact.path)?;
+        require_nonempty("artifact media_type", &artifact.media_type)?;
+        if artifact.sha256.len() != 64 || !artifact.sha256.bytes().all(|b| b.is_ascii_hexdigit()) {
+            return Err(CoreError::Invalid(format!("artifact {} has an invalid SHA-256", artifact.path)));
+        }
+    }
+    require_nonempty("authorization.test_scope", &manifest.authorization.test_scope)?;
+    require_nonempty("authorization.egress", &manifest.authorization.egress)?;
+    Ok(manifest)
+}
+
+pub fn validate_observation_json(input: &str) -> Result<ObservationEnvelope, CoreError> {
+    let observation: ObservationEnvelope = serde_json::from_str(input)?;
+    if observation.schema != OBSERVATION_SCHEMA {
+        return Err(CoreError::Invalid(format!("schema must be {OBSERVATION_SCHEMA}")));
+    }
+    for (field, value) in [
+        ("observation_id", observation.observation_id.as_str()),
+        ("session_id", observation.session_id.as_str()),
+        ("source_id", observation.source_id.as_str()),
+        ("kind", observation.kind.as_str()),
+        ("observed_at", observation.observed_at.as_str()),
+    ] {
+        require_nonempty(field, value)?;
+    }
+    Ok(observation)
+}
+
+fn require_nonempty(field: &str, value: &str) -> Result<(), CoreError> {
+    if value.trim().is_empty() {
+        return Err(CoreError::Invalid(format!("{field} must not be empty")));
+    }
+    Ok(())
+}
+
+pub fn sha256_hex(bytes: &[u8]) -> String {
+    format!("{:x}", Sha256::digest(bytes))
+}
+
+/// Append-only JSONL writer with per-source monotonic sequence enforcement.
+pub struct ObservationLog<W: Write> {
+    writer: W,
+    session_id: String,
+    last_sequence: HashMap<String, u64>,
+}
+
+impl<W: Write> ObservationLog<W> {
+    pub fn new(writer: W, session_id: impl Into<String>) -> Self {
+        Self { writer, session_id: session_id.into(), last_sequence: HashMap::new() }
+    }
+
+    pub fn append(&mut self, observation: &ObservationEnvelope) -> Result<(), CoreError> {
+        if observation.schema != OBSERVATION_SCHEMA {
+            return Err(CoreError::Invalid(format!("schema must be {OBSERVATION_SCHEMA}")));
+        }
+        if observation.session_id != self.session_id {
+            return Err(CoreError::Invalid("observation belongs to a different session".into()));
+        }
+        if let Some(previous) = self.last_sequence.get(&observation.source_id) {
+            if observation.sequence <= *previous {
+                return Err(CoreError::NonMonotonicSequence {
+                    source_id: observation.source_id.clone(),
+                    got: observation.sequence,
+                    previous: *previous,
+                });
+            }
+        }
+        let mut line = serde_json::to_vec(observation)?;
+        line.push(b'\n');
+        self.writer.write_all(&line)?;
+        self.last_sequence.insert(observation.source_id.clone(), observation.sequence);
+        Ok(())
+    }
+
+    pub fn into_inner(self) -> W { self.writer }
+}
+
+#[cfg(target_arch = "wasm32")]
+mod wasm_api {
+    use super::*;
+    use wasm_bindgen::prelude::*;
+
+    #[wasm_bindgen]
+    pub fn validate_manifest_json(input: &str) -> Result<String, JsValue> {
+        super::validate_manifest_json(input)
+            .map(|manifest| serde_json::to_string(&manifest).unwrap())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen]
+    pub fn validate_observation_json(input: &str) -> Result<String, JsValue> {
+        super::validate_observation_json(input)
+            .map(|observation| serde_json::to_string(&observation).unwrap())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen]
+    pub fn sha256_hex(input: &[u8]) -> String {
+        super::sha256_hex(input)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn observation(source: &str, sequence: u64) -> ObservationEnvelope {
+        ObservationEnvelope {
+            schema: OBSERVATION_SCHEMA.into(),
+            observation_id: format!("obs-{source}-{sequence}"),
+            session_id: "session-1".into(),
+            source_id: source.into(),
+            sequence,
+            kind: "capture.started".into(),
+            observed_at: "2026-11-14T10:00:00Z".into(),
+            payload: serde_json::json!({"synthetic": true}),
+            provenance: serde_json::json!({"adapter": "test"}),
+        }
+    }
+
+    #[test]
+    fn sha256_matches_known_vector() {
+        assert_eq!(sha256_hex(b"abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+    }
+
+    #[test]
+    fn observation_log_enforces_per_source_sequence_and_session() {
+        let mut log = ObservationLog::new(Vec::new(), "session-1");
+        log.append(&observation("screen", 1)).unwrap();
+        log.append(&observation("audio", 1)).unwrap();
+        log.append(&observation("screen", 2)).unwrap();
+        let error = log.append(&observation("screen", 2)).unwrap_err();
+        assert!(matches!(error, CoreError::NonMonotonicSequence { .. }));
+        assert_eq!(log.into_inner().iter().filter(|b| **b == b'\n').count(), 3);
+    }
+
+    #[test]
+    fn rejects_observation_from_another_session() {
+        let mut log = ObservationLog::new(Vec::new(), "session-1");
+        let mut event = observation("screen", 1);
+        event.session_id = "session-2".into();
+        assert!(log.append(&event).is_err());
+    }
+
+    #[test]
+    fn validates_observation_contract() {
+        let json = serde_json::to_string(&observation("screen", 1)).unwrap();
+        assert!(validate_observation_json(&json).is_ok());
+    }
+}
