@@ -10,6 +10,10 @@ let writeChain = Promise.resolve();
 let sessionManifest = null;
 let saving = false;
 let captureFailure = null;
+const macleCoreReady = import(chrome.runtime.getURL("core-wasm/macle_core.js")).then(async (core) => {
+  await core.default();
+  return core;
+});
 
 function send(type, details = {}) {
   chrome.runtime.sendMessage({ type, ...details }).catch(() => {});
@@ -34,6 +38,8 @@ async function startCapture(
     throw new Error("A capture is already running or the previous file is still being saved.");
   }
   try {
+    // Fail before recording starts if the shared contract runtime was not built.
+    await macleCoreReady;
     const constraints = {
       audio: { mandatory: {
         chromeMediaSource: "tab",
@@ -187,9 +193,7 @@ async function saveCapture() {
       started_at: sessionManifest.started_at,
       ended_at: sessionManifest.ended_at
     });
-    const coreUrl = chrome.runtime.getURL("core-wasm/macle_core.js");
-    const core = await import(coreUrl);
-    await core.default();
+    const core = await macleCoreReady;
     core.validate_manifest_json(JSON.stringify(sessionManifest));
     const manifest = new Blob(
       [JSON.stringify(sessionManifest, null, 2)],
