@@ -31,21 +31,32 @@ def data_dir() -> Path:
     return Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "macle-meet"
 
 
+def ensure_private_config_directory(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if os.name == "posix":
+        path.chmod(0o700)
+
+
 def authenticate(client_secrets: Path, token_path: Path) -> Credentials:
     if not client_secrets.is_file():
         raise FileNotFoundError(
             f"OAuth client file not found: {client_secrets}\n"
             "Create a Desktop OAuth client in Google Cloud and save its JSON here."
         )
+    if token_path.parent == config_dir():
+        ensure_private_config_directory(token_path.parent)
+    else:
+        token_path.parent.mkdir(parents=True, exist_ok=True)
     flow = InstalledAppFlow.from_client_secrets_file(str(client_secrets), [SCOPE])
     credentials = flow.run_local_server(host="127.0.0.1", port=0, open_browser=True)
-    token_path.parent.mkdir(parents=True, exist_ok=True)
     token_path.write_text(credentials.to_json(), encoding="utf-8")
     token_path.chmod(0o600)
     return credentials
 
 
 def load_credentials(token_path: Path) -> Credentials:
+    if token_path.parent == config_dir():
+        ensure_private_config_directory(token_path.parent)
     if not token_path.exists():
         raise FileNotFoundError("Not authenticated. Run: macle-meet auth")
     credentials = Credentials.from_authorized_user_file(str(token_path), [SCOPE])
