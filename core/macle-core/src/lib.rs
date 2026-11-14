@@ -14,6 +14,7 @@ pub const MANIFEST_SCHEMA: &str = "macle.session-manifest/v1";
 pub const OBSERVATION_SCHEMA: &str = "macle.observation/v1";
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct SourceDescriptor {
     pub source_id: String,
     pub kind: String,
@@ -23,6 +24,7 @@ pub struct SourceDescriptor {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct ArtifactDescriptor {
     pub path: String,
     pub media_type: String,
@@ -35,6 +37,7 @@ pub struct ArtifactDescriptor {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct SessionManifest {
     pub schema: String,
     pub session_id: String,
@@ -51,12 +54,14 @@ pub struct SessionManifest {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct AuthorizationRecord {
     pub test_scope: String,
     pub egress: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct ObservationEnvelope {
     pub schema: String,
     pub observation_id: String,
@@ -103,6 +108,11 @@ pub fn validate_manifest_json(input: &str) -> Result<SessionManifest, CoreError>
     }
     for artifact in &manifest.artifacts {
         require_nonempty("artifact path", &artifact.path)?;
+        if artifact.path.starts_with('/') || artifact.path.contains('\\\\')
+            || artifact.path.split('/').any(|part| part == ".." || part.is_empty())
+        {
+            return Err(CoreError::Invalid(format!("artifact path must be a safe relative path: {}", artifact.path)));
+        }
         require_nonempty("artifact media_type", &artifact.media_type)?;
         if artifact.sha256.len() != 64 || !artifact.sha256.bytes().all(|b| b.is_ascii_hexdigit()) {
             return Err(CoreError::Invalid(format!("artifact {} has an invalid SHA-256", artifact.path)));
@@ -154,9 +164,7 @@ impl<W: Write> ObservationLog<W> {
     }
 
     pub fn append(&mut self, observation: &ObservationEnvelope) -> Result<(), CoreError> {
-        if observation.schema != OBSERVATION_SCHEMA {
-            return Err(CoreError::Invalid(format!("schema must be {OBSERVATION_SCHEMA}")));
-        }
+        validate_observation_json(&serde_json::to_string(observation)?)?;
         if observation.session_id != self.session_id {
             return Err(CoreError::Invalid("observation belongs to a different session".into()));
         }
