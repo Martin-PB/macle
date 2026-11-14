@@ -289,6 +289,10 @@ async function saveCapture() {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.target !== "macle-offscreen") return;
+  if (message.type === "PING") {
+    sendResponse({ ok: true, type: "PONG" });
+    return;
+  }
   if (message.type === "START_CAPTURE") {
     startCapture(
       message.streamId,
