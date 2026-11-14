@@ -175,6 +175,23 @@ Expected:
 - No participant identity or speaker attribution is fabricated.
 - The machine-generated transcript is distinct from any Google-generated transcript artifact.
 
+## 8c. Generate a local HTML report
+
+After capture indexing, ASR and frame sampling:
+
+```sh
+macle-meet report --synthetic-test-attested \\
+  ./macle-meet-observations.jsonl \\
+  ./macle-meet-report.html
+```
+
+Expected:
+- A local HTML report is created with capture, participant/session, transcript and frame sections.
+- Verified frame JPEGs are copied into a sibling assets directory.
+- The report has no remote scripts, fonts or network dependencies.
+- Transcript and resource text is HTML-escaped.
+- Frame paths outside the configured local frame root or with a mismatched SHA-256 are not copied.
+
 ## 9. Post-meeting artifact sync
 
 After the synthetic meeting ends and Google has generated any configured artifacts, run:
