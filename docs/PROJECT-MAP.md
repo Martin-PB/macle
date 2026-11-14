@@ -40,7 +40,7 @@ A shared camera or endpoint does not turn this initial use case into an in-perso
 | Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Candidate strategies documented; repeatable evaluation protocol added |
 | Adjacent tools | Transcription, diarization, recording, calendar, chat, documents, workflow tools | Study candidates |
 | MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined; competency questions drafted as proposals |
-| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | Android-native offline-first capture with optional agent streaming is the preferred user-facing direction under feasibility study; remote Meet audio capture is not yet established. Existing Chrome connector retained as fallback/reference. Synthetic-only/local-only validation boundary remains in force. |
+| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | Shared Rust session/observation core with Chrome WebAssembly and Android native/JNI hosts is implemented as a first source-level slice. Android currently records screen only; Chrome captures the rendered Meet tab and tab audio. Offline/local operation and synthetic-only validation remain authoritative. Native/WASM builds and physical-device/browser compatibility validation are still outstanding; modality parity is not established. |
 
 ## 5. Document governance
 
@@ -65,22 +65,30 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Observation envelope](04-OBSERVATION-ENVELOPE.md) (PROPOSED)
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
-- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (invitee-side participation; REST/OAuth optional enrichment)
-- [Android capture feasibility and product direction](studies/ANDROID-CAPTURE-FEASIBILITY.md) (Android-first investigation; MediaProjection, playback-audio eligibility, offline package and optional agent streaming)
+- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (invitee-side browser capture is the core path; REST/OAuth is optional enrichment)
+- [Android capture feasibility](studies/ANDROID-CAPTURE-FEASIBILITY.md) (MediaProjection screen-only prototype; audio playback remains unverified)
+- [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
+- [Shared Rust core](../core/macle-core/README.md) (session/observation contracts, validation, append-only log and incremental SHA-256)
+- [Android capture prototype](../apps/android/README.md) (synthetic-only MediaProjection screen capture; playback audio and microphone not implemented)
+- [Chrome WASM build](../connectors/google-meet/chrome-extension/BUILD.md) (shared Rust validator and incremental artifact hashing)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
 - [Data protection and governance study](studies/DATA-PROTECTION-AND-GOVERNANCE.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
+- [External source and version traceability audit](studies/SOURCE-TRACEABILITY-AUDIT.md) (PROPOSED audit)
 - [Provenance, temporal relations, and event-envelope standards study](studies/PROVENANCE-TIME-EVENT-STANDARDS.md)
 - [Open reference environments study](studies/REFERENCE-ENVIRONMENTS.md)
+- [Reference spike readiness and version pins](studies/REFERENCE-SPIKE-READINESS.md) (PROPOSED; not executed)
 - [Data egress and privacy gate](studies/DATA-EGRESS-AND-PRIVACY-GATE.md) (PROPOSED)
 - [Temporal and revision semantics](studies/TEMPORAL-AND-REVISION-SEMANTICS.md) (PROPOSED)
 - [Architecture decision template](decisions/TEMPLATE.md) (PROPOSED)
+- [Initial demonstrator data/deployment boundary brief](decisions/DEPLOYMENT-BOUNDARY-ARBITRATION.md) (OPEN; user arbitration required)
 - [Issue taxonomy and decomposition proposal](GOVERNANCE-ISSUES.md) (PROPOSED)
 - [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
+- [Ground-truth annotation dry run 01](fixtures/GROUND-TRUTH-DRY-RUN-01.md) (simulated worked example; no real annotators or recording)
 - [Open questions](OPEN-QUESTIONS.md)
-- [Google Meet local connector](../connectors/google-meet/README.md) (desktop/browser fallback and reference prototype; synthetic-only validation)
+- [Google Meet local connector](../connectors/google-meet/README.md) (single-device invitee-side tab recorder; local processing; optional REST/OAuth enrichment; synthetic-only validation)
 - [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending; includes one-command post-capture workflow)
 - [Local speech transcription study](studies/LOCAL-SPEECH-TRANSCRIPTION.md) (first optional local ASR backend)
 - [Local video frame observations](studies/LOCAL-VIDEO-FRAME-OBSERVATIONS.md) (sparse local visual references)
@@ -88,16 +96,6 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Google Meet single-device participant watch](../connectors/google-meet/README.md#watch-participant-state-during-a-synthetic-meeting) (sampled REST polling; implementation in progress)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
-
-- [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
-- [Shared Rust core](../core/macle-core/README.md) (session/observation contracts, JSONL log, incremental SHA-256)
-- [Android capture prototype](../apps/android/README.md) (synthetic-only MediaProjection screen capture; playback audio and microphone not implemented)
-- [Chrome WASM build](../connectors/google-meet/chrome-extension/BUILD.md) (shared Rust validator and incremental artifact hashing)
-
-- [Cross-platform architecture feasibility](studies/CROSS-PLATFORM-ARCHITECTURE.md) (shared core, native capture adapters, WASM assessment; candidate architecture only)
-- [Shared Rust core](../core/macle-core/README.md) (session/observation contracts, JSONL log, SHA-256; first implementation slice)
-- [Android native core check](../apps/android/README.md) (imports and validates a session manifest through the shared Rust JNI library; capture not yet implemented)
-- [Chrome extension build](../connectors/google-meet/chrome-extension/BUILD.md) (WASM core build prerequisite)
 
 ## 7. Important restraint
 
