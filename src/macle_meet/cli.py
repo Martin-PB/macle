@@ -19,6 +19,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from . import __version__
 from .client import MeetApiError, MeetClient
 from .asr import transcribe_file
+from .frames import sample_video_frames
 from .store import LocalStore
 from .normalize import sanitize_space_resource
 
@@ -301,9 +302,20 @@ def run_transcribe(args: argparse.Namespace) -> int:
         manifest=manifest,
         conference_name=args.conference_record,
     )
+    frame_observations: list[dict[str, Any]] = []
+    frame_summary = {"frames": 0}
+    if args.frame_interval > 0:
+        frame_observations, frame_summary = sample_video_frames(
+            args.media,
+            args.frames_dir,
+            interval_seconds=args.frame_interval,
+            max_dimension=args.max_frame_dimension,
+            jpeg_quality=args.jpeg_quality,
+            manifest=manifest,
+        )
     store = LocalStore(args.database)
     try:
-        for observation in observations:
+        for observation in observations + frame_observations:
             store.add_observation(observation, conference_name=args.conference_record or "")
         exported = store.export_jsonl(args.export)
     finally:
@@ -314,6 +326,7 @@ def run_transcribe(args: argparse.Namespace) -> int:
         f"language={summary['language'] or 'unknown'})."
     )
     print(f"Media SHA-256: {summary['mediaSha256']}")
+    print(f"Sampled {frame_summary['frames']} video frames to {args.frames_dir}")
     print(f"Exported {exported} observations to {args.export}")
     return 0
 
@@ -378,6 +391,10 @@ def build_parser() -> argparse.ArgumentParser:
     transcribe.add_argument("--compute-type", help="Defaults to int8 on CPU and float16 on CUDA.")
     transcribe.add_argument("--cpu-threads", type=int, default=min(os.cpu_count() or 4, 8))
     transcribe.add_argument("--beam-size", type=int, default=5)
+    transcribe.add_argument("--frame-interval", type=float, default=30.0, help="Sample one video frame at this interval in seconds; use 0 to disable.")
+    transcribe.add_argument("--max-frame-dimension", type=int, default=1280)
+    transcribe.add_argument("--jpeg-quality", type=int, default=85)
+    transcribe.add_argument("--frames-dir", type=Path, default=data_dir() / "frames")
     transcribe.add_argument("--model-cache", type=Path, default=cache_dir() / "models")
     transcribe.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
     transcribe.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
