@@ -30,7 +30,7 @@ An API's existence does not imply universal availability. Account plan, tenant c
 - Investigate platform event coverage and the exact distinction between meeting REST APIs, Meeting SDK, and Video SDK before designing an adapter.
 
 **Sources**
-- https://godevelopers.zoom.us/docs/api/meetings/ — retrieved_on: 2026-11-13; version: not pinned in this study; consult the cited page for its current API/SDK version.
+- https://developers.zoom.us/docs/api/meetings/events/ — retrieved_on: 2026-11-13; version: not pinned in this study; consult the cited page for its current API/SDK version.
 - https://developers.zoom.us/docs/meeting-sdk/windows/default-ui/advanced-features/raw-data/ — retrieved_on: 2026-11-13; version: not pinned in this study; consult the cited page for its current API/SDK version.
 - https://developers.zoom.us/docs/video-sdk/web/raw-data/ — retrieved_on: 2026-11-13; version: not pinned in this study; consult the cited page for its current API/SDK version.
 

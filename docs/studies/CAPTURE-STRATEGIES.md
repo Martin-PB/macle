@@ -128,6 +128,10 @@ For each candidate strategy and platform, test the same scripted meeting:
 
 Record missing events, timestamp quality, attribution, media continuity, latency, resource usage, consent UX and recovery behavior.
 
-## 5. Current position
+## 5. Source traceability
+
+The named vendor examples in this study are exploratory references, not evidence that their products provide equivalent coverage. Official product/API documentation and retrieval dates are maintained in [Adjacent tools and reusable components](ADJACENT-TOOLS.md), especially the Recall.ai, Granola and tl;dv entries. Re-evaluate each cited product against its current contract, platform coverage, SDK version and data-processing terms before relying on it.
+
+## 6. Current position
 
 No strategy is selected. The purpose of this study is to prevent premature commitment to a bot, a desktop recorder, or a single platform API before their coverage has been compared against MACLE's actual requirements.

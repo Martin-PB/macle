@@ -119,30 +119,32 @@ These are test dimensions, not legal conclusions. Legal and organizational requi
 
 ## 6. Official sources reviewed
 
+All links below were rechecked on 14 November 2026. The pages are rolling vendor documentation; where no stable API/SDK release identifier is explicit in the cited page, the version is marked not pinned rather than inferred.
+
 ### Zoom
-- [Meeting SDK Web participant events](https://developers.zoom.us/docs/meeting-sdk/web/client-view/participant-events/)
-- [Meeting SDK Windows raw data](https://developers.zoom.us/docs/meeting-sdk/windows/default-ui/advanced-features/raw-data/)
-- [Meeting SDK macOS raw data](https://developers.zoom.us/docs/meeting-sdk/macos/custom-ui/advanced-features/raw-data/)
-- [Meeting SDK iOS raw-data privilege flow](https://developers.zoom.us/docs/meeting-sdk/ios/custom-ui/advanced-features/raw-data/)
+- [Meeting SDK Web participant events](https://developers.zoom.us/docs/meeting-sdk/web/client-view/participant-events/) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Meeting SDK Windows raw data](https://developers.zoom.us/docs/meeting-sdk/windows/default-ui/advanced-features/raw-data/) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Meeting SDK macOS raw data](https://developers.zoom.us/docs/meeting-sdk/macos/custom-ui/advanced-features/raw-data/) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Meeting SDK iOS raw-data privilege flow](https://developers.zoom.us/docs/meeting-sdk/ios/custom-ui/advanced-features/raw-data/) — retrieved_on: 2026-11-14; version: not pinned in this study.
 
 ### Microsoft Teams
-- [Real-time Media for calls and meetings bots](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/real-time-media-concepts)
-- [Application-hosted media bot requirements](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/requirements-considerations-application-hosted-media-bots)
-- [Meeting transcripts overview](https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/meeting-transcripts/overview-transcripts)
-- [Transcript API access and tenant policy](https://learn.microsoft.com/en-us/microsoftteams/meeting-transcript-api-access)
+- [Real-time Media for calls and meetings bots](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/real-time-media-concepts) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Application-hosted media bot requirements](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/requirements-considerations-application-hosted-media-bots) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Meeting transcripts overview](https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/meeting-transcripts/overview-transcripts) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Transcript API access and tenant policy](https://learn.microsoft.com/en-us/microsoftteams/meeting-transcript-api-access) — retrieved_on: 2026-11-14; version: not pinned in this study.
 
 ### Google Meet
-- [Meet REST API overview](https://developers.google.com/workspace/meet/api/guides/overview)
-- [Work with participants and participant sessions](https://developers.google.com/workspace/meet/api/guides/participants)
-- [Respond to Meet events](https://developers.google.com/workspace/meet/api/guides/events-overview)
-- [Work with artifacts and retention](https://developers.google.com/workspace/meet/api/guides/artifacts)
-- [Transcript entry resource](https://developers.google.com/workspace/meet/api/reference/rest/v2/conferenceRecords.transcripts.entries)
+- [Meet REST API overview](https://developers.google.com/workspace/meet/api/guides/overview) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Work with participants and participant sessions](https://developers.google.com/workspace/meet/api/guides/participants) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Respond to Meet events](https://developers.google.com/workspace/meet/api/guides/events-overview) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Work with artifacts and retention](https://developers.google.com/workspace/meet/api/guides/artifacts) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Transcript entry resource](https://developers.google.com/workspace/meet/api/reference/rest/v2/conferenceRecords.transcripts.entries) — retrieved_on: 2026-11-14; version: not pinned in this study.
 
 ### Cisco Webex
-- [Webex Meetings webhooks](https://developer.webex.com/meeting/docs/api/guides/webhooks)
-- [Webex API support matrix](https://developer.webex.com/docs/api-support)
-- [Meeting resources](https://developer.webex.com/meeting/docs/meetings)
-- [Access meeting resources](https://developer.webex.com/meeting/docs/access-meeting-resources-guide)
+- [Webex Meetings webhooks](https://developer.webex.com/meeting/docs/api/guides/webhooks) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Webex API support matrix](https://developer.webex.com/docs/api-support) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Meeting resources](https://developer.webex.com/meeting/docs/meetings) — retrieved_on: 2026-11-14; version: not pinned in this study.
+- [Access meeting resources](https://developer.webex.com/meeting/docs/access-meeting-resources-guide) — retrieved_on: 2026-11-14; version: not pinned in this study.
 
 ## 7. Research gaps and next steps
 

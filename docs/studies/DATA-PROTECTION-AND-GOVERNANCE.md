@@ -192,21 +192,23 @@ These questions should be answered before an operational deployment is approved:
 
 ## 12. Official references
 
+Sources below were rechecked on 14 November 2026. Regulations are identified by their official instrument number; CNIL web guidance is a rolling source and is not assigned a software-style version. The HR reference framework and voice-assistant white paper retain their own publication/document dates where available.
+
 ### European Union
-- [Regulation (EU) 2016/679 — GDPR, especially Articles 5, 6, 9, 25, 28, 32 and 35](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
-- [Regulation (EU) 2024/1689 — Artificial Intelligence Act, Article 5(1)(f) and recitals 44–45](https://eur-lex.europa.eu/eli/reg/2024/1689/oj)
-- [GDPR consolidated text — EUR-Lex](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679)
+- [Regulation (EU) 2016/679 — GDPR, especially Articles 5, 6, 9, 25, 28, 32 and 35](https://eur-lex.europa.eu/eli/reg/2016/679/oj) — retrieved_on: 2026-11-14; instrument: Regulation (EU) 2016/679
+- [Regulation (EU) 2024/1689 — Artificial Intelligence Act, Article 5(1)(f) and recitals 44–45](https://eur-lex.europa.eu/eli/reg/2024/1689/oj) — retrieved_on: 2026-11-14; instrument: Regulation (EU) 2024/1689
+- [GDPR consolidated text — EUR-Lex](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679) — retrieved_on: 2026-11-14; consolidated text
 
 ### CNIL
-- [Personal data: definition](https://www.cnil.fr/fr/definition/donnee-personnelle)
-- [Sensitive data: definition](https://www.cnil.fr/fr/definition/donnee-sensible)
-- [Lawfulness and legal bases](https://www.cnil.fr/fr/assurer-que-le-traitement-est-licite)
-- [Legitimate interest](https://www.cnil.fr/fr/les-bases-legales/interet-legitime)
-- [Employee activity monitoring and proportionality](https://www.cnil.fr/fr/controle-de-lactivite-des-personnes-employees)
-- [HR data processing reference framework](https://www.cnil.fr/sites/default/files/atoms/files/referentiel_grh_novembre_2019_0.pdf)
-- [DPIA/AIPD: what to know](https://www.cnil.fr/fr/ce-quil-faut-savoir-sur-lanalyse-dimpact-relative-a-la-protection-des-donnees-aipd)
-- [Risk management and DPIA](https://www.cnil.fr/fr/gerer-les-risques)
-- [Voice assistants and biometric voice identification](https://www.cnil.fr/sites/default/files/atoms/files/cnil_livre-blanc-assistants-vocaux.pdf)
+- [Personal data: definition](https://www.cnil.fr/fr/definition/donnee-personnelle) — retrieved_on: 2026-11-14
+- [Sensitive data: definition](https://www.cnil.fr/fr/definition/donnee-sensible) — retrieved_on: 2026-11-14
+- [Lawfulness and legal bases](https://www.cnil.fr/fr/assurer-que-le-traitement-est-licite) — retrieved_on: 2026-11-14
+- [Legitimate interest](https://www.cnil.fr/fr/les-bases-legales/interet-legitime) — retrieved_on: 2026-11-14
+- [Employee activity monitoring and proportionality](https://www.cnil.fr/fr/controle-de-lactivite-des-personnes-employees) — retrieved_on: 2026-11-14
+- [HR data processing reference framework](https://www.cnil.fr/sites/default/files/atoms/files/referentiel_grh_novembre_2019_0.pdf) — retrieved_on: 2026-11-14; document: November 2019
+- [DPIA/AIPD: what to know](https://www.cnil.fr/fr/ce-quil-faut-savoir-sur-lanalyse-dimpact-relative-a-la-protection-des-donnees-aipd) — retrieved_on: 2026-11-14
+- [Risk management and DPIA](https://www.cnil.fr/fr/gerer-les-risques) — retrieved_on: 2026-11-14
+- [Voice assistants and biometric voice identification](https://www.cnil.fr/sites/default/files/atoms/files/cnil_livre-blanc-assistants-vocaux.pdf) — retrieved_on: 2026-11-14; publication date not stated in this catalogue
 
 ## 13. No decision made
 
