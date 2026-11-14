@@ -147,7 +147,13 @@ A physical Android device is required for meaningful capture validation; emulato
 - Any later real-meeting or external-agent use requires a separate explicit deployment/data-egress approval.
 - The existing desktop/browser connector remains a fallback and reference until Android capture capability is demonstrated.
 
-## 8. Decision status
+## 8. Prototype implementation status
+
+A first Android native shell now requests MediaProjection consent, records screen video through a foreground service, writes a local session manifest, computes the media SHA-256 incrementally, validates the manifest through the shared Rust core/JNI library, and offers the manifest/media pair through Android Sharesheet. Playback audio and microphone are explicitly `not_requested`. The Chrome connector emits the same `macle.session-manifest/v1` contract and uses the Rust core compiled to WASM for manifest validation and incremental chunk hashing.
+
+These implementations are source-level prototypes only. Native and WASM builds have not yet been run in this environment, and Android capture requires physical-device validation. See `apps/android/README.md`, `core/macle-core/README.md`, and `connectors/google-meet/chrome-extension/BUILD.md`.
+
+## 9. Decision status
 
 This study supports an **Android-first product investigation**, not yet an unconditional decision that Android can capture every required modality. The key gating evidence is whether the actual Meet client exposes remote playback audio to AudioPlaybackCapture while the user participates normally on the same device. If it does not, the product must make the limitation explicit and assess whether a different, user-authorized capture topology is acceptable; it must not disguise microphone room audio as equivalent.
 
