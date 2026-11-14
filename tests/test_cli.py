@@ -31,3 +31,16 @@ def test_oauth_config_directory_is_owner_only(tmp_path):
     directory = tmp_path / "macle-meet"
     ensure_private_config_directory(directory)
     assert stat.S_IMODE(directory.stat().st_mode) == 0o700
+
+
+def test_transcribe_command_defaults_to_local_cpu_int8():
+    args = build_parser().parse_args([
+        "transcribe",
+        "--media", "capture.webm",
+        "--manifest", "capture.manifest.json",
+    ])
+    assert args.command == "transcribe"
+    assert args.model == "small"
+    assert args.device == "cpu"
+    assert args.compute_type is None
+    assert args.language is None
