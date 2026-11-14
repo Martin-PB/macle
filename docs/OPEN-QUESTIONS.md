@@ -36,6 +36,11 @@ This is a working list. An open question is not a hidden decision.
 - Which platform permissions and tenant restrictions make a candidate route unavailable in realistic target environments?
 
 ## Data and governance
+- Which deployment profile should be evaluated first (local-only, customer-controlled, contracted cloud, third-party capture, or hybrid)?
+- Is the first demonstrator strictly synthetic, or may it process real participants' data?
+- Who can approve a deployment-specific privacy/data-egress gate, and what evidence is required?
+- Which recipients, subprocessors, support locations, transfer mechanisms, model uses, and deletion guarantees must be known before provider selection?
+- How should deletion propagate through provenance-linked derivatives, backups, and exports?
 - What consent and disclosure behavior is required?
 - What retention and deletion guarantees are required?
 - Which deployment regions and data residency constraints apply?
@@ -46,6 +51,10 @@ This is a working list. An open question is not a hidden decision.
 - What access-control model applies to recordings, derived events, and meeting context?
 
 ## Interfaces and consumers
+- Which temporal dimensions must be represented independently: valid/event, source assertion, observation, ingestion, processing, and revision/system time?
+- How should clock identity, precision, drift, uncertainty, and ambiguous cross-clock ordering be represented?
+- Which assertion revision states and correction relations are needed for current and as-of views?
+- How can historical correction traceability coexist with deletion and retention requirements?
 - Should provenance be represented natively in a MACLE model, mapped to W3C PROV, or both?
 - Which interval relations and uncertainty semantics are needed for cross-modal temporal reasoning?
 - Is CloudEvents useful as a transport envelope while retaining a MACLE-owned domain payload?
