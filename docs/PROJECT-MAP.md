@@ -40,7 +40,7 @@ A shared camera or endpoint does not turn this initial use case into an in-perso
 | Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Candidate strategies documented; repeatable evaluation protocol added |
 | Adjacent tools | Transcription, diarization, recording, calendar, chat, documents, workflow tools | Study candidates |
 | MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined; competency questions drafted as proposals |
-| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | First single-device Google Meet slice merged: local Chrome tab capture, REST/artifact client and local ASR; participant-state polling is being added; not a production architecture decision |
+| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | Core path: invitee joins an existing Meet through the normal browser flow and explicitly captures the tab locally on one device; local ASR/report follows. Meet REST/OAuth client is optional enrichment, not a prerequisite. Synthetic-only validation boundary remains in force. |
 
 ## 5. Document governance
 
@@ -65,7 +65,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Observation envelope](04-OBSERVATION-ENVELOPE.md) (PROPOSED)
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
-- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (priority target; single-device capture, REST/artifact client and local ASR implemented as a prototype)
+- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (invitee-side browser capture is the core path; REST/OAuth is optional enrichment)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
@@ -79,7 +79,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Issue taxonomy and decomposition proposal](GOVERNANCE-ISSUES.md) (PROPOSED)
 - [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
 - [Open questions](OPEN-QUESTIONS.md)
-- [Google Meet local connector](../connectors/google-meet/README.md) (single-device executable prototype; synthetic-only validation; one-command post-capture processing)
+- [Google Meet local connector](../connectors/google-meet/README.md) (single-device invitee-side tab recorder; local processing; optional REST/OAuth enrichment; synthetic-only validation)
 - [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending; includes one-command post-capture workflow)
 - [Local speech transcription study](studies/LOCAL-SPEECH-TRANSCRIPTION.md) (first optional local ASR backend)
 - [Local video frame observations](studies/LOCAL-VIDEO-FRAME-OBSERVATIONS.md) (sparse local visual references)
