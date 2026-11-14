@@ -119,5 +119,5 @@ def test_watch_polls_until_conference_ends_and_exports_revisions(tmp_path, monke
 
     assert cli.run_watch(args) == 0
     rows = [json.loads(line) for line in export.read_text().splitlines()]
-    assert len(rows) == 4
+    assert len(rows) == 5
     assert sum(row["payload"].get("endTime") is not None for row in rows) == 1
