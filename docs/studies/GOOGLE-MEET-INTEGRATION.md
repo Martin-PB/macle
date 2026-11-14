@@ -72,6 +72,40 @@ The Meet add-ons SDK lets a web application appear inside Meet and supports coll
 
 The reviewed documentation does not establish that add-ons can access raw participant audio/video, individual media tracks, or the full meeting UI state. Do not infer media access from the ability to embed an application in Meet. Treat add-ons as a UI integration candidate only until a specific documented capability is verified.
 
+## 5.1 Surface C2 — Companion mode as a secondary observation surface
+
+Google Meet Companion mode must not be confused with a media-capture SDK.
+
+Google documents Companion mode as a second-screen experience. Its microphone and meeting audio are disabled to avoid echo, and its camera is off by default. The user may enable a personal video tile in supported contexts, but that is the user's own camera feed; it does not expose the remote participants' individual video tracks to the companion client. The documented use cases focus on viewing presentations, sharing a screen, chat, polls, Q&A and host controls. The participant grid/video tiles are not available in the same way as a full audio/video join.
+
+Consequently:
+- Companion mode is **not** a route to obtain the meeting's audio.
+- It is **not established** as a route to acquire remote participant camera streams.
+- It may provide a secondary interaction/presentation surface, and potentially the user's own camera as an explicit personal-video feature; these are distinct observations.
+- A presentation visible in Companion mode is not equivalent to the original presenter's camera or a separate media track.
+- Do not assume that a second device running Companion mode can act as a camera-only observer for all participants.
+
+### Multi-device identity and temporal correlation
+
+Google's API model offers an important partial aid: a participant represents a person, while participant sessions are created per participant-device pair. The same person's full-audio/video connection and Companion-mode connection may therefore be represented as separate device sessions associated with participant identity, where Google resolves them to the same signed-in participant. This is useful for provenance and association, but it does not synchronize the devices' observations or guarantee that two independent capture clocks are aligned.
+
+If MACLE ever combines observations from a primary device and a Companion device, it must preserve:
+- the Google participant resource and each distinct participant-session resource;
+- the source device and capture process identity;
+- source timestamps, local monotonic timestamps, ingestion/receipt timestamps and any estimated clock offset separately;
+- uncertainty bounds for temporal alignment;
+- the observation modality and surface (e.g. presentation view, user camera, chat event, REST event);
+- explicit association confidence and the evidence used to associate observations across devices.
+
+Potential correlation signals include the shared conference record, participant identity where available, participant-session start/end times, event timestamps, and explicit user pairing between the two local MACLE clients. These signals can support a best-effort temporal association; they do not justify silently merging the streams into one synchronized media timeline.
+
+A separate-device approach therefore has a significant coordination cost. It should be evaluated only if Companion mode provides a genuinely useful observation that cannot be obtained more simply on the primary device. It is not a prerequisite for the first Google Meet connector.
+
+**Sources**
+- Google Meet Companion mode help: https://support.google.com/meet/answer/11295507?hl=en — retrieved 2026-11-14.
+- Google Meet Companion mode feature comparison: https://support.google.com/a/users/answer/11418474?hl=en — retrieved 2026-11-14.
+- Meet participant and participant-session model: https://developers.google.com/workspace/meet/api/guides/participants — retrieved 2026-11-14.
+
 ## 6. Surface D — Meet Media API: not a sustainable path
 
 Google's developer documentation states that the Meet Media API Developer Preview will not proceed to general availability and that its endpoints will be permanently shut down on **2027-01-15**. New signups are closed; existing approved preview participants retain access only until shutdown.
@@ -166,6 +200,8 @@ A later authorized integration test may use a controlled Google Workspace test e
 - Which Workspace editions and admin policies affect artifact generation and API access?
 - What are the exact Workspace Events subscription lifetimes, event delivery guarantees, retry behavior and reconciliation requirements?
 - Can user-controlled browser/desktop capture provide sufficient local live observations without relying on unsupported Meet internals?
+- Does Companion mode provide any observation surface that is genuinely additive to primary-device capture, and is its value worth the separate-device correlation cost?
+- Can two MACLE clients on one conference reliably associate participant identity and calibrate clock offsets without treating participant-session identity as a media synchronization guarantee?
 - Are visible bot-based routes acceptable for the intended product experience?
 - What level of live multimodal fidelity is actually required by the initial competency questions?
 - Which gaps are acceptable in the first usable product?
