@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://macle.dev/schemas/session-manifest-v1.json",
+  "title": "MACLE session manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "session_id", "platform", "started_at", "sources", "artifacts", "limitations", "authorization"],
+  "properties": {
+    "schema": { "const": "macle.session-manifest/v1" },
+    "session_id": { "type": "string", "minLength": 1 },
+    "platform": { "type": "string", "minLength": 1 },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": ["string", "null"], "format": "date-time" },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "kind", "status"],
+        "properties": {
+          "source_id": { "type": "string", "minLength": 1 },
+          "kind": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["available", "unavailable", "interrupted", "not_requested"] },
+          "detail": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "media_type", "size_bytes", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "media_type": { "type": "string", "minLength": 1 },
+          "size_bytes": { "type": "integer", "minimum": 0 },
+          "sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+          "started_at": { "type": ["string", "null"], "format": "date-time" },
+          "ended_at": { "type": ["string", "null"], "format": "date-time" }
+        }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["test_scope", "egress"],
+      "properties": {
+        "test_scope": { "type": "string", "minLength": 1 },
+        "egress": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
