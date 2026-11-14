@@ -20,3 +20,14 @@ def test_sync_rejects_multiple_conference_lookup_modes():
         assert exc.code == 2
     else:
         raise AssertionError("lookup modes should be mutually exclusive")
+
+
+
+def test_oauth_config_directory_is_owner_only(tmp_path):
+    import stat
+
+    from macle_meet.cli import ensure_private_config_directory
+
+    directory = tmp_path / "macle-meet"
+    ensure_private_config_directory(directory)
+    assert stat.S_IMODE(directory.stat().st_mode) == 0o700
