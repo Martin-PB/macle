@@ -24,6 +24,11 @@ This is a working list. An open question is not a hidden decision.
 - How should anonymous, dial-in, room-device, guest, and bot participants be represented?
 
 ## Capture and platforms
+- Can the Android Google Meet app's remote playback audio actually be captured by a separate MACLE app through AudioPlaybackCapture on supported devices/versions, or is only screen/microphone capture available?
+- Which Android versions/devices can sustain MediaProjection and microphone capture for a complete meeting, including app switching, screen lock, permission revocation and interruptions?
+- Should Android be baselined as the primary user-facing client after the capture feasibility gate, with desktop/browser retained as fallback?
+- What portable session-package contract and Android export/share mechanism should be baselined?
+- Which agent streaming protocol, endpoint trust model, encryption, acknowledgement and replay semantics should be baselined?
 - Is a visible bot acceptable as a possible later live-observation route for Google Meet?
 - Is desktop/browser capture acceptable?
 - Is a third-party capture provider acceptable for an initial version?
