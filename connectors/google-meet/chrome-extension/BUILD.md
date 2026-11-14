@@ -2,7 +2,7 @@
 
 ## Install a prebuilt release (recommended for users)
 
-Download the versioned ZIP from [MACLE Chrome releases](https://github.com/Martin-PB/macle/releases). The ZIP already contains the compiled shared Rust/WASM runtime. Users do not need Rust, Cargo, wasm-pack, Node.js, or a local build environment.
+Once the first release workflow has completed, download the versioned ZIP from [MACLE Chrome releases](https://github.com/Martin-PB/macle/releases). The ZIP already contains the compiled shared Rust/WASM runtime. Users do not need Rust, Cargo, wasm-pack, Node.js, or a local build environment.
 
 1. Extract the ZIP into a permanent folder.
 2. Open `chrome://extensions` and enable **Developer mode**.
