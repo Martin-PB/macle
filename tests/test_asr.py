@@ -129,6 +129,10 @@ def test_transcribe_cli_indexes_capture_and_stores_segments(tmp_path, monkeypatc
         model_cache=tmp_path / "models",
         cpu_threads=4,
         beam_size=5,
+        frame_interval=0,
+        max_frame_dimension=1280,
+        jpeg_quality=85,
+        frames_dir=tmp_path / "frames",
         database=database,
         export=export,
     )
