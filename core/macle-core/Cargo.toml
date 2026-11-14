@@ -21,5 +21,3 @@ wasm-bindgen = "0.2"
 [target.'cfg(target_os = "android")'.dependencies]
 jni = "0.21"
 
-[dev-dependencies]
-hex = "0.4"
