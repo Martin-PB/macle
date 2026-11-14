@@ -1,0 +1,5 @@
+body { max-width: 720px; margin: 40px auto; padding: 0 20px; color: #202124; font: 16px/1.55 system-ui, sans-serif; }
+.warning { padding: 12px; border-left: 4px solid #b3261e; background: #fceeee; color: #7a1712; }
+label { display: block; margin: 20px 0; }
+button { padding: 9px 14px; }
+#status { font-weight: 600; }

@@ -1,6 +1,6 @@
 # Study — Google Meet integration
 
-**Status:** current desk research and integration planning; no capture architecture, provider, add-on, or production deployment has been selected.  
+**Status:** current desk research plus an initial single-device prototype; no production capture architecture, provider, add-on, or deployment has been selected.  
 **Product priority:** first platform integration for a usable MACLE product. Discord is a likely later integration, explicitly deferred.  
 **Research retrieved:** 2026-11-14.
 
@@ -51,9 +51,11 @@ Important identity distinctions:
 
 MACLE must preserve Google's original resource names and not collapse these entities into one generic participant identifier.
 
-Transcript entries are particularly useful for a first artifact integration: they provide discrete speech segments with participant association, timestamps, text and language code. Google documents a 30-day availability window for transcript entries after the conference. This is a time-bounded artifact interface, not a durable transcript archive guarantee.
+Transcript entries are particularly useful for a first artifact integration: they provide discrete speech segments with participant association, timestamps, text and language code. Google documents a 30-day availability window for transcript entries after the conference. ConferenceRecord resources themselves also have an `expireTime` and are deleted 30 days after the conference ends. This is a time-bounded API evidence window, not a durable transcript or meeting-metadata archive guarantee; MACLE must sync eligible records promptly and preserve its own governed local copy.
 
-Access is constrained by OAuth authorization/scopes, whether the authenticated user is a meeting owner or participant for the requested operation, Workspace configuration and policies, organizer/host settings, artifact generation and availability. Domain-wide delegation is a distinct administrative authorization path, not a default assumption for a consumer application.
+Access is constrained by OAuth authorization/scopes, whether the authenticated user is a meeting owner or participant for the requested operation, Workspace configuration and policies, organizer/host settings, artifact generation and availability. A useful single-device route for a currently active meeting is to call `spaces.get` with the meeting code, read `activeConference.conferenceRecord`, and then retrieve the conference and participants; this avoids relying on organizer-only historical discovery for the active session. Domain-wide delegation is a distinct administrative authorization path, not a default assumption for a consumer application.
+
+Google also explicitly states that the Meet REST API is not intended for performance tracking or user evaluation within an organization, and that Meet data should not be collected for that purpose. MACLE's initial integration must not be repurposed into employee-performance scoring or surveillance; any future use case in this area requires separate product and legal review.
 
 ## 4. Surface B — Google Workspace Events
 
@@ -150,11 +152,35 @@ A provider may offer a Meet-specific bot or desktop SDK. No provider is selected
 
 **Stage A does not authorize sending synthetic or real data to such a provider.** A later provider trial requires a separate explicit data-egress decision; real-meeting use requires a separate deployment-specific approval.
 
-## 8. First useful product slice — proposal, not a decision
+## 7.4 Initial single-device implementation
+
+Following the project owner's instruction on 2026-11-14, the first executable prototype uses one computer and deliberately avoids Companion mode and inter-device synchronization.
+
+The current implementation branch contains two local components:
+
+1. **Chrome tab recorder:** a Manifest V3 extension restricted to `meet.google.com`. The user explicitly attests to synthetic-only testing in the extension settings, then starts/stops capture by clicking the toolbar icon. It records the rendered Meet tab as one composite video and the tab's audio output. The WebM and a provenance manifest are downloaded locally.
+2. **Python REST/artifact client:** a desktop OAuth flow with the read-only Meet scope; organizer-scoped conference discovery or explicit retrieval of a known conference resource; participant and participant-session listing; recording/transcript/smart-note metadata; transcript entries; local SQLite revision storage; JSONL observation export.
+
+The browser recorder is intentionally limited:
+- It captures the visible tab rendering, not individual participant camera tracks.
+- It captures audio output from the tab. The local microphone can be explicitly enabled and authorized; it is then mixed with tab audio, not kept as a separate track.
+- It does not inspect private Meet internals or inject scripts into Meet.
+- It records a composite presentation/layout, so layout changes and hidden participants cannot be reconstructed as independent source tracks.
+- It stops when the selected tab begins any navigation or closes.
+- It writes recording chunks to the browser's local Origin Private File System before download, avoiding full-recording buffering in extension memory.
+- It does not send media to any server or third-party provider.
+
+The Python client is complementary, not a substitute for live capture. Google REST resources preserve participant/session identities and transcript timestamps, but the local composite recording is not automatically diarized or frame-aligned with those resources. A later correlation step can use the conference resource and overlapping timestamps, but it must preserve uncertainty.
+
+The extension's synthetic-only checkbox is an operator attestation, not proof that all participants/media are synthetic. The implementation must be used only with synthetic test meetings under the current approval. No real-meeting capture is authorized.
+
+This is an initial working implementation contract. The first browser smoke test and live Google OAuth/API test still need to be performed in the user's Chrome/Google Cloud environment; code being present is not verification.
+
+## 8. First useful product slice — implementation baseline for the prototype
 
 A pragmatic first slice to validate with product requirements:
 1. User-authorized Google OAuth connection with least-privilege scopes.
-2. Discover eligible Meet spaces/conference records for the authorized principal.
+2. For the current meeting, resolve the active conference through `spaces.get` using the meeting code or space resource; for history, discover organizer-visible conference records or fetch a known conference resource.
 3. Subscribe to relevant Workspace Events and persist source event provenance.
 4. Reconcile events against Meet REST resources.
 5. Retrieve available conference participants and participant sessions.
@@ -167,7 +193,7 @@ This slice can provide useful post-meeting articulation and lifecycle context. I
 ## 9. Minimum adapter mapping requirements
 
 The future adapter should preserve at least:
-- Google meeting-space resource name;
+- Google meeting-space resource name (but not the short-lived meeting code or meeting URI; Google advises against storing meeting codes long term);
 - conference-record resource name;
 - participant resource name;
 - participant-session resource name;
@@ -210,12 +236,18 @@ A later authorized integration test may use a controlled Google Workspace test e
 
 - Google Meet REST API overview: https://developers.google.com/workspace/meet/api/guides/overview — retrieved 2026-11-14.
 - Google Meet REST API v2 reference: https://developers.google.com/workspace/meet/api/reference/rest/v2 — retrieved 2026-11-14.
-- Meet conference records: https://developers.google.com/workspace/meet/api/guides/conferences — retrieved 2026-11-14.
+- Google Meet Space resource and `activeConference` field: https://developers.google.com/workspace/meet/api/reference/rest/v2/spaces — retrieved 2026-11-14.
+- Google Meet meeting-space lifecycle and active conference lookup: https://developers.google.com/workspace/meet/api/guides/meeting-spaces-overview — retrieved 2026-11-14.
+- Meet conference records and organizer-filtered discovery: https://developers.google.com/workspace/meet/api/guides/conferences — retrieved 2026-11-14.
+- ConferenceRecord resource, including its 30-day `expireTime`: https://developers.google.com/workspace/meet/api/reference/rest/v2/conferenceRecords — retrieved 2026-11-14.
 - Meet participants and participant sessions: https://developers.google.com/workspace/meet/api/guides/participants — retrieved 2026-11-14.
 - Google Workspace Events for Meet: https://developers.google.com/workspace/events/guides/events-meet — retrieved 2026-11-14.
 - Google Meet SDK/API overview (including add-ons and Media API lifecycle notice): https://developers.google.com/workspace/meet/overview — retrieved 2026-11-14.
 - Google Meet API release notes (Media API shutdown announcement dated 2026-10-28): https://developers.google.com/workspace/meet/release-notes — retrieved 2026-11-14.
 - Meet Media API overview (historical preview documentation): https://developers.google.com/workspace/meet/media-api/guides/overview — retrieved 2026-11-14.
+- Chrome Extensions `tabCapture` API: https://developer.chrome.com/docs/extensions/reference/api/tabCapture — retrieved 2026-11-14.
+- Chrome Extensions Offscreen API: https://developer.chrome.com/docs/extensions/reference/api/offscreen — retrieved 2026-11-14.
+- Chrome Extensions Downloads API: https://developer.chrome.com/docs/extensions/reference/api/downloads — retrieved 2026-11-14.
 
 ---
 

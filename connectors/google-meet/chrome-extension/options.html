@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MACLE Meet capture settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <h1>MACLE — Google Meet local capture</h1>
+    <p class="warning">Synthetic test meetings only. Real participant capture is not authorized by the current project decision.</p>
+    <label>
+      <input id="attest" type="checkbox">
+      I confirm that I will use this extension only with a synthetic test meeting and synthetic identities/content.
+    </label>
+    <label>
+      <input id="includeMicrophone" type="checkbox">
+      Include this device's microphone in the recording (optional; off by default).
+    </label>
+    <label>
+      <input id="syntheticMicrophone" type="checkbox">
+      I confirm that the selected microphone input is synthetic test audio (for example, a virtual microphone), not a real person's voice.
+    </label>
+    <button id="authorizeMic">Authorize microphone</button>
+    <button id="save">Save settings</button>
+    <p id="status" role="status"></p>
+    <h2>How to use</h2>
+    <ol>
+      <li>Open a synthetic Google Meet test meeting in Chrome.</li>
+      <li>Click the MACLE extension toolbar icon to start recording. The icon badge shows REC.</li>
+      <li>Click the icon again to stop and save the WebM and JSON manifest.</li>
+    </ol>
+    <p>The capture contains the rendered tab and tab audio output. The microphone is optional and is mixed into the recorded audio only when explicitly enabled and authorized. Under the current project approval, microphone input must be synthetic test audio; do not capture a real person's voice. Separate participant tracks are not available.
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>
