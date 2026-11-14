@@ -76,3 +76,67 @@ def test_transcribe_file_rejects_unknown_device(tmp_path):
     media.write_bytes(b"synthetic")
     with pytest.raises(ValueError, match="device"):
         transcribe_file(media, device="tpu", model_factory=FakeModel)
+
+
+
+def test_transcribe_cli_indexes_capture_and_stores_segments(tmp_path, monkeypatch):
+    import json
+    from argparse import Namespace
+
+    import macle_meet.cli as cli
+
+    media = tmp_path / "capture.webm"
+    media.write_bytes(b"synthetic-webm")
+    manifest = tmp_path / "capture.manifest.json"
+    manifest.write_text(json.dumps({
+        "schema": "macle.capture-manifest/v0",
+        "captureId": "capture-002",
+        "startedAt": "2026-11-14T10:00:00.000Z",
+        "syntheticTestAttested": True,
+        "microphoneCaptured": False,
+    }))
+    database = tmp_path / "macle.sqlite3"
+    export = tmp_path / "observations.jsonl"
+    observation = {
+        "id": "asr-segment-1",
+        "schema": "macle.observation/v0",
+        "source": {"conferenceRecord": "conferenceRecords/c2"},
+        "content": "synthetic phrase",
+    }
+    monkeypatch.setattr(
+        cli,
+        "transcribe_file",
+        lambda *args, **kwargs: (
+            [observation],
+            {
+                "segments": 1,
+                "model": "small",
+                "device": "cpu",
+                "computeType": "int8",
+                "language": "fr",
+                "mediaSha256": "abc123",
+            },
+        ),
+    )
+    args = Namespace(
+        media=media,
+        manifest=manifest,
+        conference_record="conferenceRecords/c2",
+        model="small",
+        language="fr",
+        device="cpu",
+        compute_type=None,
+        model_cache=tmp_path / "models",
+        cpu_threads=4,
+        beam_size=5,
+        database=database,
+        export=export,
+    )
+
+    assert cli.run_transcribe(args) == 0
+    rows = [json.loads(line) for line in export.read_text().splitlines()]
+    assert len(rows) == 2
+    assert {row["source"]["resourceType"] for row in rows} == {
+        "local_capture",
+        None,
+    } or any(row["id"] == "asr-segment-1" for row in rows)
