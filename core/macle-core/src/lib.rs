@@ -263,7 +263,7 @@ mod android_jni {
     fn validation_result(mut env: JNIEnv, input: JString, manifest: bool) -> jstring {
         let message = match env.get_string(&input) {
             Ok(value) => {
-                let json: String = value.into();
+                let json = value.to_string_lossy().into_owned();
                 let result = if manifest {
                     super::validate_manifest_json(&json).map(|_| ())
                 } else {
