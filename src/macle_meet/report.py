@@ -85,6 +85,10 @@ def _copy_frame_asset(
         return None, "Frame SHA-256 does not match its observation."
     assets_frames.mkdir(parents=True, exist_ok=True, mode=0o700)
     target = assets_frames / f"{actual_hash}.jpg"
+    if target.is_symlink():
+        target.unlink()
+    if target.exists() and _sha256(target) != actual_hash:
+        target.unlink()
     if not target.exists():
         shutil.copyfile(source, target)
         target.chmod(0o600)
@@ -101,6 +105,8 @@ def generate_report(
     output_path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     assets_dir = output_path.parent / f"{output_path.stem}_assets"
     assets_frames = assets_dir / "frames"
+    if assets_dir.is_symlink() or assets_frames.is_symlink():
+        raise RuntimeError("Refusing to write report assets through a symbolic link.")
     frame_assets: dict[str, tuple[str | None, str]] = {}
     for observation in observations:
         if observation.get("modality") == "video_frame":
