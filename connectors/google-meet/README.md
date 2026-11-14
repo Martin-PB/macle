@@ -86,6 +86,7 @@ The installer includes the optional `faster-whisper` backend. After capture, tra
 macle-meet transcribe \\
   --media ./MACLE-Meet-....webm \\
   --manifest ./MACLE-Meet-....manifest.json \\
+  --conference-record 'conferenceRecords/CONFERENCE_ID' \
   --language fr
 ```
 
