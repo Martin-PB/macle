@@ -391,17 +391,25 @@ def run_transcribe(args: argparse.Namespace) -> int:
             store.add_observation(observation, conference_name=args.conference_record or "")
         exported = store.export_jsonl(args.export)
         if args.frame_interval > 0:
-            frame_observations, frame_summary = sample_video_frames(
-                args.media,
-                args.frames_dir,
-                interval_seconds=args.frame_interval,
-                max_dimension=args.max_frame_dimension,
-                jpeg_quality=args.jpeg_quality,
-                manifest=manifest,
-            )
-            for observation in frame_observations:
-                store.add_observation(observation, conference_name=args.conference_record or "")
-            exported = store.export_jsonl(args.export)
+            try:
+                frame_observations, frame_summary = sample_video_frames(
+                    args.media,
+                    args.frames_dir,
+                    interval_seconds=args.frame_interval,
+                    max_dimension=args.max_frame_dimension,
+                    jpeg_quality=args.jpeg_quality,
+                    manifest=manifest,
+                )
+            except Exception as exc:
+                print(
+                    f"macle-meet: warning: video frame sampling failed; "
+                    f"capture and ASR observations remain available: {exc}",
+                    file=sys.stderr,
+                )
+            else:
+                for observation in frame_observations:
+                    store.add_observation(observation, conference_name=args.conference_record or "")
+                exported = store.export_jsonl(args.export)
     finally:
         store.close()
     print(
