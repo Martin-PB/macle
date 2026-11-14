@@ -67,6 +67,14 @@ This is a working list. An open question is not a hidden decision.
 - What does a consuming agent need to query: timeline, participants, current state, relations, source artifacts, or all of these?
 - How should MACLE expose uncertainty and provenance without making downstream consumers depend on vendor-specific schemas?
 
+## Cross-platform architecture
+- Which domain/session/package/transport components must be shared across Android, iOS, Windows, Linux, macOS and browser?
+- Should the shared core be Rust with native bindings and an optional WASM target, or should Kotlin Multiplatform, Flutter, Tauri or another approach be preferred after prototyping?
+- Which capture capabilities can each OS expose for the actual Meet client and route, and which remain unavailable or conditional?
+- Which iOS ReplayKit flows are viable for capturing another app's meeting content, and what limitations apply?
+- What is the smallest conformance suite that proves package/observation equivalence across independently implemented adapters?
+- Which desktop shell/UI framework, if any, can be shared without weakening native capture and lifecycle behavior?
+
 ## Engineering
 - What latency and throughput targets are appropriate?
 - Which media and event formats should be canonical?
