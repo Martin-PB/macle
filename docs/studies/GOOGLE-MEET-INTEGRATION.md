@@ -15,14 +15,13 @@ The integration must separate at least four surfaces:
 3. **In-meeting user experience:** Meet add-ons embed a collaborative application in Meet. They are a user-interface and collaboration surface, not a documented raw audio/video capture API.
 4. **Live media observation:** requires a separate, sustainable acquisition route. The Meet Media API is being shut down and must not be used as the foundation of a new product.
 
-A first useful integration can start with OAuth-authorized metadata, lifecycle events and post-meeting artifacts, while clearly identifying that it is not live multimodal situational awareness. Live observation remains a separate engineering and governance workstream.
+The first usable product workflow is instead participant-side and local: an invited user opens the ordinary Meet invitation URL in a browser on the same device, completes whatever sign-in or guest/admission steps the host requires, and explicitly starts local tab capture. This core workflow does not require a Workspace subscription, Workspace administrator role, Google OAuth application, Meet REST access, Workspace Events, Calendar integration, or meeting-organizer privileges. Meet APIs and post-meeting artifacts are optional enrichment paths with separate authorization and availability constraints.
 
 ## 2. Product priority and boundaries
 
-The project owner clarified on 2026-11-14:
-- Google Meet is the first target for a usable MACLE platform integration.
-- Discord is a likely second platform, but deferred.
-- Stage A is approved for the first technical demonstrator: synthetic identities and content only, locally self-hosted, with no third-party provider egress.
+The project owner clarified on 2026-11-14 that the target user is an invitee to an existing Google Meet meeting, not a Workspace administrator or organizer. MACLE must let that user join through the normal browser flow and record locally on the same device. No Workspace subscription, admin role, Calendar integration, OAuth client or Meet API is a prerequisite for core capture. Google Meet is the first target; Discord is deferred.
+
+Stage A remains approved only for synthetic identities and content, locally self-hosted, with no third-party provider egress.
 
 Stage A is limited to synthetic/local validation. It does not authorize real-meeting capture, processing real participant data, or sending any data to external capture, speech, transcription or AI providers.
 
@@ -154,7 +153,9 @@ A provider may offer a Meet-specific bot or desktop SDK. No provider is selected
 
 ## 7.4 Initial single-device implementation
 
-Following the project owner's instruction on 2026-11-14, the first executable prototype uses one computer and deliberately avoids Companion mode and inter-device synchronization.
+Following the project owner's instruction on 2026-11-14, the first executable prototype uses one computer and deliberately avoids Companion mode and inter-device synchronization. The **Chrome tab recorder is the core acquisition path**: the user opens the invitation URL as an ordinary participant (signed-in Google account or guest where the host permits), completes the normal Meet pre-join/admission flow, and explicitly starts/stops local capture. Workspace APIs are not needed to join or record the tab.
+
+The companion Python REST/artifact client is optional enrichment. It requires its own Google Cloud OAuth setup and is not part of the minimum join-and-record path.
 
 The current implementation branch contains two local components:
 
@@ -178,18 +179,18 @@ This is an initial working implementation contract. The first browser smoke test
 
 ## 8. First useful product slice — current implementation baseline
 
-The first executable single-device prototype now contains:
-1. User-authorized Google OAuth connection with the read-only Meet scope.
-2. Active conference resolution through `spaces.get` using a meeting code or stable space resource; historical organizer-scoped discovery and known-resource lookup remain separate.
-3. Local Chrome tab capture through `chrome.tabCapture`: the rendered tab video and tab audio are recorded as one composite WebM, with a provenance manifest.
-4. Optional local microphone mixing, disabled by default and restricted to an explicitly attested synthetic virtual-microphone input under the current Stage A boundary.
-5. Optional local speech transcription of the WebM using faster-whisper/CTranslate2, producing timestamped MACLE observations with media/model provenance and no speaker attribution.
-6. Sparse local frame sampling from the composite WebM, producing hashed visual frame references with capture-relative timestamps; no image recognition is performed.
-7. Local polling of Meet REST participant and participant-session resources, preserving participant vs participant-device session identities and resource revisions.
-8. Retrieval of transcripts, transcript entries, recordings metadata and smart notes when authorized and available.
-9. Local SQLite/JSONL persistence, content hashes and explicit coverage gaps.
+The first useful slice is the invited-participant, same-device browser workflow. The core path is local tab capture and local post-capture processing; the Google API client below is optional enrichment and must never be presented as a prerequisite for recording.
 
-The participant watch uses sampled REST polling, not Google Workspace Events delivery. Workspace Events subscriptions and Pub/Sub reconciliation remain a possible later enhancement. The tab recording is a composite view, not individual participant tracks. The prototype is not full live multimodal observation and must not be described as such.
+The current prototype contains:
+1. Local Chrome tab capture through `chrome.tabCapture`: the rendered tab video and tab audio are recorded as one composite WebM, with a provenance manifest.
+2. Optional local microphone mixing, disabled by default and restricted to an explicitly attested synthetic virtual-microphone input under the current Stage A boundary.
+3. Optional local speech transcription of the WebM using faster-whisper/CTranslate2, producing timestamped MACLE observations with media/model provenance and no speaker attribution.
+4. Sparse local frame sampling from the composite WebM, producing hashed visual frame references with capture-relative timestamps; no image recognition is performed.
+5. Optional Google Meet REST enrichment: user-authorized OAuth with the read-only Meet scope, active conference resolution through `spaces.get`, and sampled polling of participant and participant-session resources, preserving participant vs participant-device session identities and resource revisions.
+6. Optional retrieval of transcripts, transcript entries, recordings metadata and smart notes when authorized and available.
+7. Local SQLite/JSONL persistence, content hashes and explicit coverage gaps.
+
+The optional participant watch uses sampled REST polling, not Google Workspace Events delivery. Workspace Events subscriptions and Pub/Sub reconciliation remain a possible later enhancement. The tab recording is a composite view, not individual participant tracks. The prototype is not full live multimodal observation and must not be described as such.
 
 ## 9. Minimum adapter mapping requirements
 
