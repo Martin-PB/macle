@@ -311,6 +311,39 @@ mod tests {
         let json = serde_json::to_string(&observation("screen", 1)).unwrap();
         assert!(validate_observation_json(&json).is_ok());
     }
+
+    #[test]
+    fn validates_shared_session_manifest_fixture() {
+        let fixture = include_str!("../../../tests/fixtures/session-manifest-v1.json");
+        let manifest = validate_manifest_json(fixture).unwrap();
+        assert_eq!(manifest.session_id, "synthetic-session-001");
+        assert_eq!(manifest.platform, "chrome");
+    }
+
+    #[test]
+    fn rejects_unsafe_artifact_paths() {
+        let fixture = include_str!("../../../tests/fixtures/session-manifest-v1.json");
+        let mut manifest = validate_manifest_json(fixture).unwrap();
+        manifest.artifacts.push(ArtifactDescriptor {
+            path: "../escape.webm".into(),
+            media_type: "video/webm".into(),
+            size_bytes: 1,
+            sha256: "a".repeat(64),
+            started_at: None,
+            ended_at: None,
+        });
+        let json = serde_json::to_string(&manifest).unwrap();
+        assert!(validate_manifest_json(&json).is_err());
+    }
+
+    #[test]
+    fn incremental_sha256_matches_one_shot_digest() {
+        let mut incremental = Sha256Accumulator::new();
+        incremental.update(b"a");
+        incremental.update(b"b");
+        incremental.update(b"c");
+        assert_eq!(incremental.finalize_hex(), sha256_hex(b"abc"));
+    }
 }
 
 #[cfg(target_os = "android")]
