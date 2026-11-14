@@ -22,10 +22,31 @@ async function ensureOffscreenDocument() {
 }
 
 async function stopCapture() {
-  await chrome.runtime.sendMessage({ target: "macle-offscreen", type: "STOP_CAPTURE" }).catch(() => {});
-  await chrome.storage.local.set({ captureActive: false, capturedTabId: null });
-  await chrome.action.setBadgeText({ text: "" });
-  await chrome.action.setTitle({ title: "MACLE Meet capture — click to start" });
+  const state = await chrome.storage.local.get(["captureActive", "captureStopping"]);
+  if (!state.captureActive || state.captureStopping) return;
+
+  // Keep the active state until the offscreen recorder has finalized and
+  // exported both files. This prevents a second start racing the save.
+  await chrome.storage.local.set({ captureStopping: true });
+  const result = await chrome.runtime.sendMessage({
+    target: "macle-offscreen",
+    type: "STOP_CAPTURE"
+  }).catch((error) => ({ ok: false, error: error.message || String(error) }));
+
+  if (!result?.ok) {
+    const error = result?.error || "The recorder could not be stopped.";
+    await chrome.storage.local.set({
+      captureActive: false,
+      captureStopping: false,
+      capturedTabId: null
+    });
+    await chrome.action.setBadgeText({ text: "ERR" });
+    await chrome.action.setTitle({ title: "MACLE capture stop error: " + error });
+    return;
+  }
+
+  await chrome.action.setBadgeText({ text: "..." });
+  await chrome.action.setTitle({ title: "MACLE is finalizing the recording and exporting its files" });
 }
 
 chrome.action.onClicked.addListener(async (tab) => {
@@ -62,7 +83,7 @@ chrome.action.onClicked.addListener(async (tab) => {
       syntheticMicrophoneAttested: Boolean(state.syntheticMicrophoneAttested)
     });
     if (!result?.ok) throw new Error(result?.error || "Recorder did not start.");
-    await chrome.storage.local.set({ captureActive: true, capturedTabId: tab.id });
+    await chrome.storage.local.set({ captureActive: true, captureStopping: false, capturedTabId: tab.id });
     await chrome.action.setBadgeText({ text: "REC" });
     await chrome.action.setBadgeBackgroundColor({ color: "#b3261e" });
     await chrome.action.setTitle({ title: "MACLE is recording this Meet tab — click to stop" });
@@ -90,7 +111,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === "CAPTURE_SAVED" || message.type === "CAPTURE_ERROR") {
-    chrome.storage.local.set({ captureActive: false, capturedTabId: null });
+    chrome.storage.local.set({ captureActive: false, captureStopping: false, capturedTabId: null });
     chrome.action.setBadgeText({ text: message.type === "CAPTURE_SAVED" ? "OK" : "ERR" });
     chrome.action.setTitle({
       title: message.type === "CAPTURE_SAVED"
@@ -115,6 +136,6 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
 
 chrome.runtime.onStartup.addListener(async () => {
   // A browser restart ends all media tracks; clear any stale toolbar state.
-  await chrome.storage.local.set({ captureActive: false, capturedTabId: null });
+  await chrome.storage.local.set({ captureActive: false, captureStopping: false, capturedTabId: null });
   await chrome.action.setBadgeText({ text: "" });
 });
