@@ -5,7 +5,7 @@ The extension now validates its session manifest with the shared Rust core compi
 From the repository root:
 
 ```sh
-sh scripts/build-wasm-core.sh
+sh scripts/test-wasm-core.sh
 ```
 
 Then load `connectors/google-meet/chrome-extension` from `chrome://extensions` with Developer mode enabled.
