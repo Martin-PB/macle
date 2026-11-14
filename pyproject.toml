@@ -17,6 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]
+asr = ["faster-whisper>=1.2.1,<2"]
 
 [project.scripts]
 macle-meet = "macle_meet.cli:main"

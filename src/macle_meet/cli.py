@@ -17,6 +17,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 from . import __version__
 from .client import MeetApiError, MeetClient
+from .asr import transcribe_file
 from .store import LocalStore
 from .normalize import sanitize_space_resource
 
@@ -29,6 +30,10 @@ def config_dir() -> Path:
 
 def data_dir() -> Path:
     return Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "macle-meet"
+
+
+def cache_dir() -> Path:
+    return Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "macle-meet"
 
 
 def ensure_private_config_directory(path: Path) -> None:
@@ -178,6 +183,53 @@ def run_index_capture(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_transcribe(args: argparse.Namespace) -> int:
+    if not args.manifest.is_file():
+        raise FileNotFoundError(f"Capture manifest not found: {args.manifest}")
+    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    if manifest.get("schema") != "macle.capture-manifest/v0" or not manifest.get("captureId"):
+        raise RuntimeError("Unsupported or incomplete MACLE capture manifest.")
+    if manifest.get("syntheticTestAttested") is not True:
+        raise RuntimeError("Refusing to transcribe a capture without the synthetic-only attestation.")
+    if manifest.get("microphoneCaptured") and manifest.get("microphoneSyntheticAttested") is not True:
+        raise RuntimeError("Refusing to transcribe microphone audio without a synthetic-input attestation.")
+    capture_args = argparse.Namespace(
+        manifest=args.manifest,
+        media=args.media,
+        conference_record=args.conference_record,
+        database=args.database,
+        export=args.export,
+    )
+    run_index_capture(capture_args)
+    observations, summary = transcribe_file(
+        args.media,
+        model_name=args.model,
+        language=args.language,
+        device=args.device,
+        compute_type=args.compute_type,
+        model_cache=args.model_cache,
+        cpu_threads=args.cpu_threads,
+        beam_size=args.beam_size,
+        manifest=manifest,
+        conference_name=args.conference_record,
+    )
+    store = LocalStore(args.database)
+    try:
+        for observation in observations:
+            store.add_observation(observation, conference_name=args.conference_record or "")
+        exported = store.export_jsonl(args.export)
+    finally:
+        store.close()
+    print(
+        f"Transcribed {summary['segments']} segments using {summary['model']} "
+        f"({summary['device']}/{summary['computeType']}, "
+        f"language={summary['language'] or 'unknown'})."
+    )
+    print(f"Media SHA-256: {summary['mediaSha256']}")
+    print(f"Exported {exported} observations to {args.export}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="macle-meet",
@@ -214,6 +266,20 @@ def build_parser() -> argparse.ArgumentParser:
     capture.add_argument("--conference-record")
     capture.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
     capture.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
+
+    transcribe = sub.add_parser("transcribe", help="Transcribe a local capture using local Whisper ASR.")
+    transcribe.add_argument("--media", type=Path, required=True)
+    transcribe.add_argument("--manifest", type=Path, required=True)
+    transcribe.add_argument("--conference-record", help="Associate the capture and transcript with a Meet conference resource.")
+    transcribe.add_argument("--model", default="small", choices=["tiny", "base", "small", "medium", "large-v3", "turbo"])
+    transcribe.add_argument("--language", help="Language code such as fr; omit for automatic detection.")
+    transcribe.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
+    transcribe.add_argument("--compute-type", help="Defaults to int8 on CPU and float16 on CUDA.")
+    transcribe.add_argument("--cpu-threads", type=int, default=min(os.cpu_count() or 4, 8))
+    transcribe.add_argument("--beam-size", type=int, default=5)
+    transcribe.add_argument("--model-cache", type=Path, default=cache_dir() / "models")
+    transcribe.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
+    transcribe.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
     return parser
 
 
@@ -229,6 +295,8 @@ def main() -> None:
             raise SystemExit(run_sync(args))
         if args.command == "index-capture":
             raise SystemExit(run_index_capture(args))
+        if args.command == "transcribe":
+            raise SystemExit(run_transcribe(args))
     except (MeetApiError, FileNotFoundError, RuntimeError, requests.RequestException) as exc:
         print(f"macle-meet: error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc
