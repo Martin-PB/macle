@@ -29,13 +29,19 @@
     <button id="authorizeMic">Authorize microphone</button>
     <button id="save">Save settings</button>
     <p id="status" role="status"></p>
+    <section id="pendingExport" hidden>
+      <h2>Recording awaiting export</h2>
+      <p id="pendingExportStatus" role="status">A finalized recording is retained locally because Chrome did not complete its export.</p>
+      <button id="retryExport">Retry export</button>
+    </section>
+    <p>If Chrome interrupts an export, open this settings page and use the recovery control above. MACLE retains the finalized local recording until export recovery succeeds.</p>
     <h2>How to use</h2>
     <ol>
       <li>Open a synthetic Google Meet test meeting in Chrome.</li>
       <li>Click the MACLE extension toolbar icon to start recording. The icon badge shows REC.</li>
       <li>Click the icon again to stop and save the WebM and JSON manifest.</li>
     </ol>
-    <p>The capture contains the rendered tab and tab audio independently of local playback. Local monitoring is off by default to avoid acoustic echo. The microphone is optional and is mixed into the recorded audio only when explicitly enabled and authorized. Under the current project approval, microphone input must be synthetic test audio; do not capture a real person's voice. Separate participant tracks are not available.
+    <p>The capture contains the rendered tab and tab audio independently of local playback. Local monitoring is off by default to avoid acoustic echo. The microphone is optional and is mixed into the recorded audio only when explicitly enabled and authorized. Under the current project approval, microphone input must be synthetic test audio; do not capture a real person's voice. Separate participant tracks are not available.</p>
   </main>
   <script src="options.js"></script>
 </body>
