@@ -94,6 +94,19 @@ Then:
 
 Android captures the display only. It does not capture Google Meet playback audio or microphone input. MediaProjection can be revoked by Android at any time. The current prototype does not yet promise recovery after process death, orientation changes, storage exhaustion, or long-duration recording.
 
+## Download prebuilt artifacts from GitHub Actions
+
+The MACLE prototype build workflow builds both targets on pull requests and pushes to main. When both jobs pass, it publishes two temporary artifacts for 14 days:
+
+- macle-chrome-extension — the packaged Chrome extension ZIP.
+- macle-android-debug — the unsigned debug APK for arm64-v8a Android devices.
+
+To retrieve them, open the successful **MACLE prototype builds** run in the repository's Actions tab and download the artifacts shown at the bottom of the run summary.
+
+For Chrome, extract the ZIP and load the extracted directory from chrome://extensions using Developer mode and **Load unpacked**.
+
+For Android, install the debug APK on a connected device with adb install -r MACLE-android-debug.apk. It is a development build, not a Play Store-signed release.
+
 ## Validation boundary
 
 The scripts validate the shared Rust/WASM contract path and build artifacts. They do not prove that Chrome can capture every Meet configuration or that Android can capture Meet playback audio. A physical-device/browser smoke test remains necessary before treating either adapter as operationally validated.
