@@ -13,7 +13,7 @@ The two adapters have different capabilities:
 
 ### Install the prebuilt extension (recommended)
 
-A versioned, prebuilt extension ZIP is published on the repository's GitHub Releases page:
+Versioned, prebuilt extension ZIPs will be published on the repository's GitHub Releases page as soon as the first release workflow has completed:
 
 - [MACLE Chrome releases](https://github.com/Martin-PB/macle/releases)
 
@@ -37,8 +37,7 @@ The release ZIP contains the compiled shared Rust/WASM runtime. Installing it do
 
 ### Build from source (maintainers and contributors)
 
-
-### Prerequisites
+#### Prerequisites
 
 - Rust toolchain and rustup
 - wasm-pack
