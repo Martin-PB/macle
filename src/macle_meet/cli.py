@@ -21,6 +21,7 @@ from . import __version__
 from .client import MeetApiError, MeetClient
 from .asr import transcribe_file
 from .frames import sample_video_frames
+from .report import generate_report
 from .store import LocalStore
 from .normalize import sanitize_space_resource
 
@@ -188,6 +189,26 @@ def run_index_capture(args: argparse.Namespace) -> int:
         store.close()
     print(f"Indexed local capture {manifest.get('captureId')} ({digest.hexdigest()[:12]}…).")
     print(f"Exported {count} observations to {args.export}")
+    return 0
+
+
+def run_report(args: argparse.Namespace) -> int:
+    if not args.synthetic_test_attested:
+        raise RuntimeError(
+            "Report generation is restricted to synthetic test observations under the current approval. "
+            "Pass --synthetic-test-attested only after confirming the export contains synthetic test data."
+        )
+    summary = generate_report(
+        args.input,
+        args.output,
+        frames_root=args.frames_root,
+    )
+    print(
+        f"Generated report with {summary['observations']} observations: "
+        f"{summary['report']}"
+    )
+    if summary["assets"]:
+        print(f"Local frame assets: {summary['assets']}")
     return 0
 
 
@@ -365,6 +386,12 @@ def build_parser() -> argparse.ArgumentParser:
     sync.add_argument("--token-file", type=Path, default=config_dir() / "token.json")
     sync.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
     sync.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
+    report = sub.add_parser("report", help="Generate a local HTML report from MACLE JSONL observations.")
+    report.add_argument("input", type=Path)
+    report.add_argument("output", type=Path)
+    report.add_argument("--frames-root", type=Path, default=data_dir() / "frames")
+    report.add_argument("--synthetic-test-attested", action="store_true", help="Confirm that the export contains only synthetic test data.")
+
     watch = sub.add_parser("watch", help="Poll Meet participant and participant-session state locally.")
     watch_lookup = watch.add_mutually_exclusive_group(required=True)
     watch_lookup.add_argument("--meeting-code", help="Resolve the active conference from a meeting code.")
@@ -414,6 +441,8 @@ def main() -> None:
             return
         if args.command == "sync":
             raise SystemExit(run_sync(args))
+        if args.command == "report":
+            raise SystemExit(run_report(args))
         if args.command == "watch":
             if args.interval <= 0 or (args.duration is not None and args.duration <= 0):
                 raise RuntimeError("Watch interval and duration must be positive.")
