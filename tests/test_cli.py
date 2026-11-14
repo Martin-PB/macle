@@ -172,3 +172,80 @@ def test_report_refuses_non_synthetic_export(tmp_path):
     )
     with pytest.raises(RuntimeError, match="synthetic test observations"):
         run_report(args)
+
+
+
+def test_process_capture_command_defaults_to_local_cpu_and_frame_sampling():
+    args = build_parser().parse_args([
+        "process-capture",
+        "--media", "capture.webm",
+        "--manifest", "capture.manifest.json",
+    ])
+    assert args.command == "process-capture"
+    assert args.conference_record is None
+    assert args.model == "small"
+    assert args.device == "cpu"
+    assert args.frame_interval == 30.0
+    assert args.synthetic_test_attested is False
+
+
+def test_process_capture_keeps_local_report_when_meet_sync_fails(tmp_path, monkeypatch):
+    from argparse import Namespace
+
+    import macle_meet.cli as cli
+
+    calls = []
+    def fake_transcribe(args):
+        calls.append("transcribe")
+        args.export.write_text('{"id":"local-capture"}\\n', encoding="utf-8")
+
+    monkeypatch.setattr(cli, "run_transcribe", fake_transcribe)
+
+    def fail_sync(args):
+        calls.append("sync")
+        raise RuntimeError("synthetic OAuth/API failure")
+
+    monkeypatch.setattr(cli, "run_sync", fail_sync)
+
+    def fake_report(args):
+        assert args.input.is_file()
+        assert "local-capture" in args.input.read_text(encoding="utf-8")
+        calls.append("report")
+        return 0
+
+    monkeypatch.setattr(cli, "run_report", fake_report)
+    args = Namespace(
+        synthetic_test_attested=True,
+        media=tmp_path / "capture.webm",
+        manifest=tmp_path / "capture.manifest.json",
+        conference_record="conferenceRecords/c1",
+        model="small",
+        language="fr",
+        device="cpu",
+        compute_type=None,
+        model_cache=tmp_path / "models",
+        cpu_threads=4,
+        beam_size=5,
+        frame_interval=30.0,
+        max_frame_dimension=1280,
+        jpeg_quality=85,
+        frames_dir=tmp_path / "frames",
+        token_file=tmp_path / "token.json",
+        database=tmp_path / "macle.sqlite3",
+        export=tmp_path / "observations.jsonl",
+        report=tmp_path / "report.html",
+    )
+
+    assert cli.run_process_capture(args) == 0
+    assert calls == ["transcribe", "sync", "report"]
+
+
+def test_process_capture_requires_synthetic_only_attestation(tmp_path):
+    from argparse import Namespace
+
+    import pytest
+    from macle_meet.cli import run_process_capture
+
+    args = Namespace(synthetic_test_attested=False)
+    with pytest.raises(RuntimeError, match="synthetic test data"):
+        run_process_capture(args)

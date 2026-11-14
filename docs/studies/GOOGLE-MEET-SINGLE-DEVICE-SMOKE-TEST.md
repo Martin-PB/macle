@@ -175,7 +175,24 @@ Expected:
 - No participant identity or speaker attribution is fabricated.
 - The machine-generated transcript is distinct from any Google-generated transcript artifact.
 
-## 8c. Generate a local HTML report
+## 8c. One-command post-capture processing
+
+The same local steps can be run together:
+
+```sh
+macle-meet process-capture --synthetic-test-attested \\
+  --media ./MACLE-Meet-....webm \\
+  --manifest ./MACLE-Meet-....manifest.json \\
+  --conference-record 'conferenceRecords/CONFERENCE_ID' \\
+  --language fr
+```
+
+Expected:
+- Capture indexing, local ASR, sparse frame sampling and HTML report generation complete in one command.
+- If the Meet REST sync fails, local observations are preserved and the report is still produced with a warning.
+- The conference resource argument is optional; without it, no Meet REST sync is attempted.
+
+## 8d. Generate a local HTML report separately
 
 After capture indexing, ASR and frame sampling:
 
