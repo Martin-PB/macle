@@ -62,12 +62,7 @@ class ScreenCaptureService : Service() {
             ACTION_STOP -> finishCapture(stopProjection = true)
             ACTION_START -> {
                 val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
-                val data = if (Build.VERSION.SDK_INT >= 33) {
-                    intent.getParcelableExtra(EXTRA_PROJECTION_DATA, Intent::class.java)
-                } else {
-                    @Suppress("DEPRECATION")
-                    intent.getParcelableExtra(EXTRA_PROJECTION_DATA)
-                }
+                val data = projectionIntent(intent)
                 if (data == null) {
                     stopSelf()
                     return START_NOT_STICKY
@@ -78,6 +73,32 @@ class ScreenCaptureService : Service() {
         return START_NOT_STICKY
     }
 
+    private fun projectionIntent(intent: Intent): Intent? {
+        return if (Build.VERSION.SDK_INT >= 33) {
+            intent.getParcelableExtra(EXTRA_PROJECTION_DATA, Intent::class.java)
+        } else {
+            legacyProjectionIntent(intent)
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun legacyProjectionIntent(intent: Intent): Intent? =
+        intent.getParcelableExtra(EXTRA_PROJECTION_DATA)
+
+    private fun createMediaRecorder(): MediaRecorder {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) MediaRecorder(this)
+        else legacyMediaRecorder()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun legacyMediaRecorder(): MediaRecorder = MediaRecorder()
+
+    @Suppress("DEPRECATION")
+    private fun readDisplayMetrics(): DisplayMetrics {
+        val metrics = DisplayMetrics()
+        (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealMetrics(metrics)
+        return metrics
+    }
     private fun startCapture(resultCode: Int, data: Intent) {
         if (projection != null || finishing) return
         try {
@@ -102,20 +123,13 @@ class ScreenCaptureService : Service() {
             val mediaDirectory = File(sessionDirectory, "media/screen").apply { mkdirs() }
             mediaFile = File(mediaDirectory, "capture.mp4")
 
-            val metrics = DisplayMetrics()
-            @Suppress("DEPRECATION")
-            (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealMetrics(metrics)
+            val metrics = readDisplayMetrics()
             val scale = minOf(1f, 1920f / metrics.widthPixels, 1080f / metrics.heightPixels)
             val width = ((metrics.widthPixels * scale).toInt() / 2) * 2
             val height = ((metrics.heightPixels * scale).toInt() / 2) * 2
             val density = metrics.densityDpi
 
-            val mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                MediaRecorder(this)
-            } else {
-                @Suppress("DEPRECATION")
-                MediaRecorder()
-            }
+            val mediaRecorder = createMediaRecorder()
             recorder = mediaRecorder
             mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
