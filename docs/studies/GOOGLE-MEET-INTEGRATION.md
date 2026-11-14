@@ -184,9 +184,10 @@ The first executable single-device prototype now contains:
 3. Local Chrome tab capture through `chrome.tabCapture`: the rendered tab video and tab audio are recorded as one composite WebM, with a provenance manifest.
 4. Optional local microphone mixing, disabled by default and restricted to an explicitly attested synthetic virtual-microphone input under the current Stage A boundary.
 5. Optional local speech transcription of the WebM using faster-whisper/CTranslate2, producing timestamped MACLE observations with media/model provenance and no speaker attribution.
-6. Local polling of Meet REST participant and participant-session resources, preserving participant vs participant-device session identities and resource revisions.
-7. Retrieval of transcripts, transcript entries, recordings metadata and smart notes when authorized and available.
-8. Local SQLite/JSONL persistence, content hashes and explicit coverage gaps.
+6. Sparse local frame sampling from the composite WebM, producing hashed visual frame references with capture-relative timestamps; no image recognition is performed.
+7. Local polling of Meet REST participant and participant-session resources, preserving participant vs participant-device session identities and resource revisions.
+8. Retrieval of transcripts, transcript entries, recordings metadata and smart notes when authorized and available.
+9. Local SQLite/JSONL persistence, content hashes and explicit coverage gaps.
 
 The participant watch uses sampled REST polling, not Google Workspace Events delivery. Workspace Events subscriptions and Pub/Sub reconciliation remain a possible later enhancement. The tab recording is a composite view, not individual participant tracks. The prototype is not full live multimodal observation and must not be described as such.
 

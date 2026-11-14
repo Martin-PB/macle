@@ -45,6 +45,8 @@ def test_transcribe_command_defaults_to_local_cpu_int8():
     assert args.device == "cpu"
     assert args.compute_type is None
     assert args.language is None
+    assert args.frame_interval == 30.0
+    assert args.max_frame_dimension == 1280
 
 
 def test_transcribe_command_accepts_conference_resource():
