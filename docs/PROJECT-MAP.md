@@ -65,7 +65,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Observation envelope](04-OBSERVATION-ENVELOPE.md) (PROPOSED)
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
-- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (priority target; no capture route selected)
+- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (priority target; local single-device capture route implemented as a first prototype)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
