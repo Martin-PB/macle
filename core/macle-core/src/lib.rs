@@ -94,7 +94,8 @@ pub fn validate_manifest_json(input: &str) -> Result<SessionManifest, CoreError>
     }
     require_nonempty("session_id", &manifest.session_id)?;
     require_nonempty("platform", &manifest.platform)?;
-    require_nonempty("started_at", &manifest.started_at)?;
+    require_rfc3339("started_at", &manifest.started_at)?;
+    if let Some(ended_at) = &manifest.ended_at { require_rfc3339("ended_at", ended_at)?; }
     let mut ids = std::collections::HashSet::new();
     for source in &manifest.sources {
         require_nonempty("source_id", &source.source_id)?;
@@ -114,6 +115,8 @@ pub fn validate_manifest_json(input: &str) -> Result<SessionManifest, CoreError>
             return Err(CoreError::Invalid(format!("artifact path must be a safe relative path: {}", artifact.path)));
         }
         require_nonempty("artifact media_type", &artifact.media_type)?;
+        if let Some(started_at) = &artifact.started_at { require_rfc3339("artifact.started_at", started_at)?; }
+        if let Some(ended_at) = &artifact.ended_at { require_rfc3339("artifact.ended_at", ended_at)?; }
         if artifact.sha256.len() != 64 || !artifact.sha256.bytes().all(|b| b.is_ascii_hexdigit()) {
             return Err(CoreError::Invalid(format!("artifact {} has an invalid SHA-256", artifact.path)));
         }
@@ -137,7 +140,14 @@ pub fn validate_observation_json(input: &str) -> Result<ObservationEnvelope, Cor
     ] {
         require_nonempty(field, value)?;
     }
+    require_rfc3339("observed_at", &observation.observed_at)?;
     Ok(observation)
+}
+
+fn require_rfc3339(field: &str, value: &str) -> Result<(), CoreError> {
+    time::OffsetDateTime::parse(value, &time::format_description::well_known::Rfc3339)
+        .map(|_| ())
+        .map_err(|error| CoreError::Invalid(format!("{field} must be RFC 3339: {error}")))
 }
 
 fn require_nonempty(field: &str, value: &str) -> Result<(), CoreError> {
