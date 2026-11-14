@@ -42,7 +42,7 @@ MACLE remains an exploratory product, but its first cross-platform implementatio
 
 ## Build and installation
 
-The first local Chrome and Android capture prototypes can be built from source. See [the installation guide](docs/INSTALLATION.md) for prerequisites, build commands and the synthetic-only smoke tests.
+A prebuilt [MACLE Chrome extension release](https://github.com/Martin-PB/macle/releases) is the recommended installation path; it includes the compiled WebAssembly runtime and does not require a local Rust/Cargo build. Chrome Developer mode is required for the unpacked ZIP installation. Android remains a source-built development prototype. See [the installation guide](docs/INSTALLATION.md) for installation steps, maintainer build commands and synthetic-only smoke tests.
 
 ## License
 
