@@ -91,8 +91,16 @@ pub fn validate_manifest_json(input: &str) -> Result<SessionManifest, CoreError>
     }
     require_nonempty("session_id", &manifest.session_id)?;
     require_nonempty("platform", &manifest.platform)?;
-    require_rfc3339("started_at", &manifest.started_at)?;
-    if let Some(ended_at) = &manifest.ended_at { require_rfc3339("ended_at", ended_at)?; }
+    let started_at = parse_rfc3339("started_at", &manifest.started_at)?;
+    if let Some(ended_at) = &manifest.ended_at {
+        let ended_at = parse_rfc3339("ended_at", ended_at)?;
+        if ended_at < started_at {
+            return Err(CoreError::Invalid("ended_at precedes started_at".into()));
+        }
+    }
+    if manifest.sources.is_empty() {
+        return Err(CoreError::Invalid("a session must declare at least one source".into()));
+    }
     let mut ids = std::collections::HashSet::new();
     for source in &manifest.sources {
         require_nonempty("source_id", &source.source_id)?;
@@ -112,8 +120,13 @@ pub fn validate_manifest_json(input: &str) -> Result<SessionManifest, CoreError>
             return Err(CoreError::Invalid(format!("artifact path must be a safe relative path: {}", artifact.path)));
         }
         require_nonempty("artifact media_type", &artifact.media_type)?;
-        if let Some(started_at) = &artifact.started_at { require_rfc3339("artifact.started_at", started_at)?; }
-        if let Some(ended_at) = &artifact.ended_at { require_rfc3339("artifact.ended_at", ended_at)?; }
+        let artifact_started = artifact.started_at.as_ref()
+            .map(|value| parse_rfc3339("artifact.started_at", value)).transpose()?;
+        let artifact_ended = artifact.ended_at.as_ref()
+            .map(|value| parse_rfc3339("artifact.ended_at", value)).transpose()?;
+        if matches!((artifact_started, artifact_ended), (Some(start), Some(end)) if end < start) {
+            return Err(CoreError::Invalid(format!("artifact {} ends before it starts", artifact.path)));
+        }
         if artifact.sha256.len() != 64 || !artifact.sha256.bytes().all(|b| b.is_ascii_hexdigit()) {
             return Err(CoreError::Invalid(format!("artifact {} has an invalid SHA-256", artifact.path)));
         }
@@ -137,7 +150,10 @@ pub fn validate_observation_json(input: &str) -> Result<ObservationEnvelope, Cor
     ] {
         require_nonempty(field, value)?;
     }
-    require_rfc3339("observed_at", &observation.observed_at)?;
+    parse_rfc3339("observed_at", &observation.observed_at)?;
+    if !observation.provenance.is_object() {
+        return Err(CoreError::Invalid("provenance must be a JSON object".into()));
+    }
     Ok(observation)
 }
 
@@ -148,9 +164,8 @@ where
     Option::<String>::deserialize(deserializer)
 }
 
-fn require_rfc3339(field: &str, value: &str) -> Result<(), CoreError> {
+fn parse_rfc3339(field: &str, value: &str) -> Result<time::OffsetDateTime, CoreError> {
     time::OffsetDateTime::parse(value, &time::format_description::well_known::Rfc3339)
-        .map(|_| ())
         .map_err(|error| CoreError::Invalid(format!("{field} must be RFC 3339: {error}")))
 }
 
