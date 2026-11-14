@@ -9,6 +9,7 @@
     "session_id",
     "platform",
     "started_at",
+    "ended_at",
     "sources",
     "artifacts",
     "limitations",
