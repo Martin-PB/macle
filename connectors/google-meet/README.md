@@ -1,9 +1,11 @@
 # MACLE Google Meet local connector
 
-A single-device connector for Google Meet. It combines two explicitly separate inputs:
+A single-device connector for a person who has been invited to an existing Google Meet meeting. The primary workflow is to open the invitation in the ordinary browser session, join through Google's normal participant flow, and explicitly record the visible Meet tab locally.
 
-1. A user-initiated Chrome tab recorder for the visible Google Meet tab, recording the tab's rendered video and tab audio locally.
-2. A local Python client for Google Meet REST API metadata and available post-meeting artifacts.
+The connector has two independent components:
+
+1. **Core: local Chrome tab recorder and local processing.** No Workspace subscription, Workspace administrator role, Google Cloud project, OAuth client, Meet REST API, Workspace Events, Calendar access or organizer privileges are required to capture and process the tab.
+2. **Optional enrichment: Python client for Google Meet REST metadata and available post-meeting artifacts.** This component requires separate OAuth/API setup and is not needed to join or record a meeting.
 
 No companion device, meeting bot, hosted MACLE service, remote database, or third-party capture/transcription provider is used.
 
@@ -20,6 +22,16 @@ This is a first working slice, not complete multimodal perception. In particular
 The owner has approved local, synthetic-only testing. The extension therefore requires an explicit confirmation that the selected meeting is a synthetic test meeting before recording starts. This checkbox is an operator attestation, not an automated guarantee about the meeting's participants.
 
 Do not use it to capture real meetings or real participant data until a separate authorization is explicitly granted.
+
+## Core invited-participant workflow
+
+1. Open the Google Meet invitation URL in Chrome, just as you would for an ordinary meeting.
+2. Sign in with the Google account you normally use, or choose the guest flow if the organizer permits it.
+3. Complete any normal pre-join, waiting-room and host-admission steps. MACLE does not bypass these controls; the host may require a signed-in or specifically invited account.
+4. Once admitted, use the MACLE extension toolbar button to start and stop local tab capture.
+5. Run the local processing command on the downloaded WebM and manifest to create the transcript, sparse visual observations and HTML report.
+
+No Google Workspace plan, administrator access, Google Cloud project or OAuth setup is involved in this core workflow. Google API access is optional and only adds platform metadata/artifacts when the account and meeting permissions allow it.
 
 ## Chrome extension setup
 
@@ -44,6 +56,10 @@ sh scripts/build-wasm-core.sh
 See [Chrome extension build instructions](chrome-extension/BUILD.md). The extension refuses to start a capture if the shared WASM runtime is missing. The generated `core-wasm/` files are build artifacts and are not committed.
 
 The Chrome capture now emits a `macle.session-manifest/v1` manifest with separate source capability states and a SHA-256 digest for the WebM artifact. The recording and manifest are still downloaded as a pair, not yet as a single archive package.
+
+## Optional Google API/artifact enrichment
+
+The following Python client is **not required** for joining or recording. Skip this entire section if local tab recording, transcription and reporting are sufficient.
 
 ## Python API/artifact client
 
