@@ -101,7 +101,7 @@ BigBlueButton is a strong candidate for testing rich post-meeting event/media re
 
 ## 7. Version snapshot and research recommendation
 
-On 14 November 2026, the Jitsi Docker release inventory showed stable-11248-3 as the latest release; the Jitsi web release notes showed the 2.0.11248 line. LiveKit's official server release inventory showed v1.13.11, and the JavaScript client SDK reference showed v2.24.0. These are candidate test pins, not selected production dependencies. See [reference spike readiness](REFERENCE-SPIKE-READINESS.md) for the detailed pinning and test plan.
+On 14 November 2026, the Jitsi Docker release inventory showed stable-11248-3 as the latest release; the Jitsi web release notes showed the 2.0.11248 line. LiveKit's official server release inventory showed v1.13.11, and the npm package registry showed livekit-client v2.24.0 (published 13 November 2026). The generated SDK documentation page still displayed v2.23.0 when checked, so the spike must pin the package release and separately record the documentation build version. These are candidate test pins, not selected production dependencies. See [reference spike readiness](REFERENCE-SPIKE-READINESS.md) for the detailed pinning and test plan.
 
 The Jitsi and LiveKit documentation sources below establish API surfaces, not empirical behavior in the MACLE fixture.
 
@@ -149,6 +149,7 @@ Official project documentation checked on 13 November 2026:
 - [Participant and track-composite egress](https://docs.livekit.io/transport/media/ingress-egress/egress/participant/)
 - [Webhook API reference](https://docs.livekit.io/reference/api/projects/webhooks/)
 - [Self-hosted local server](https://docs.livekit.io/transport/self-hosting/local/)
+- [livekit-client npm package](https://www.npmjs.com/package/livekit-client) — v2.24.0 published 13 November 2026; generated docs page version differs at retrieval.
 - [Server deployment requirements](https://docs.livekit.io/transport/self-hosting/deployment/)
 
 ### BigBlueButton
