@@ -55,7 +55,8 @@ chrome.action.onClicked.addListener(async (tab) => {
       "syntheticTestAttested",
       "captureActive",
       "includeMicrophone",
-      "syntheticMicrophoneAttested"
+      "syntheticMicrophoneAttested",
+      "monitorTabAudio"
     ]);
     if (state.captureActive) {
       await stopCapture();
@@ -80,7 +81,8 @@ chrome.action.onClicked.addListener(async (tab) => {
       streamId,
       tab: { id: tab.id, title: tab.title || "", url: tab.url },
       includeMicrophone: Boolean(state.includeMicrophone && state.syntheticMicrophoneAttested),
-      syntheticMicrophoneAttested: Boolean(state.syntheticMicrophoneAttested)
+      syntheticMicrophoneAttested: Boolean(state.syntheticMicrophoneAttested),
+      monitorTabAudio: Boolean(state.monitorTabAudio)
     });
     if (!result?.ok) throw new Error(result?.error || "Recorder did not start.");
     await chrome.storage.local.set({ captureActive: true, captureStopping: false, capturedTabId: tab.id });
