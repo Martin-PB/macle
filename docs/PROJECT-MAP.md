@@ -80,7 +80,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Reference meeting fixture 01](fixtures/REFERENCE-MEETING-01.md) (PROPOSED; not yet executed)
 - [Open questions](OPEN-QUESTIONS.md)
 - [Google Meet local connector](../connectors/google-meet/README.md) (first single-device executable slice; synthetic-only validation)
-- [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending)
+- [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending; includes one-command post-capture workflow)
 - [Local speech transcription study](studies/LOCAL-SPEECH-TRANSCRIPTION.md) (first optional local ASR backend)
 - [Local video frame observations](studies/LOCAL-VIDEO-FRAME-OBSERVATIONS.md) (sparse local visual references)
 - [Local HTML report generation](../connectors/google-meet/README.md#local-html-report) (offline inspection of observation exports)
