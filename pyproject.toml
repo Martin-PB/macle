@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Local, single-device Google Meet metadata and artifact collector for MACLE"
 readme = "connectors/google-meet/README.md"
 requires-python = ">=3.11"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
 dependencies = [
   "google-auth>=2.35,<3",
   "google-auth-oauthlib>=1.2,<2",
