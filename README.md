@@ -38,7 +38,7 @@ The project takes inspiration from process philosophy and the philosophy of situ
 
 ## Status
 
-MACLE is at an early exploratory stage. Its use cases, conceptual model and technical design are being developed. No particular implementation architecture is assumed yet.
+MACLE remains an exploratory product, but its first cross-platform implementation slice is now underway: a shared Rust session core with a Chrome WebAssembly host and an Android native/JNI host. The Android app contains a synthetic-only, screen-only MediaProjection prototype; Chrome continues to provide the existing local tab recorder. Neither platform's capture behavior has yet been validated across a physical-device/browser compatibility matrix. The current Stage A boundary remains synthetic-only and local-only.
 
 ## License
 
