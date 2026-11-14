@@ -40,7 +40,7 @@ A shared camera or endpoint does not turn this initial use case into an in-perso
 | Capture mechanisms | Native SDK, bot participant, desktop capture, post-meeting artifacts | Candidate strategies documented; repeatable evaluation protocol added |
 | Adjacent tools | Transcription, diarization, recording, calendar, chat, documents, workflow tools | Study candidates |
 | MACLE product requirements | Decide what MACLE itself must provide | Not yet baselined; competency questions drafted as proposals |
-| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | First executable Google Meet slice implemented on a work branch: local Chrome tab capture + Python REST/artifact client; not a production architecture decision |
+| Architecture and implementation | Select interfaces, storage, runtime, languages, deployment | First single-device Google Meet slice merged: local Chrome tab capture, REST/artifact client and local ASR; participant-state polling is being added; not a production architecture decision |
 
 ## 5. Document governance
 
@@ -65,7 +65,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Observation envelope](04-OBSERVATION-ENVELOPE.md) (PROPOSED)
 - [Meeting observation catalogue](studies/MEETING-OBSERVATION-CATALOG.md)
 - [Videoconferencing platform study](studies/VIDEOCONFERENCING-PLATFORMS.md)
-- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (priority target; local single-device capture route implemented as a first prototype)
+- [Google Meet first-integration study](studies/GOOGLE-MEET-INTEGRATION.md) (priority target; single-device capture, REST/artifact client and local ASR implemented as a prototype)
 - [Capture strategy study](studies/CAPTURE-STRATEGIES.md)
 - [Platform capability and evidence matrix](studies/PLATFORM-CAPABILITY-MATRIX.md)
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
@@ -82,6 +82,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Google Meet local connector](../connectors/google-meet/README.md) (first single-device executable slice; synthetic-only validation)
 - [Google Meet single-device smoke test](studies/GOOGLE-MEET-SINGLE-DEVICE-SMOKE-TEST.md) (manual validation pending)
 - [Local speech transcription study](studies/LOCAL-SPEECH-TRANSCRIPTION.md) (first optional local ASR backend)
+- [Google Meet single-device participant watch](../connectors/google-meet/README.md#watch-participant-state-during-a-synthetic-meeting) (sampled REST polling; implementation in progress)
 - [Decision register](decisions/README.md)
 - [ADR 0001 — Initial scope](decisions/ADR-0001-INITIAL-SCOPE.md)
 

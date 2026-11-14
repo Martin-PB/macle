@@ -96,6 +96,26 @@ class MeetClient:
                 )
         return records
 
+    def collect_participant_state(self, conference: dict[str, Any]) -> list[dict[str, Any]]:
+        """Fetch participant and participant-session resources for one poll."""
+        conference_name = conference.get("name")
+        if not conference_name:
+            raise MeetApiError("Conference record has no resource name.")
+        participants = self.list_all(
+            f"{conference_name}/participants", "participants"
+        )
+        resources: list[dict[str, Any]] = list(participants)
+        for participant in participants:
+            participant_name = participant.get("name")
+            if participant_name:
+                resources.extend(
+                    self.list_all(
+                        f"{participant_name}/participantSessions",
+                        "participantSessions",
+                    )
+                )
+        return resources
+
     def _request(self, resource: str, params: dict[str, Any]) -> dict[str, Any]:
         path = resource.strip("/")
         url = f"{self.base_url}/{quote(path, safe='/')}"

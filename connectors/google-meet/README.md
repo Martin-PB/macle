@@ -59,13 +59,13 @@ Then:
 
 ```sh
 macle-meet auth
-macle-meet sync --days 30
+macle-meet sync --synthetic-test-attested --days 30
 ```
 
 To attach to the active conference from the same device, resolve its current meeting space using the meeting code. The connector uses the code for the lookup but removes `meetingCode` and `meetingUri` from the stored space snapshot, because Google says meeting codes should not be stored long term:
 
 ```sh
-macle-meet sync --meeting-code abc-mnop-xyz
+macle-meet sync --synthetic-test-attested --meeting-code abc-mnop-xyz
 ```
 
 You can also pass a space resource directly with `--space spaces/RESOURCE_ID`. This calls `spaces.get`, reads `activeConference.conferenceRecord`, and then retrieves the conference and available participants/artifacts. It prints the stable `spaces/RESOURCE_ID` for later use with `--space`. It works only while that space has an active conference and Google authorizes access. Google advises against storing meeting codes long term; the connector redacts the code and meeting URI from its persisted space snapshot.
@@ -73,10 +73,22 @@ You can also pass a space resource directly with `--space spaces/RESOURCE_ID`. T
 To retrieve a known past conference resource:
 
 ```sh
-macle-meet sync --conference-record 'conferenceRecords/CONFERENCE_ID'
+macle-meet sync --synthetic-test-attested --conference-record 'conferenceRecords/CONFERENCE_ID'
 ```
 
 The local SQLite database is stored under `~/.local/share/macle-meet/`; the JSONL observation export is written to the current directory. The optional ASR model cache is stored under `~/.cache/macle-meet/models/`. OAuth credentials are stored under `~/.config/macle-meet/` with owner-only permissions; the directory is created with mode 0700 and the token with mode 0600.
+
+## Watch participant state during a synthetic meeting
+
+To collect a sampled timeline of participant and participant-device sessions while a synthetic meeting is active:
+
+```sh
+macle-meet watch --synthetic-test-attested --meeting-code abc-mnop-xyz --interval 15
+```
+
+The command polls the Meet REST API every 15 seconds by default, stores participant and participant-session resource revisions locally, and stops when Google reports that the conference has ended or when you press Ctrl+C. Use `--duration 3600` to set a maximum duration, or `--space spaces/RESOURCE_ID` if you already know the stable space resource. You can also use `--conference-record` for a known conference, but it cannot resolve an active meeting space by itself.
+
+This is **sampled REST polling**, not a real-time Workspace Events subscription. A short-lived state transition can be missed between polls, and API visibility/quotas depend on the Google account and Workspace policy. The explicit `--synthetic-test-attested` flag is required for both sync and watch while the current project approval remains synthetic-only.
 
 ## Local speech transcription
 

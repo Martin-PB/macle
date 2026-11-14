@@ -176,19 +176,19 @@ The extension's synthetic-only checkbox is an operator attestation, not proof th
 
 This is an initial working implementation contract. The first browser smoke test and live Google OAuth/API test still need to be performed in the user's Chrome/Google Cloud environment; code being present is not verification.
 
-## 8. First useful product slice — implementation baseline for the prototype
+## 8. First useful product slice — current implementation baseline
 
-A pragmatic first slice to validate with product requirements:
-1. User-authorized Google OAuth connection with least-privilege scopes.
-2. For the current meeting, resolve the active conference through `spaces.get` using the meeting code or space resource; for history, discover organizer-visible conference records or fetch a known conference resource.
-3. Subscribe to relevant Workspace Events and persist source event provenance.
-4. Reconcile events against Meet REST resources.
-5. Retrieve available conference participants and participant sessions.
-6. Retrieve transcripts, transcript entries, recordings metadata and smart notes when authorized and available.
-7. Normalize these into MACLE observations while preserving original Google resource identifiers, source payloads, timestamps, uncertainty, retrieval time and artifact references.
-8. Expose explicit coverage gaps: no raw live media, no guaranteed live transcript, missing/disabled artifacts, event delivery gaps, access denial and retention expiry.
+The first executable single-device prototype now contains:
+1. User-authorized Google OAuth connection with the read-only Meet scope.
+2. Active conference resolution through `spaces.get` using a meeting code or stable space resource; historical organizer-scoped discovery and known-resource lookup remain separate.
+3. Local Chrome tab capture through `chrome.tabCapture`: the rendered tab video and tab audio are recorded as one composite WebM, with a provenance manifest.
+4. Optional local microphone mixing, disabled by default and restricted to an explicitly attested synthetic virtual-microphone input under the current Stage A boundary.
+5. Optional local speech transcription of the WebM using faster-whisper/CTranslate2, producing timestamped MACLE observations with media/model provenance and no speaker attribution.
+6. Local polling of Meet REST participant and participant-session resources, preserving participant vs participant-device session identities and resource revisions.
+7. Retrieval of transcripts, transcript entries, recordings metadata and smart notes when authorized and available.
+8. Local SQLite/JSONL persistence, content hashes and explicit coverage gaps.
 
-This slice can provide useful post-meeting articulation and lifecycle context. It must not be marketed or specified as full live multimodal observation.
+The participant watch uses sampled REST polling, not Google Workspace Events delivery. Workspace Events subscriptions and Pub/Sub reconciliation remain a possible later enhancement. The tab recording is a composite view, not individual participant tracks. The prototype is not full live multimodal observation and must not be described as such.
 
 ## 9. Minimum adapter mapping requirements
 
@@ -241,6 +241,7 @@ A later authorized integration test may use a controlled Google Workspace test e
 - Meet conference records and organizer-filtered discovery: https://developers.google.com/workspace/meet/api/guides/conferences — retrieved 2026-11-14.
 - ConferenceRecord resource, including its 30-day `expireTime`: https://developers.google.com/workspace/meet/api/reference/rest/v2/conferenceRecords — retrieved 2026-11-14.
 - Meet participants and participant sessions: https://developers.google.com/workspace/meet/api/guides/participants — retrieved 2026-11-14.
+- Meet participant-session list method and active-session filter (`end_time IS NULL`): https://developers.google.com/workspace/meet/api/reference/rest/v2/conferenceRecords.participants.participantSessions/list — retrieved 2026-11-14.
 - Google Workspace Events for Meet: https://developers.google.com/workspace/events/guides/events-meet — retrieved 2026-11-14.
 - Google Meet SDK/API overview (including add-ons and Media API lifecycle notice): https://developers.google.com/workspace/meet/overview — retrieved 2026-11-14.
 - Google Meet API release notes (Media API shutdown announcement dated 2026-10-28): https://developers.google.com/workspace/meet/release-notes — retrieved 2026-11-14.
