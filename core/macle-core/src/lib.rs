@@ -147,8 +147,32 @@ fn require_nonempty(field: &str, value: &str) -> Result<(), CoreError> {
     Ok(())
 }
 
+pub struct Sha256Accumulator {
+    hasher: Sha256,
+}
+
+impl Sha256Accumulator {
+    pub fn new() -> Self {
+        Self { hasher: Sha256::new() }
+    }
+
+    pub fn update(&mut self, bytes: &[u8]) {
+        self.hasher.update(bytes);
+    }
+
+    pub fn finalize_hex(self) -> String {
+        format!("{:x}", self.hasher.finalize())
+    }
+}
+
+impl Default for Sha256Accumulator {
+    fn default() -> Self { Self::new() }
+}
+
 pub fn sha256_hex(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    let mut accumulator = Sha256Accumulator::new();
+    accumulator.update(bytes);
+    accumulator.finalize_hex()
 }
 
 /// Append-only JSONL writer with per-source monotonic sequence enforcement.
@@ -204,6 +228,27 @@ mod wasm_api {
         super::validate_observation_json(input)
             .map(|observation| serde_json::to_string(&observation).unwrap())
             .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
+    #[wasm_bindgen]
+    pub struct WasmSha256Accumulator {
+        inner: super::Sha256Accumulator,
+    }
+
+    #[wasm_bindgen]
+    impl WasmSha256Accumulator {
+        #[wasm_bindgen(constructor)]
+        pub fn new() -> WasmSha256Accumulator {
+            WasmSha256Accumulator { inner: super::Sha256Accumulator::new() }
+        }
+
+        pub fn update(&mut self, input: &[u8]) {
+            self.inner.update(input);
+        }
+
+        pub fn finalize_hex(self) -> String {
+            self.inner.finalize_hex()
+        }
     }
 
     #[wasm_bindgen]
@@ -268,7 +313,7 @@ mod android_jni {
     use jni::sys::jstring;
     use jni::JNIEnv;
 
-    fn validation_result(mut env: JNIEnv, input: JString, manifest: bool) -> jstring {
+    fn validation_result<'local>(mut env: JNIEnv<'local>, input: JString<'local>, manifest: bool) -> jstring {
         let message = match env.get_string(&input) {
             Ok(value) => {
                 let json = value.to_string_lossy().into_owned();
@@ -287,14 +332,14 @@ mod android_jni {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "system" fn Java_dev_macle_app_core_NativeCore_validateManifestJson(
-        env: JNIEnv, _class: JClass, input: JString
+    pub extern "system" fn Java_dev_macle_app_core_NativeCore_validateManifestJson<'local>(
+        env: JNIEnv<'local>, _class: JClass<'local>, input: JString<'local>
     ) -> jstring {
         validation_result(env, input, true)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "system" fn Java_dev_macle_app_core_NativeCore_validateObservationJson(
+    pub extern "system" fn Java_dev_macle_app_core_NativeCore_validateObservationJson<'local>(
         env: JNIEnv, _class: JClass, input: JString
     ) -> jstring {
         validation_result(env, input, false)
