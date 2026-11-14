@@ -70,6 +70,7 @@ A study recommendation is not a decision. A vendor feature is not automatically 
 - [Capture evaluation protocol](studies/CAPTURE-EVALUATION-PROTOCOL.md)
 - [Data protection and governance study](studies/DATA-PROTECTION-AND-GOVERNANCE.md)
 - [Adjacent tools and components study](studies/ADJACENT-TOOLS.md)
+- [External source and version traceability audit](studies/SOURCE-TRACEABILITY-AUDIT.md) (PROPOSED audit)
 - [Provenance, temporal relations, and event-envelope standards study](studies/PROVENANCE-TIME-EVENT-STANDARDS.md)
 - [Open reference environments study](studies/REFERENCE-ENVIRONMENTS.md)
 - [Data egress and privacy gate](studies/DATA-EGRESS-AND-PRIVACY-GATE.md) (PROPOSED)
