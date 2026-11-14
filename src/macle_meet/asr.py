@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -118,7 +118,7 @@ def transcribe_file(
             "id": observation_id,
             "schema": "macle.observation/v0",
             "observedAt": observed_at,
-            "retrievedAt": datetime.now().astimezone().isoformat(),
+            "retrievedAt": datetime.now(timezone.utc).isoformat(),
             "source": {
                 "platform": "google_meet",
                 "resourceName": capture_id or media_path.name,
