@@ -1,6 +1,6 @@
 # Study — Videoconferencing platforms
 
-**Status:** initial desk research; not a platform selection or implementation plan.  
+**Status:** comparative desk research; Google Meet is the first product integration priority, but no capture architecture or provider is selected.  
 **Scope:** Zoom, Microsoft Teams, Google Meet, Cisco Webex, with cross-platform capture providers as a separate category.
 
 ## 1. Why platform-specific study is necessary
@@ -63,8 +63,10 @@ An API's existence does not imply universal availability. Account plan, tenant c
 
 **Implications**
 - The documented REST API is strong for meeting metadata, lifecycle events, and post-meeting artifacts.
-- Do not mistake this for a general-purpose raw live audio/video API. A separate capture route (for example, a supported SDK, browser/desktop capture, or a bot provider) would need investigation.
+- Do not mistake this for a general-purpose raw live audio/video API. A separate capture route would need investigation.
+- Google announced that the Meet Media API Developer Preview will not proceed to general availability and that its endpoints will be shut down on 2027-01-15. It is not a sustainable foundation for a new product.
 - Distinguish persistent meeting-space members from participants and participant-device sessions.
+- Google Meet is now the first product integration priority; see [the dedicated integration study](GOOGLE-MEET-INTEGRATION.md). Discord is deferred as a likely later target.
 
 **Sources**
 - https://developers.google.com/workspace/meet/api/guides/overview — retrieved_on: 2026-11-13; version: not pinned in this study; consult the cited page for its current API/SDK version.
@@ -140,9 +142,11 @@ This table is a research snapshot, not a scorecard. “Not established” means 
 - Permission and consent flows, including organizational policy.
 - Platform terms and technical restrictions on recording, bot participation and automated capture.
 
-## 6. No decisions made
+## 6. Product priority and decision boundaries
 
-No platform has been selected as the first integration. No capture provider has been selected. No assumption is made that all four platforms must be supported in the first release.
+Google Meet is the first product integration priority, as clarified by the project owner on 2026-11-14. Discord is a likely later integration and is deferred. This priority does not select a capture route, provider, browser extension, bot, or deployment architecture. No assumption is made that all four platforms must be supported in the first release.
+
+The first technical demonstrator is approved for synthetic identities/content in a local self-hosted environment only. This does not authorize real-meeting capture or third-party data egress. Jitsi/LiveKit remain possible generic reference environments, not the first product integration target.
 
 
 ## 7. Event-level findings (additional research)
@@ -180,7 +184,7 @@ Sources:
 
 ## 9. Revised research priority
 
-The next useful platform work is not to add every vendor indiscriminately. It is to complete a capability matrix for the likely first candidates (Zoom, Teams, Meet, Webex), then decide whether one or more secondary platforms merit inclusion. The matrix should distinguish:
+The next platform work is to deepen the Google Meet integration study and define a first useful product slice, while keeping live media acquisition separate from supported REST/event/artifact interfaces. Other platforms remain comparative context. The matrix should distinguish:
 - lifecycle and participant events;
 - live media access and stream granularity;
 - screen-share lifecycle and content;
