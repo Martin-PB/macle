@@ -1,0 +1,141 @@
+name: MACLE Chrome extension release
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publish a versioned GitHub Release after all checks pass"
+        required: true
+        type: boolean
+        default: false
+      version:
+        description: "Chrome extension version (must match manifest.json)"
+        required: false
+        type: string
+        default: "0.1.0"
+  push:
+    tags:
+      - "macle-chrome-v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macle-chrome-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-verify:
+    name: Build and verify installable Chrome ZIP
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up stable Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install ZIP utility and WebAssembly packager
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes zip unzip
+          cargo install wasm-pack --locked
+
+      - name: Run native shared-core tests
+        run: cargo test --workspace
+
+      - name: Build, test and package the Chrome extension
+        run: sh scripts/package-chrome-extension.sh
+
+      - name: Verify the distributable archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="dist/macle-chrome-extension.zip"
+          unzip -t "$archive"
+          unzip -Z1 "$archive" | grep -Fx "manifest.json"
+          unzip -Z1 "$archive" | grep -Fx "core-wasm/macle_core.js"
+          unzip -Z1 "$archive" | grep -Fx "core-wasm/macle_core_bg.wasm"
+          temp_dir="$(mktemp -d)"
+          unzip -q "$archive" -d "$temp_dir"
+          node -e '
+            const fs = require("node:fs");
+            const manifest = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            if (manifest.manifest_version !== 3) throw new Error("Expected Manifest V3");
+            if (!manifest.version || !manifest.name) throw new Error("Missing extension identity/version");
+            if (!fs.statSync(process.argv[2]).size) throw new Error("WASM runtime is empty");
+            console.log("Manifest V3 and packaged WASM runtime: PASS");
+          ' "$temp_dir/manifest.json" "$temp_dir/core-wasm/macle_core_bg.wasm"
+          rm -rf "$temp_dir"
+
+      - name: Create checksum and build provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp dist/macle-chrome-extension.zip "dist/MACLE-Chrome-${GITHUB_SHA::12}.zip"
+          (
+            cd dist
+            sha256sum macle-chrome-extension.zip "MACLE-Chrome-${GITHUB_SHA::12}.zip" > SHA256SUMS.txt
+          )
+          {
+            echo "source_commit=$GITHUB_SHA"
+            echo "source_ref=$GITHUB_REF"
+            echo "node=$(node --version)"
+            echo "rustc=$(rustc --version)"
+            echo "wasm_pack=$(wasm-pack --version)"
+            echo "built_at_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > dist/BUILD-PROVENANCE.txt
+
+      - name: Upload verified extension package
+        uses: actions/upload-artifact@v4
+        with:
+          name: macle-chrome-extension-${{ github.sha }}
+          path: |
+            dist/macle-chrome-extension.zip
+            dist/MACLE-Chrome-*.zip
+            dist/SHA256SUMS.txt
+            dist/BUILD-PROVENANCE.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/macle-chrome-v') || (github.event_name == 'workflow_dispatch' && inputs.publish_release)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/macle-chrome-v* ]]; then
+            version="${GITHUB_REF_NAME#macle-chrome-v}"
+            tag="$GITHUB_REF_NAME"
+          else
+            if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+              echo "Publishing a release from workflow_dispatch is only allowed from main." >&2
+              exit 1
+            fi
+            version="$REQUESTED_VERSION"
+            tag="macle-chrome-v$version"
+          fi
+          manifest_version="$(node -p "require('./connectors/google-meet/chrome-extension/manifest.json').version")"
+          if [[ "$version" != "$manifest_version" ]]; then
+            echo "Requested release version ($version) does not match manifest version ($manifest_version)." >&2
+            exit 1
+          fi
+          gh release create "$tag" \
+            dist/macle-chrome-extension.zip \
+            "dist/MACLE-Chrome-${GITHUB_SHA::12}.zip" \
+            dist/SHA256SUMS.txt \
+            dist/BUILD-PROVENANCE.txt \
+            --target "$GITHUB_SHA" \
+            --title "MACLE Chrome extension v$version" \
+            --generate-notes

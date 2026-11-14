@@ -296,12 +296,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   if (message.type === "STOP_CAPTURE") {
     if (!recorder || recorder.state === "inactive") {
-      sendResponse({ ok: false, error: "No active capture." });
+      sendResponse(saving
+        ? { ok: true, finalizing: true }
+        : { ok: false, error: "No active capture." });
       return;
     }
     saving = true;
     recorder.stop();
-    sendResponse({ ok: true });
-    return true;
+    sendResponse({ ok: true, finalizing: true });
+    return;
   }
 });

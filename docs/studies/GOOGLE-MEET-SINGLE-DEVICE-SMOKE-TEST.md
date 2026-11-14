@@ -52,13 +52,16 @@ Expected:
 
 ## 4. Install the Chrome extension
 
-1. Open `chrome://extensions`.
-2. Enable Developer mode.
-3. Select **Load unpacked** and choose `connectors/google-meet/chrome-extension`.
-4. Open the extension's options page.
-5. Check the synthetic-only attestation.
-6. Leave microphone capture disabled for the baseline test.
-7. Save settings.
+1. Download the versioned ZIP from [MACLE Chrome releases](https://github.com/Martin-PB/macle/releases) and extract it into a permanent folder. Do not build from source for this operational test.
+2. Verify the downloaded ZIP against the release's `SHA256SUMS.txt`.
+3. Open `chrome://extensions`.
+4. Enable Developer mode.
+5. Select **Load unpacked** and choose the extracted folder containing `manifest.json`.
+6. Confirm the extension version matches the selected release.
+7. Open the extension's options page.
+8. Check the synthetic-only attestation.
+9. Leave microphone capture disabled for the baseline test.
+10. Save settings.
 
 Expected:
 - Extension loads without manifest errors.
@@ -239,10 +242,14 @@ When executed, append:
 - OS and Chrome versions.
 - Python version.
 - Google Workspace account type and relevant test policy settings (no account identifiers or tokens).
-- Extension load result.
+- Extension release tag/version and source commit from `BUILD-PROVENANCE.txt`.
+- ZIP SHA-256 verification result.
+- Extension load result (including Chrome version and any manifest/console errors).
 - OAuth result.
 - Active conference lookup result.
 - Capture start/stop and playback result.
+- WebM container/codec inspection (for example, `ffprobe -show_streams`), confirming both video and audio streams where Chrome exposed tab audio.
+- A controlled known audio stimulus result: expected tone/speech is audible in playback and present in the recorded audio; record any measured offset or dropout.
 - Manifest fields and file hash.
 - Python test/CI status.
 - Deviations, errors, and unresolved limitations.

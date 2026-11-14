@@ -11,7 +11,33 @@ The two adapters have different capabilities:
 
 ## Chrome
 
-### Prerequisites
+### Install the prebuilt extension (recommended)
+
+Versioned, prebuilt extension ZIPs will be published on the repository's GitHub Releases page as soon as the first release workflow has completed:
+
+- [MACLE Chrome releases](https://github.com/Martin-PB/macle/releases)
+
+No Rust, Cargo, wasm-pack, Node.js, ZIP utility, or local compilation is needed to install a published release.
+
+1. Download the asset named `macle-chrome-extension.zip` from the selected release.
+2. Extract the ZIP into a permanent folder. Do not delete or move that folder while the extension is installed.
+3. Open `chrome://extensions`.
+4. Enable **Developer mode**.
+5. Select **Load unpacked** and choose the extracted folder containing `manifest.json`.
+6. Pin MACLE to the toolbar if desired.
+7. Open the extension's options and explicitly attest to synthetic-only testing.
+8. Open a synthetic Google Meet test session.
+9. Click the MACLE toolbar icon to start. Click it again to stop and save the WebM and manifest separately.
+
+Chrome will load the extension from the extracted folder. This is a developer-mode installation, not a Chrome Web Store installation; Chrome may display a developer-mode notice. To update, download and extract the newer release, then use **Reload** on the extension card or remove the old unpacked folder and load the new one.
+
+Check the release's `SHA256SUMS.txt` before installation if you want to verify the downloaded ZIP. The release also includes `BUILD-PROVENANCE.txt`, identifying the source commit and build tool versions.
+
+The release ZIP contains the compiled shared Rust/WASM runtime. Installing it does not require building that runtime locally.
+
+### Build from source (maintainers and contributors)
+
+#### Prerequisites
 
 - Rust toolchain and rustup
 - wasm-pack
@@ -94,18 +120,13 @@ Then:
 
 Android captures the display only. It does not capture Google Meet playback audio or microphone input. MediaProjection can be revoked by Android at any time. The current prototype does not yet promise recovery after process death, orientation changes, storage exhaustion, or long-duration recording.
 
-## Download prebuilt artifacts from GitHub Actions
+## Temporary CI build artifacts
 
-The MACLE prototype build workflow builds both targets on pull requests and pushes to main. When both jobs pass, it publishes two temporary artifacts for 14 days:
+Pull-request and main-branch prototype builds may also publish short-lived GitHub Actions artifacts for maintainers. These are diagnostic build outputs, retained for 14 days by the prototype workflow; they are not the stable user download channel.
 
-- macle-chrome-extension — the packaged Chrome extension ZIP.
-- macle-android-debug — the unsigned debug APK for arm64-v8a Android devices.
+For normal Chrome installation, use the versioned assets on [MACLE Chrome releases](https://github.com/Martin-PB/macle/releases). A release contains the installable ZIP, SHA-256 checksums, and build provenance.
 
-To retrieve them, open the successful **MACLE prototype builds** run in the repository's Actions tab and download the artifacts shown at the bottom of the run summary.
-
-For Chrome, extract the ZIP and load the extracted directory from chrome://extensions using Developer mode and **Load unpacked**.
-
-For Android, install the debug APK on a connected device with adb install -r MACLE-android-debug.apk. It is a development build, not a Play Store-signed release.
+For Android, the Actions artifact remains a development APK, not a Play Store-signed release.
 
 ## Validation boundary
 
