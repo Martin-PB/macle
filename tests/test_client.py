@@ -55,3 +55,29 @@ def test_collect_conference_reads_transcript_entries_and_sessions():
     names = {resource["name"] for resource in resources}
     assert "conferenceRecords/c1/participants/p1/participantSessions/s1" in names
     assert "conferenceRecords/c1/transcripts/t1/entries/e1" in names
+
+
+
+class ParticipantStateSession:
+    def get(self, url, params=None, timeout=None):
+        if url.endswith("/participants"):
+            return FakeResponse({
+                "participants": [{"name": "conferenceRecords/c1/participants/p1"}]
+            })
+        if url.endswith("/participantSessions"):
+            return FakeResponse({
+                "participantSessions": [{
+                    "name": "conferenceRecords/c1/participants/p1/participantSessions/s1",
+                    "startTime": "2026-11-14T10:00:00Z",
+                }]
+            })
+        raise AssertionError(f"Unexpected URL: {url}")
+
+
+def test_collect_participant_state_reads_participants_and_sessions():
+    client = MeetClient(ParticipantStateSession(), base_url="https://example.test/v2")
+    resources = client.collect_participant_state({"name": "conferenceRecords/c1"})
+    assert [resource["name"] for resource in resources] == [
+        "conferenceRecords/c1/participants/p1",
+        "conferenceRecords/c1/participants/p1/participantSessions/s1",
+    ]
