@@ -76,6 +76,11 @@ def load_credentials(token_path: Path) -> Credentials:
 
 
 def run_sync(args: argparse.Namespace) -> int:
+    if not args.synthetic_test_attested:
+        raise RuntimeError(
+            "Meet metadata sync is restricted to synthetic test meetings under the current approval. "
+            "Pass --synthetic-test-attested only after confirming the meeting contains synthetic identities/content."
+        )
     credentials = load_credentials(args.token_file)
     client = MeetClient(AuthorizedSession(credentials))
     since = None
@@ -185,6 +190,11 @@ def run_index_capture(args: argparse.Namespace) -> int:
 
 
 def run_watch(args: argparse.Namespace) -> int:
+    if not args.synthetic_test_attested:
+        raise RuntimeError(
+            "Participant polling is restricted to synthetic test meetings under the current approval. "
+            "Pass --synthetic-test-attested only after confirming the meeting contains synthetic identities/content."
+        )
     credentials = load_credentials(args.token_file)
     client = MeetClient(AuthorizedSession(credentials))
     space_name = args.space
@@ -335,6 +345,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--space",
         help="Resolve the active conference from a space resource, e.g. spaces/RESOURCE_ID.",
     )
+    sync.add_argument("--synthetic-test-attested", action="store_true", help="Confirm that the target meeting contains only synthetic test identities/content.")
     sync.add_argument("--token-file", type=Path, default=config_dir() / "token.json")
     sync.add_argument("--database", type=Path, default=data_dir() / "macle.sqlite3")
     sync.add_argument("--export", type=Path, default=Path("macle-meet-observations.jsonl"))
@@ -343,6 +354,7 @@ def build_parser() -> argparse.ArgumentParser:
     watch_lookup.add_argument("--meeting-code", help="Resolve the active conference from a meeting code.")
     watch_lookup.add_argument("--space", help="Resolve the active conference from a space resource.")
     watch_lookup.add_argument("--conference-record", help="Watch a known conference resource.")
+    watch.add_argument("--synthetic-test-attested", action="store_true", help="Confirm that the target meeting contains only synthetic test identities/content.")
     watch.add_argument("--interval", type=float, default=15.0, help="Polling interval in seconds (default: 15).")
     watch.add_argument("--duration", type=float, help="Optional maximum watch duration in seconds.")
     watch.add_argument("--token-file", type=Path, default=config_dir() / "token.json")
