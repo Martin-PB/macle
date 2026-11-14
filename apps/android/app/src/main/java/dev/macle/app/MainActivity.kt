@@ -71,6 +71,9 @@ class MainActivity : Activity() {
         layout.addView(export)
         layout.addView(import)
         setContentView(layout)
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
+        }
     }
 
     private fun requestScreenCapture() {
@@ -172,5 +175,6 @@ class MainActivity : Activity() {
     companion object {
         private const val REQUEST_PROJECTION = 4102
         private const val REQUEST_MANIFEST = 4101
+        private const val REQUEST_NOTIFICATIONS = 4103
     }
 }
