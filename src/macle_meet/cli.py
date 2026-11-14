@@ -426,7 +426,7 @@ def run_transcribe(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="macle-meet",
-        description="Local, single-device Google Meet connector for MACLE.",
+        description="Local, single-device Google Meet capture, observation, transcription and reporting for MACLE.",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
