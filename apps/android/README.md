@@ -1,6 +1,29 @@
-# MACLE Android — first native core integration
+# MACLE Android — first native capture prototype
 
-This is the first Android vertical slice. It is intentionally small: the app imports a MACLE session manifest and validates it by calling the same Rust core compiled as a native Android library. It does **not** yet capture a meeting or request MediaProjection.
+The Android shell now contains a deliberately limited, synthetic-only screen-capture vertical slice. It calls the same Rust core as the Chrome WebAssembly build.
+
+## What works in this prototype
+
+- Native Android application shell (minimum Android 10 / API 29).
+- Explicit checkbox attestation for synthetic test content.
+- Android MediaProjection consent flow initiated by the user.
+- Foreground service with a persistent capture notification.
+- Local screen-only MP4 recording using MediaProjection + MediaRecorder.
+- Session manifest generation with separate source states, capture limitations, timestamps and a streamed SHA-256 file digest.
+- Manifest validation through the shared Rust core over JNI.
+- Export of the manifest and media file through Android's Sharesheet / FileProvider.
+- Import and validation of an existing manifest, including the shared Chrome fixture.
+
+## Explicitly not implemented
+
+- Remote Meet playback audio capture (AudioPlaybackCapture is not implemented or verified).
+- Microphone capture.
+- Participant-specific media tracks, transcription, or semantic interpretation.
+- Agent streaming, network permissions, or any hosted MACLE service.
+- A single ZIP package; this prototype exports the manifest and media as two files.
+- Production lifecycle recovery, exhaustive device/OS compatibility, or long-duration reliability.
+
+The manifest records playback audio and microphone as `not_requested`, not as successfully captured sources. If screen recording fails or produces an empty file, the screen source is marked `interrupted`.
 
 ## Build the shared Rust library
 
@@ -13,21 +36,22 @@ cargo install cargo-ndk
 ./scripts/build-android-core.sh
 ```
 
-Then open `apps/android` in Android Studio and run the `app` configuration on an Android 10+ device/emulator.
+The current script builds `arm64-v8a`. Then open `apps/android` in Android Studio and run the `app` configuration on an Android 10+ physical device.
 
-The Rust library is built for `arm64-v8a` by the script. Add other ABI targets only when needed.
+## Synthetic smoke test
 
-## Smoke test
+1. Install and launch MACLE.
+2. Check the synthetic-only attestation. Do not use real meeting participants or voices.
+3. Tap **Authorize and start screen capture** and approve Android's system capture dialog.
+4. Display a project-controlled synthetic test screen/stimulus; the app records the display locally.
+5. Tap **Stop capture**. The service finalizes the MP4 and validates the session manifest with the Rust core.
+6. Tap **Export last session** and send both files to a local test consumer.
+7. Optionally use **Import and validate session manifest** to validate a Chrome-generated fixture or the exported manifest.
 
-1. Build and launch MACLE.
-2. Select **Import session manifest**.
-3. Choose `tests/fixtures/session-manifest-v1.json`.
-4. The app should report that the manifest is valid.
+## Platform and safety boundary
 
-## Boundary
-
-- This app is a native integration proof, not yet the Android capture MVP.
-- No network permission or agent streaming is present.
-- The shared core validates the contract; it does not acquire media.
-- The next Android implementation step is an explicit, user-authorized MediaProjection screen-capture adapter with visible foreground-service lifecycle and synthetic-only test gating.
-- AudioPlaybackCapture remains a separate unverified capability and must not be inferred from screen capture.
+- Screen capture is user-authorized through MediaProjection; the operating system can revoke it.
+- A visible foreground service is used while recording.
+- The capture may include all visible content on the selected display; use only controlled synthetic material under the current Stage A approval.
+- The first adapter records video only. It must not imply that Android Meet playback audio can be captured.
+- Physical-device tests are still required for orientation changes, display/app-window selection, lock, interruption, revocation, low storage, process death and long-duration behavior.
