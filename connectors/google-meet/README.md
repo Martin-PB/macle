@@ -9,7 +9,7 @@ No companion device, meeting bot, hosted MACLE service, remote database, or thir
 
 ## Current capability boundary
 
-The Chrome recorder captures the rendered tab as one composite video stream and the audio output of that tab. Recording chunks are written to the browser's local Origin Private File System before download, so the full meeting is not kept in extension memory. It does not expose individual participant media tracks. It does not capture the local microphone in this initial version. It cannot see content that is not rendered in the selected tab, and browser/OS behavior may constrain capture.
+The Chrome recorder captures the rendered tab as one composite video stream and the audio output of that tab. Recording chunks are written to the browser's local Origin Private File System before download, so the full meeting is not kept in extension memory. It does not expose individual participant media tracks. It can optionally mix this device's microphone into the recording, but only after explicit permission and a separate attestation that the source is synthetic test audio. The microphone is off by default and is not stored as a separate track. It cannot see content that is not rendered in the selected tab, and browser/OS behavior may constrain capture.
 
 The Python client retrieves conference metadata, participants, participant sessions, recording/transcript/smart-note metadata, and structured transcript entries where Google makes them available. The general conference-list endpoint is organizer-scoped; a known conference record can be fetched directly if Google authorizes access.
 
@@ -28,10 +28,10 @@ Do not use it to capture real meetings or real participant data until a separate
 3. Choose **Load unpacked** and select `connectors/google-meet/chrome-extension`.
 4. Open a synthetic Google Meet test meeting in a Chrome tab.
 5. Open the extension's settings page from Chrome's extension details and save the synthetic-only attestation.
-6. Optionally select microphone capture, attest that the selected input is synthetic test audio, and use **Authorize microphone** in settings; the default is off.
+6. Leave microphone capture off for the baseline test. If testing it, select the synthetic-input attestation, enable the microphone, and use **Authorize microphone**; the default is off.
 7. Click the MACLE toolbar icon to start recording (the badge shows REC); click it again to stop. Chrome downloads a WebM recording and a JSON capture manifest.
 
-The extension only starts on `https://meet.google.com/`. Capture is initiated by a visible toolbar click; a second click stops it. It also stops on tab navigation or closure. It records the tab's rendered output and tab audio. The local microphone is included only if explicitly enabled and authorized in settings.
+The extension only starts on `https://meet.google.com/`. Capture is initiated by a visible toolbar click; a second click stops it. It also stops on tab navigation or closure. It records the tab's rendered output and tab audio. The local microphone is included only if explicitly enabled, authorized in Chrome, and separately attested as synthetic test audio. Never use a real person's voice under the current approval.
 
 ## Python API/artifact client
 
@@ -70,7 +70,7 @@ To retrieve a known past conference resource:
 macle-meet sync --conference-record 'conferenceRecords/CONFERENCE_ID'
 ```
 
-The local SQLite database is stored under `~/.local/share/macle-meet/`; the JSONL observation export is written to the current directory. OAuth credentials are stored under `~/.config/macle-meet/` with owner-only permissions.
+The local SQLite database is stored under `~/.local/share/macle-meet/`; the JSONL observation export is written to the current directory. OAuth credentials are stored under `~/.config/macle-meet/` with owner-only permissions; the directory is created with mode 0700 and the token with mode 0600.
 
 ## Local-only data handling
 
