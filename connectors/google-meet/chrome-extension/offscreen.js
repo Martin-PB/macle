@@ -210,7 +210,7 @@ async function saveCapture() {
     await requestDownload(blob, filename);
     await requestDownload(
       manifest,
-      filename.replace(/\\.webm$/, ".manifest.json")
+      filename.replace(/\.webm$/, ".manifest.json")
     );
     if (temporaryFileName) {
       const fileToRemove = temporaryFileName;
