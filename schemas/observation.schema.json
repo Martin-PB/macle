@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://macle.dev/schemas/observation-v1.json",
+  "title": "MACLE observation envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "observation_id", "session_id", "source_id", "sequence", "kind", "observed_at", "payload", "provenance"],
+  "properties": {
+    "schema": { "const": "macle.observation/v1" },
+    "observation_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "source_id": { "type": "string", "minLength": 1 },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "kind": { "type": "string", "minLength": 1 },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "payload": {},
+    "provenance": { "type": "object" }
+  }
+}
