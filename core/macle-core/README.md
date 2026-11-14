@@ -15,15 +15,15 @@ This crate is the platform-independent contract implementation. It deliberately 
 From the repository root:
 
 ```sh
-cargo test --manifest-path core/macle-core/Cargo.toml
+cargo test --workspace
 cargo check --manifest-path core/macle-core/Cargo.toml
 ```
 
-To build the browser module (requires Rust's `wasm32-unknown-unknown` target and `wasm-pack`):
+To build and test the browser module (requires Rust's `wasm32-unknown-unknown` target, `wasm-pack` and Node.js):
 
 ```sh
 rustup target add wasm32-unknown-unknown
-wasm-pack build core/macle-core --target web --out-dir ../../connectors/google-meet/chrome-extension/core-wasm
+sh scripts/test-wasm-core.sh
 ```
 
 The generated WASM package is a build artifact, not checked in. A Chrome extension build should bundle the generated JS/WASM pair and load it from its extension origin. Do not silently fall back to a different validation implementation if the module is missing in a production build.
