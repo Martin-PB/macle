@@ -29,6 +29,7 @@ codec correctness, file-system durability, or JavaScript refinement.
 | A retry cannot start until the retained artifact passes its SHA-256 check | `DownloadRequiresVerifiedArtifact`; `ExportingRequiresVerifiedHash` |
 | A hash mismatch blocks recovery without deleting the retained artifact | `BlockedMeansNoFalseSuccess`; `MetadataRequiresRetainedArtifact` |
 | Recovery is successful only after both exports are complete, then the local recovery record and artifact may be removed | `RecoveredMeansTruthfulSuccess`; `OnlyRecoveryRemovesArtifact`; `OnlyRecoveryRemovesMetadata` |
+| If both exports were already complete before a cleanup crash, recovery removes stale local metadata without re-exporting or re-hashing the artifact | `CleanupAlreadyExported` |
 | Browser restart during recovery forces re-verification and converts in-progress exports to retryable interruptions | `BrowserRestart` |
 | A new capture cannot start while a retained export is pending | `PendingRecoveryBlocksNewCapture` |
 | The recording phase ends when its source tab closes, and the recorder then eventually stops | `NoRecordingAfterTabClosure`; `TabClosureEventuallyStopsRecorder` |
@@ -71,7 +72,10 @@ a download ID—as the terminal success condition.
 8. Browser restart during export recovery returns the state to Pending,
    invalidates the previous hash-verification witness, and records in-progress
    downloads as interrupted; the OPFS artifact and recovery metadata remain.
-9. Export recovery is safety-checked only. The model deliberately makes no
+9. If both downloads were already complete before a cleanup crash, recovery
+   may remove stale metadata and the retained file without re-hashing it: no
+   further export is performed in that path.
+10. Export recovery is safety-checked only. The model deliberately makes no
    liveness claim because a user can repeatedly cancel or interrupt downloads.
 
 ## Verification status
