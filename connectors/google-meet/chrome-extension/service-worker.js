@@ -80,12 +80,15 @@ chrome.action.onClicked.addListener(async (tab) => {
       "syntheticMicrophoneAttested",
       "monitorTabAudio"
     ]);
-    if (state.captureActive) {
-      await stopCapture();
-      return;
-    }
+    // A finalized pending export takes precedence over a stale active marker.
+    // This lets the user recover OPFS data if Offscreen disappeared before its
+    // CAPTURE_SAVED/CAPTURE_ERROR notification reached the service worker.
     if (state.pendingExport) {
       await chrome.runtime.openOptionsPage();
+      return;
+    }
+    if (state.captureActive) {
+      await stopCapture();
       return;
     }
     if (!state.syntheticTestAttested) {
