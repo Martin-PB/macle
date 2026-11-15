@@ -3,17 +3,29 @@ const includeMicrophone = document.getElementById("includeMicrophone");
 const syntheticMicrophone = document.getElementById("syntheticMicrophone");
 const monitorTabAudio = document.getElementById("monitorTabAudio");
 const status = document.getElementById("status");
+const pendingExportSection = document.getElementById("pendingExport");
+const pendingExportStatus = document.getElementById("pendingExportStatus");
+const retryExport = document.getElementById("retryExport");
 
 chrome.storage.local.get([
   "syntheticTestAttested",
   "includeMicrophone",
   "syntheticMicrophoneAttested",
-  "monitorTabAudio"
+  "monitorTabAudio",
+  "pendingExport"
 ]).then((value) => {
   attest.checked = Boolean(value.syntheticTestAttested);
   includeMicrophone.checked = Boolean(value.includeMicrophone);
   syntheticMicrophone.checked = Boolean(value.syntheticMicrophoneAttested);
   monitorTabAudio.checked = Boolean(value.monitorTabAudio);
+  if (value.pendingExport) {
+    pendingExportSection.hidden = false;
+    pendingExportStatus.textContent =
+      value.pendingExport.filename + " — media: " +
+      (value.pendingExport.mediaComplete ? "exported" : "pending") +
+      ", manifest: " + (value.pendingExport.manifestComplete ? "exported" : "pending") +
+      ". The retained recording will be SHA-256 checked before retry.";
+  }
 });
 
 document.getElementById("authorizeMic").addEventListener("click", async () => {
@@ -44,4 +56,20 @@ document.getElementById("save").addEventListener("click", async () => {
   status.textContent = attest.checked
     ? "Synthetic-only attestation and capture settings saved on this device."
     : "Attestation disabled. Capture will not start.";
+});
+
+
+retryExport.addEventListener("click", async () => {
+  retryExport.disabled = true;
+  pendingExportStatus.textContent = "Checking the retained recording and retrying the missing exports…";
+  try {
+    const result = await chrome.runtime.sendMessage({ type: "RETRY_PENDING_EXPORT" });
+    if (!result?.ok) throw new Error(result?.error || "Export recovery failed.");
+    pendingExportSection.hidden = true;
+    status.textContent = "Recording export recovered: " + result.filename;
+  } catch (error) {
+    pendingExportStatus.textContent = "Export recovery failed: " + (error.message || String(error));
+  } finally {
+    retryExport.disabled = false;
+  }
 });

@@ -1,4 +1,5 @@
 let recorder = null;
+let starting = false;
 let stream = null;
 let microphoneStream = null;
 let recorderStream = null;
@@ -10,6 +11,7 @@ let writeChain = Promise.resolve();
 let sessionManifest = null;
 let artifactHasher = null;
 let saving = false;
+let retryingExport = false;
 let captureFailure = null;
 const macleCoreReady = import(chrome.runtime.getURL("core-wasm/macle_core.js")).then(async (core) => {
   await core.default();
@@ -36,10 +38,17 @@ async function startCapture(
   syntheticMicrophoneAttested = false,
   monitorTabAudio = false
 ) {
-  if (saving || (recorder && recorder.state !== "inactive")) {
-    throw new Error("A capture is already running or the previous file is still being saved.");
+  if (starting || saving || retryingExport || (recorder && recorder.state !== "inactive")) {
+    throw new Error("A capture is already starting, running, or the previous file is still being saved.");
   }
+  // Set the lock synchronously, before the first await, so concurrent
+  // START_CAPTURE messages cannot both pass the guard.
+  starting = true;
   try {
+    const { pendingExport } = await chrome.storage.local.get("pendingExport");
+    if (pendingExport) {
+      throw new Error("A finalized recording is awaiting export. Open MACLE settings and retry its export before starting another capture.");
+    }
     // Fail before recording starts if the shared contract runtime was not built.
     const core = await macleCoreReady;
     artifactHasher = new core.WasmSha256Accumulator();
@@ -150,6 +159,8 @@ async function startCapture(
     if (recorderStream) recorderStream.getTracks().forEach((track) => track.stop());
     if (audioContext) await audioContext.close().catch(() => {});
     if (writable) await writable.abort().catch(() => {});
+    // No finalized recovery record can exist during startCapture: if setup
+    // fails before MediaRecorder starts, remove the partial OPFS file directly.
     if (temporaryFileName) {
       const root = await navigator.storage.getDirectory().catch(() => null);
       if (root) await root.removeEntry(temporaryFileName).catch(() => {});
@@ -166,6 +177,8 @@ async function startCapture(
     artifactHasher = null;
     captureFailure = null;
     throw error;
+  } finally {
+    starting = false;
   }
 }
 
@@ -177,16 +190,111 @@ async function requestDownload(blob, filename) {
       url,
       filename
     });
-    if (!result?.ok) throw new Error(result?.error || "Browser download failed.");
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-  } catch (error) {
+    if (!result?.ok || !Number.isInteger(result.downloadId)) {
+      throw new Error(result?.error || "Chrome did not accept the download request.");
+    }
+
+    // A download ID proves acceptance only. Poll the downloads API through
+    // the service worker until Chrome reports complete or interrupted.
+    const deadline = Date.now() + 30 * 60 * 1000;
+    while (Date.now() < deadline) {
+      const status = await chrome.runtime.sendMessage({
+        type: "DOWNLOAD_STATUS",
+        downloadId: result.downloadId
+      });
+      if (!status?.ok) throw new Error(status?.error || "Could not inspect download status.");
+      if (status.state === "complete") return result.downloadId;
+      if (status.state === "interrupted") {
+        throw new Error("Chrome interrupted download: " + (status.error || filename));
+      }
+      if (status.state !== "in_progress") {
+        throw new Error("Unexpected Chrome download state: " + status.state);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    throw new Error("Timed out waiting for Chrome to finish downloading " + filename);
+  } finally {
     URL.revokeObjectURL(url);
-    throw error;
+  }
+}
+
+async function removeRetainedArtifact(root, fileName) {
+  try {
+    await root.removeEntry(fileName);
+  } catch (error) {
+    if (error.name !== "NotFoundError") throw error;
+  }
+}
+
+async function retryPendingExport() {
+  if (retryingExport || saving) {
+    throw new Error("An export operation is already in progress.");
+  }
+  retryingExport = true;
+  try {
+    const { pendingExport } = await chrome.storage.local.get("pendingExport");
+    if (!pendingExport) throw new Error("There is no pending recording export.");
+
+    const root = await navigator.storage.getDirectory();
+
+    // If both downloads completed before a crash, the retained OPFS file is
+    // no longer needed. Finish cleanup even if the file was already removed.
+    if (pendingExport.mediaComplete && pendingExport.manifestComplete) {
+      await removeRetainedArtifact(root, pendingExport.temporaryFileName);
+      await chrome.storage.local.remove("pendingExport");
+      send("CAPTURE_SAVED", { filename: pendingExport.filename, recovered: true });
+      return { ok: true, filename: pendingExport.filename };
+    }
+
+    const handle = await root.getFileHandle(pendingExport.temporaryFileName);
+    const blob = await handle.getFile();
+    if (blob.size !== pendingExport.sizeBytes) {
+      throw new Error("The retained recording size does not match its export record.");
+    }
+
+    const core = await macleCoreReady;
+    const hasher = new core.WasmSha256Accumulator();
+    const reader = blob.stream().getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        hasher.update(value);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    const actualSha256 = hasher.finalize_hex();
+    if (actualSha256 !== pendingExport.sha256) {
+      throw new Error("The retained recording failed its SHA-256 integrity check.");
+    }
+    core.validate_manifest_json(pendingExport.manifestJson);
+
+    let record = pendingExport;
+    if (!record.mediaComplete) {
+      await requestDownload(blob, record.filename);
+      record = { ...record, mediaComplete: true };
+      await chrome.storage.local.set({ pendingExport: record });
+    }
+    if (!record.manifestComplete) {
+      const manifest = new Blob([record.manifestJson], { type: "application/json" });
+      await requestDownload(manifest, record.manifestFilename);
+      record = { ...record, manifestComplete: true };
+      await chrome.storage.local.set({ pendingExport: record });
+    }
+
+    await removeRetainedArtifact(root, record.temporaryFileName);
+    await chrome.storage.local.remove("pendingExport");
+    send("CAPTURE_SAVED", { filename: record.filename, recovered: true });
+    return { ok: true, filename: record.filename };
+  } finally {
+    retryingExport = false;
   }
 }
 
 async function saveCapture() {
   saving = true;
+  let pendingExportRecord = null;
   try {
     sessionManifest.ended_at = new Date().toISOString();
     if (captureFailure) throw new Error(captureFailure);
@@ -207,28 +315,47 @@ async function saveCapture() {
       started_at: sessionManifest.started_at,
       ended_at: sessionManifest.ended_at
     });
+    const manifestFilename = filename.replace(/\.webm$/, ".manifest.json");
+    pendingExportRecord = {
+      temporaryFileName,
+      filename,
+      manifestFilename,
+      manifestJson: JSON.stringify(sessionManifest, null, 2),
+      sha256,
+      sizeBytes: blob.size,
+      mediaComplete: false,
+      manifestComplete: false,
+      createdAt: new Date().toISOString()
+    };
+    // Persist the recovery pointer before validation and either download. If
+    // validation or Chrome export fails, the finalized OPFS artifact remains.
+    await chrome.storage.local.set({ pendingExport: pendingExportRecord });
+
     const core = await macleCoreReady;
-    core.validate_manifest_json(JSON.stringify(sessionManifest));
+    core.validate_manifest_json(pendingExportRecord.manifestJson);
     const manifest = new Blob(
-      [JSON.stringify(sessionManifest, null, 2)],
+      [pendingExportRecord.manifestJson],
       { type: "application/json" }
     );
+
     await requestDownload(blob, filename);
-    await requestDownload(
-      manifest,
-      filename.replace(/\.webm$/, ".manifest.json")
-    );
+    pendingExportRecord = { ...pendingExportRecord, mediaComplete: true };
+    await chrome.storage.local.set({ pendingExport: pendingExportRecord });
+
+    await requestDownload(manifest, manifestFilename);
+    pendingExportRecord = { ...pendingExportRecord, manifestComplete: true };
+    await chrome.storage.local.set({ pendingExport: pendingExportRecord });
+
     if (temporaryFileName) {
-      const fileToRemove = temporaryFileName;
-      setTimeout(async () => {
-        const root = await navigator.storage.getDirectory().catch(() => null);
-        if (root) await root.removeEntry(fileToRemove).catch(() => {});
-      }, 65000);
+      const root = await navigator.storage.getDirectory();
+      await removeRetainedArtifact(root, temporaryFileName);
       temporaryFileName = null;
     }
+    await chrome.storage.local.remove("pendingExport");
+    pendingExportRecord = null;
     send("CAPTURE_SAVED", { filename });
   } catch (error) {
-    let failureMessage = error.message || String(error);
+    const failureMessage = error.message || String(error);
     if (sessionManifest) {
       sessionManifest.ended_at = sessionManifest.ended_at || new Date().toISOString();
       const hasFinalizedArtifact = sessionManifest.artifacts.length > 0;
@@ -241,25 +368,33 @@ async function saveCapture() {
           }
         }
       }
-      sessionManifest.limitations.push(
-        (hasFinalizedArtifact ? "Capture artifact was finalized, but export failed: " :
-          "Capture was interrupted before an artifact could be finalized: ") + failureMessage
-      );
-      try {
-        const core = await macleCoreReady;
-        core.validate_manifest_json(JSON.stringify(sessionManifest));
-        const manifest = new Blob(
-          [JSON.stringify(sessionManifest, null, 2)],
-          { type: "application/json" }
+
+      if (pendingExportRecord) {
+        sessionManifest.limitations.push(
+          "Export is pending; the finalized recording has been retained locally for retry. Last error: " +
+          failureMessage
         );
-        const stamp = sessionManifest.started_at.replace(/[:.]/g, "-");
-        await requestDownload(manifest, "MACLE-Meet-" + stamp + ".manifest.json");
-      } catch (manifestError) {
-        failureMessage += "; interruption manifest export also failed: " +
-          (manifestError.message || String(manifestError));
+        pendingExportRecord = {
+          ...pendingExportRecord,
+          manifestJson: JSON.stringify(sessionManifest, null, 2)
+        };
+        try {
+          const recoveryCore = await macleCoreReady;
+          recoveryCore.validate_manifest_json(pendingExportRecord.manifestJson);
+          await chrome.storage.local.set({ pendingExport: pendingExportRecord });
+        } catch (persistError) {
+          console.error("MACLE could not refresh pending export metadata:", persistError);
+        }
+      } else {
+        sessionManifest.limitations.push(
+          "Capture was interrupted before an artifact could be finalized: " + failureMessage
+        );
       }
     }
-    send("CAPTURE_ERROR", { error: failureMessage });
+    send("CAPTURE_ERROR", {
+      error: failureMessage + (pendingExportRecord ? "; finalized recording retained locally for export retry" : ""),
+      pendingExport: Boolean(pendingExportRecord)
+    });
   } finally {
     // Stop every acquired source explicitly. Closing AudioContext does not
     // release the microphone MediaStream tracks created by getUserMedia().
@@ -268,7 +403,7 @@ async function saveCapture() {
     if (recorderStream) recorderStream.getTracks().forEach((track) => track.stop());
     if (audioContext) await audioContext.close().catch(() => {});
     if (writable) await writable.abort().catch(() => {});
-    if (temporaryFileName) {
+    if (temporaryFileName && !pendingExportRecord) {
       const root = await navigator.storage.getDirectory().catch(() => null);
       if (root) await root.removeEntry(temporaryFileName).catch(() => {});
     }
@@ -290,8 +425,16 @@ async function saveCapture() {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.target !== "macle-offscreen") return;
   if (message.type === "PING") {
-    sendResponse({ ok: true, type: "PONG" });
-    return;
+    macleCoreReady
+      .then(() => sendResponse({ ok: true, type: "PONG", coreReady: true }))
+      .catch((error) => sendResponse({ ok: false, error: error.message || String(error) }));
+    return true;
+  }
+  if (message.type === "RETRY_PENDING_EXPORT") {
+    retryPendingExport()
+      .then(sendResponse)
+      .catch((error) => sendResponse({ ok: false, error: error.message || String(error) }));
+    return true;
   }
   if (message.type === "START_CAPTURE") {
     startCapture(
