@@ -353,6 +353,9 @@ TerminalRecorderQuiescent ==
 StopEventuallyTerminates ==
   stopRequested ~> (phase = "Saved" \/ phase = "Failed")
 
+TabClosureEventuallyStopsRecorder ==
+  (~tabOpen /\ recorder = "Recording") ~> (recorder # "Recording")
+
 Spec ==
   Init
   /\ [][Next]_vars
