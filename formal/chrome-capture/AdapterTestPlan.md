@@ -29,6 +29,7 @@ real Chromium APIs. They are separate from TLC model checking.
 | C-20 | Both downloads completed but the browser stopped before clearing recovery metadata | Retry performs cleanup without downloading either file again; it may tolerate an already-removed OPFS file |
 | C-21 | MediaRecorder construction fails after the OPFS file and writable handle are created | Partial file is removed, writable handle is aborted, and acquired media tracks are stopped; error is not masked by cleanup |
 | C-22 | STOP_CAPTURE acknowledgement fails or Offscreen is temporarily unavailable | Service worker retains captureActive and capturedTabId, clears only captureStopping, and a later toolbar click retries stop instead of starting a second recorder |
+| C-23 | Source tab navigates or closes while MediaRecorder is active | Capture leaves the Recording phase immediately; the recorder is stopped and its tracks are released before finalization completes |
 
 ## Required real-browser acceptance test
 
