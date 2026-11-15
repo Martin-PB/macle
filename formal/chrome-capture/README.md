@@ -31,9 +31,10 @@ codec correctness, file-system durability, or JavaScript refinement.
 | Recovery is successful only after both exports are complete, then the local recovery record and artifact may be removed | `RecoveredMeansTruthfulSuccess`; `OnlyRecoveryRemovesArtifact`; `OnlyRecoveryRemovesMetadata` |
 | Browser restart during recovery forces re-verification and converts in-progress exports to retryable interruptions | `BrowserRestart` |
 | A new capture cannot start while a retained export is pending | `PendingRecoveryBlocksNewCapture` |
-| Recording cannot remain active after its source tab is closed | `NoRecordingAfterTabClosure` |
+| The recording phase ends when its source tab closes, and the recorder then eventually stops | `NoRecordingAfterTabClosure`; `TabClosureEventuallyStopsRecorder` |
 | A terminal session has no active recorder | `TerminalRecorderQuiescent` |
 | A stop request eventually reaches Saved or Failed under the stated fairness assumptions | `StopEventuallyTerminates` |
+| A recorder active at tab closure eventually becomes quiescent under recorder-stop fairness | `TabClosureEventuallyStopsRecorder` |
 
 ## Important semantic correction
 
