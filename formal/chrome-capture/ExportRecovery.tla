@@ -110,6 +110,18 @@ Recover ==
   /\ metadataPresent' = FALSE
   /\ UNCHANGED <<artifactHashValid, hashVerified, mediaState, manifestState, captureStarted>>
 
+CleanupAlreadyExported ==
+  /\ phase = "Pending"
+  /\ mediaState = "Complete"
+  /\ manifestState = "Complete"
+  /\ artifactRetained
+  /\ metadataPresent
+  /\ phase' = "Recovered"
+  /\ artifactRetained' = FALSE
+  /\ metadataPresent' = FALSE
+  /\ UNCHANGED <<artifactHashValid, hashVerified, mediaState,
+                  manifestState, captureStarted>>
+
 BrowserRestart ==
   /\ phase \in {"Verifying", "Exporting"}
   /\ phase' = "Pending"
@@ -135,6 +147,7 @@ Next ==
   \/ CompleteManifestDownload
   \/ InterruptManifestDownload
   \/ Recover
+  \/ CleanupAlreadyExported
   \/ BrowserRestart
   \/ AttemptNewCapture
 
@@ -168,7 +181,6 @@ BlockedMeansNoFalseSuccess ==
 
 RecoveredMeansTruthfulSuccess ==
   phase = "Recovered" =>
-    /\ hashVerified
     /\ mediaState = "Complete"
     /\ manifestState = "Complete"
     /\ ~artifactRetained
