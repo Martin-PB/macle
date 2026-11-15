@@ -527,7 +527,8 @@ async function runToolbarClickWithPendingExport() {
           return {
             pendingExport: { filename: "retained.webm" },
             syntheticTestAttested: true,
-            captureActive: false,
+            captureActive: true,
+            capturedTabId: 7,
             includeMicrophone: false,
             syntheticMicrophoneAttested: false,
             monitorTabAudio: false
